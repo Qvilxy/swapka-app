@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SWAPKA</title>
+    <!-- Подключаем скрипт Telegram WebApp -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* === ОСНОВНЫЕ СТИЛИ И ПЕРЕМЕННЫЕ === */
+        :root {
+            --bg-color: #F2F2F7;
+            --text-color: #000000;
+            --secondary-text-color: #8E8E93;
+            --card-bg: #FFFFFF;
+            --border-color: #C6C6C8;
+            --button-bg: #007AFF;
+            --button-text: #FFFFFF;
+            --search-bg: #E3E3E8;
+            --nav-bg: rgba(255, 255, 255, 0.8);
+            --nav-active: #007AFF;
+            --nav-inactive: #8E8E93;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --text-color: #FFFFFF;
+            --secondary-text-color: #8E8E93;
+            --card-bg: #1C1C1E;
+            --border-color: #3A3A3C;
+            --button-bg: #0A84FF;
+            --button-text: #FFFFFF;
+            --search-bg: #1C1C1E;
+            --nav-bg: rgba(28, 28, 30, 0.8);
+            --nav-active: #0A84FF;
+            --nav-inactive: #8E8E93;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+            padding-bottom: 80px; /* Отступ для нижней панели */
+        }
+
+        .app-header {
+            text-align: center;
+            padding: 15px 0;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-color);
+            z-index: 100;
+        }
+
+        .container {
+            padding: 0 10px;
+        }
+
+        /* === СТРАНИЦЫ === */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        /* === ГЛАВНАЯ СТРАНИЦА === */
+        .search-container {
+            padding: 10px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--search-bg);
+            color: var(--text-color);
+            font-size: 17px;
+            outline: none;
+        }
+        .search-input::placeholder {
+            color: var(--secondary-text-color);
+        }
+
+        .ads-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .ad-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+        .ad-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background-color: var(--search-bg);
+        }
+        .ad-info {
+            padding: 10px;
+        }
+        .ad-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ad-city {
+            font-size: 13px;
+            color: var(--secondary-text-color);
+            margin-bottom: 4px;
+        }
+        .ad-price {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--secondary-text-color);
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        /* === СТРАНИЦА ПРОФИЛЯ === */
+        .profile-page {
+            padding: 20px;
+        }
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .profile-user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: var(--search-bg);
+        }
+        .profile-details h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .profile-stats {
+            font-size: 14px;
+            color: var(--secondary-text-color);
+        }
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .menu-list {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .menu-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 17px;
+            cursor: pointer;
+        }
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        .menu-item:active {
+            background-color: var(--search-bg);
+        }
+
+        /* === СТРАНИЦА СООБЩЕНИЙ === */
+        .messages-page {
+            padding: 20px;
+            text-align: center;
+            color: var(--secondary-text-color);
+        }
+        .messages-icon {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+
+        /* === НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ === */
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 400px;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            cursor: pointer;
+            color: var(--nav-inactive);
+            transition: color 0.2s;
+        }
+        .nav-item.active {
+            color: var(--nav-active);
+        }
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 2px;
+        }
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* === МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ОБЪЯВЛЕНИЯ === */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 15px 15px 0 0;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 17px;
+            outline: none;
+        }
+        .photo-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .photo-upload-area.has-image {
+            border-style: solid;
+            padding: 5px;
+        }
+        .upload-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .submit-ad-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Заголовок приложения -->
+    <header class="app-header">SWAPKA</header>
+
+    <!-- === ВКЛАДКА "ГЛАВНАЯ" === -->
+    <div id="mainPage" class="page active">
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Поиск...">
+        </div>
+        <div class="ads-grid" id="adsGrid">
+            <div class="empty-state">
+                <div class="empty-state-icon">📦</div>
+                <p>Объявлений пока нет</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- === ВКЛАДКА "СООБЩЕНИЯ" === -->
+    <div id="messagesPage" class="page messages-page">
+        <div class="messages-icon">💬</div>
+        <h3>Сообщения</h3>
+        <p>Здесь будут ваши чаты</p>
+    </div>
+
+    <!-- === ВКЛАДКА "ПРОФИЛЬ" === -->
+    <div id="profilePage" class="page profile-page">
+        <div class="profile-header">
+            <div class="profile-user-info">
+                <img src="" alt="Avatar" class="profile-avatar" id="profileAvatar">
+                <div class="profile-details">
+                    <h2 id="profileName">Загрузка...</h2>
+                    <div class="profile-stats">
+                        <p>Рейтинг: 4/5</p>
+                        <p>Подписчики: 67</p>
+                    </div>
+                </div>
+            </div>
+            <button class="theme-toggle-btn" id="themeToggleBtn">🌙</button>
+        </div>
+        <div class="menu-list">
+            <div class="menu-item" id="createAdBtn">Создать объявление</div>
+            <div class="menu-item">Мои объявления</div>
+            <div class="menu-item">Поддержка</div>
+            <div class="menu-item">Правила</div>
+        </div>
+    </div>
+
+    <!-- === МОДАЛЬНОЕ ОКНО ДЛЯ СОЗДАНИЯ ОБЪЯВЛЕНИЯ === -->
+    <div class="modal" id="createAdModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Новое объявление</h3>
+                <button class="close-modal-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="adForm">
+                <div class="form-group">
+                    <label class="form-label">Название</label>
+                    <input type="text" class="form-input" id="adTitle" required placeholder="Например, iPhone 13">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Фотография</label>
+                    <div class="photo-upload-area" id="photoUploadArea">
+                        <div id="uploadPlaceholder">
+                            <p>Нажмите, чтобы добавить фото</p>
+                        </div>
+                        <img id="imagePreview" class="upload-preview hidden">
+                    </div>
+                    <input type="file" id="adPhotoInput" accept="image/*" class="hidden">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Цена (₽)</label>
+                    <input type="number" class="form-input" id="adPrice" required placeholder="50000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Город</label>
+                    <input type="text" class="form-input" id="adCity" required placeholder="Москва">
+                </div>
+                <button type="submit" class="submit-ad-btn">Опубликовать</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- === НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ === -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-page="main">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Главная</span>
+        </div>
+        <div class="nav-item" data-page="messages">
+            <span class="nav-icon">💬</span>
+            <span class="nav-label">Сообщения</span>
+        </div>
+        <div class="nav-item" data-page="profile">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Профиль</span>
+        </div>
+    </nav>
+
+    <script>
+        // === ИНИЦИАЛИЗАЦИЯ TELEGRAM WEBAPP ===
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем приложение на весь экран
+
+        // === СОСТОЯНИЕ ПРИЛОЖЕНИЯ ===
+        let ads = JSON.parse(localStorage.getItem('swapka_ads')) || [];
+        let currentTheme = localStorage.getItem('swapka_theme') || 'light';
+        let userData = null;
+
+        // === DOM ЭЛЕМЕНТЫ ===
+        const pages = {
+            main: document.getElementById('mainPage'),
+            messages: document.getElementById('messagesPage'),
+            profile: document.getElementById('profilePage')
+        };
+        const navItems = document.querySelectorAll('.nav-item');
+        const adsGrid = document.getElementById('adsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const createAdModal = document.getElementById('createAdModal');
+        const createAdBtn = document.getElementById('createAdBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const adForm = document.getElementById('adForm');
+        const photoUploadArea = document.getElementById('photoUploadArea');
+        const adPhotoInput = document.getElementById('adPhotoInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const profileNameEl = document.getElementById('profileName');
+        const profileAvatarEl = document.getElementById('profileAvatar');
+
+        // === ФУНКЦИИ ===
+
+        function init() {
+            // Получаем данные пользователя из Telegram
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                userData = tg.initDataUnsafe.user;
+            } else {
+                // Демо-данные, если открыто не в Telegram
+                userData = { first_name: 'Тимур', last_name: 'Артыков', photo_url: '' };
+            }
+            updateProfileUI();
+            applyTheme(currentTheme);
+            renderAds(ads);
+            setupEventListeners();
+        }
+
+        function updateProfileUI() {
+            const fullName = `${userData.first_name} ${userData.last_name || ''}`.trim();
+            profileNameEl.textContent = fullName;
+            
+            if (userData.photo_url) {
+                profileAvatarEl.src = userData.photo_url;
+            } else {
+                // Генерируем аватарку с инициалами, если фото нет
+                const initial = fullName.charAt(0).toUpperCase();
+                profileAvatarEl.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23ccc" width="100" height="100"/><text fill="%23666" font-size="40" x="50" y="60" text-anchor="middle">${initial}</text></svg>`;
+            }
+        }
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggleBtn.textContent = '☀️';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggleBtn.textContent = '🌙';
+            }
+            currentTheme = theme;
+            localStorage.setItem('swapka_theme', theme);
+        }
+
+        function switchPage(pageName) {
+            // Скрываем все страницы
+            Object.values(pages).forEach(page => page.classList.remove('active'));
+            // Показываем нужную
+            pages[pageName].classList.add('active');
+            
+            // Обновляем активный элемент навигации
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.page === pageName);
+            });
+        }
+
+        function renderAds(adsToRender) {
+            if (adsToRender.length === 0) {
+                adsGrid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📦</div><p>Объявлений пока нет</p></div>`;
+                return;
+            }
+            adsGrid.innerHTML = adsToRender.map(ad => `
+                <div class="ad-card">
+                    <img src="${ad.photo}" alt="${ad.title}" class="ad-image">
+                    <div class="ad-info">
+                        <div class="ad-title">${escapeHtml(ad.title)}</div>
+                        <div class="ad-city">Город</div>
+                        <div class="ad-price">${parseInt(ad.price).toLocaleString()} руб.</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function createAd() {
+            const title = document.getElementById('adTitle').value;
+            const price = document.getElementById('adPrice').value;
+            const city = document.getElementById('adCity').value;
+            const photo = imagePreview.src;
+
+            const newAd = {
+                id: Date.now(),
+                title,
+                price,
+                city,
+                photo,
+            };
+
+            ads.unshift(newAd); // Добавляем в начало массива
+            localStorage.setItem('swapka_ads', JSON.stringify(ads));
+            
+            renderAds(ads);
+            closeAdModal();
+            tg.showAlert('Объявление успешно создано!');
+            switchPage('main'); // Переходим на главную
+        }
+
+        function closeAdModal() {
+            createAdModal.classList.remove('active');
+            adForm.reset();
+            imagePreview.classList.add('hidden');
+            uploadPlaceholder.classList.remove('hidden');
+            photoUploadArea.classList.remove('has-image');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function setupEventListeners() {
+            // Навигация
+            navItems.forEach(item => {
+                item.addEventListener('click', () => switchPage(item.dataset.page));
+            });
+
+            // Поиск
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filteredAds = ads.filter(ad => 
+                    ad.title.toLowerCase().includes(query) || 
+                    ad.city.toLowerCase().includes(query)
+                );
+                renderAds(filteredAds);
+            });
+
+            // Модальное окно
+            createAdBtn.addEventListener('click', () => createAdModal.classList.add('active'));
+            closeModalBtn.addEventListener('click', closeAdModal);
+            createAdModal.addEventListener('click', (e) => {
+                if (e.target === createAdModal) closeAdModal();
+            });
+
+            // Загрузка фото
+            photoUploadArea.addEventListener('click', () => adPhotoInput.click());
+            adPhotoInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imagePreview.src = e.target.result;
+                        imagePreview.classList.remove('hidden');
+                        uploadPlaceholder.classList.add('hidden');
+                        photoUploadArea.classList.add('has-image');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Форма создания объявления
+            adForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                createAd();
+            });
+
+            // Переключение темы
+            themeToggleBtn.addEventListener('click', () => {
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                applyTheme(newTheme);
+            });
+        }
+
+        // Запуск приложения
+        init();
+    </script>
+</body>
+</html>
