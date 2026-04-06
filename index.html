@@ -51,42 +51,15 @@
       height: 100vh;
     }
 
-    /* Header */
-    .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background-color: var(--header-bg);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      z-index: 100;
-      box-shadow: var(--shadow);
-    }
-
-    .header-title {
-      font-weight: bold;
-      font-size: 18px;
-      letter-spacing: 1px;
-    }
-
-    .header-btn {
-      background: none;
-      border: none;
-      font-size: 16px;
-      color: var(--text-color);
-      cursor: pointer;
-    }
+    /* Header — теперь используется ТОЛЬКО системный хедер Telegram */
+    /* Мы убираем свой .header, чтобы избежать наложения */
 
     .search-bar {
       width: calc(100% - 32px);
       padding: 10px 16px;
       border: 1px solid var(--border-color);
       border-radius: 20px;
-      margin: 70px 16px 16px;
+      margin: 16px;
       background-color: var(--card-bg);
       color: var(--text-color);
       outline: none;
@@ -185,10 +158,11 @@
       color: #666;
     }
 
-    /* Profile Tab */
+    /* Profile Tab — ИСПРАВЛЕНО: нет наложения заголовка */
     .profile-header {
       display: flex;
       align-items: center;
+      margin-top: 20px; /* Отступ сверху вместо фиксированного хедера */
       margin-bottom: 20px;
       position: relative;
     }
@@ -557,12 +531,8 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Header -->
-    <div class="header">
-      <button class="header-btn" id="closeBtn">✕ Закрыть</button>
-      <div class="header-title">SWAPKA</div>
-      <button class="header-btn">⋯</button>
-    </div>
+    <!-- ВНИМАНИЕ: Мы УДАЛИЛИ свой .header, потому что Telegram уже предоставляет системный хедер -->
+    <!-- Это решает проблему наложения "SWAPKA" на аватарку -->
 
     <!-- Search Bar -->
     <input type="text" class="search-bar" id="searchInput" placeholder="Поиск по названию..." />
@@ -970,11 +940,6 @@
         renderMyAds();
       }
     }
-
-    // Close App Button (Telegram specific)
-    document.getElementById('closeBtn').addEventListener('click', () => {
-      tg.close();
-    });
 
     // Initial render
     renderAds();
