@@ -1,23 +1,3 @@
-Конечно! Ниже — **полностью готовый, рабочий код** для Telegram Mini App «SWAPKA», который точно повторяет дизайн с ваших скриншотов и реализует все запрошенные функции:
-
-✅ Переключение вкладок через нижнее меню (Главная / Сообщения / Профиль)  
-✅ Прозрачные плитки на главной (вместо зелёных) — с фото 1000x1000, названием, городом, ценой  
-✅ Рабочий поиск по названиям объявлений  
-✅ При клике на объявление — открывается детальная страница (как на 4-м фото), но с кнопкой «Написать» вместо «Позвонить»  
-✅ Кнопка «Написать» → открывает чат с продавцом во вкладке «Сообщения»  
-✅ Во вкладке «Сообщения» — список чатов (зелёные прямоугольники заменены на реальные данные)  
-✅ Вкладка «Профиль»: аватар и имя из Telegram WebApp, переключатель темы (луна/солнце), оранжевая кнопка «Создать объявление»  
-✅ Модальное окно создания объявления: загрузка 1–10 фото, название, город, цена  
-✅ Под кнопкой — список своих объявлений с красной кнопкой «✕ Удалить» в правом верхнем углу  
-✅ Темная/светлая тема с сохранением в `localStorage`  
-✅ Убраны лишние элементы типа «Правила», «Поддержка»  
-✅ Нет дублирующего хедера — используется системный хедер Telegram (или скрыт через настройки бота)
-
----
-
-## 📁 Файл: `index.html`
-
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -723,11 +703,8 @@
         const card = document.createElement('div');
         card.className = 'ad-card';
         card.innerHTML = `
-          <img src="${ad.photos[0] || 'https://via.placeholder.com/1000'}" class="ad-image" />
-          <div class="ad-info">
-            <div class="ad-title">${ad.title}</div>
-            <div class="ad-city">${ad.city}</div>
-            <div class="ad-price">${ad.price.toLocaleString()} ₽</div>
+          <img src="<LaTex>id_7</LaTex>{ad.title}</div>
+            <div class="ad-city"><LaTex>id_6</LaTex>{ad.price.toLocaleString()} ₽</div>
           </div>
         `;
         card.onclick = () => openAdDetail(ad);
@@ -741,30 +718,10 @@
         const item = document.createElement('div');
         item.className = 'chat-item';
         item.innerHTML = `
-          <img src="${chat.avatar}" class="chat-avatar" />
-          <div class="chat-preview">
-            <div class="chat-name">${chat.name}</div>
-            <div class="chat-last-msg">${chat.lastMsg}</div>
-          </div>
-        `;
-        item.onclick = () => openChat(chat);
-        chatList.appendChild(item);
-      });
-    }
-
-    function renderMyAds() {
-      myAdsContainer.innerHTML = '';
-      const myAds = ads.filter(ad => ad.userId === currentUser.id);
-      myAds.forEach(ad => {
-        const card = document.createElement('div');
-        card.className = 'my-ad-card';
-        card.innerHTML = `
-          <button class="delete-btn" data-id="${ad.id}">✕</button>
-          <img src="${ad.photos[0] || 'https://via.placeholder.com/1000'}" class="ad-image" />
-          <div class="ad-info">
-            <div class="ad-title">${ad.title}</div>
-            <div class="ad-city">${ad.city}</div>
-            <div class="ad-price">${ad.price.toLocaleString()} ₽</div>
+          <img src="<LaTex>id_5</LaTex>{chat.name}</div>
+            <div class="chat-last-msg"><LaTex>id_4</LaTex>{ad.id}">✕</button>
+          <img src="<LaTex>id_3</LaTex>{ad.title}</div>
+            <div class="ad-city"><LaTex>id_2</LaTex>{ad.price.toLocaleString()} ₽</div>
           </div>
         `;
         card.querySelector('.delete-btn').onclick = (e) => {
@@ -876,23 +833,7 @@
       detailImage.src = ad.photos[0] || 'https://via.placeholder.com/1000';
       detailTitle.textContent = ad.title;
       detailCity.textContent = ad.city;
-      detailPrice.textContent = `${ad.price.toLocaleString()} ₽`;
-      adDetail.style.display = 'block';
-      window.currentAd = ad;
-    }
-
-    backToHome.addEventListener('click', () => {
-      adDetail.style.display = 'none';
-    });
-
-    writeBtn.addEventListener('click', () => {
-      if (!window.currentAd) return;
-
-      let chat = chats.find(c => c.id === window.currentAd.userId);
-      if (!chat) {
-        chat = {
-          id: window.currentAd.userId,
-          name: `Продавец "${window.currentAd.title}"`,
+      detailPrice.textContent = `<LaTex>id_1</LaTex>{window.currentAd.title}"`,
           lastMsg: 'Новое сообщение о товаре',
           avatar: 'https://via.placeholder.com/50'
         };
@@ -927,9 +868,3 @@
       msgEl.className = 'message sent';
       msgEl.textContent = msg;
       chatMessages.appendChild(msgEl);
-      messageInput.value = '';
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    });
-
-    function deleteAd(id) {
-      if (
