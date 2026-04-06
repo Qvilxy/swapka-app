@@ -2,2248 +2,633 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Swapka</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SWAPKA</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f5f5f5;
-            --bg-card: #ffffff;
-            --text-primary: #1a1a1a;
-            --text-secondary: #666666;
-            --text-tertiary: #999999;
-            --border-color: #e5e5e5;
-            --accent-color: #007bff;
-            --accent-green: #34c759;
-            --accent-blue: #007bff;
-            --search-bg: #f0f0f0;
-            --bottom-nav-bg: #ffffff;
-            --message-sent: #007bff;
-            --message-received: #f0f0f0;
-            --overlay-bg: rgba(0,0,0,0.5);
-            --card-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            --star-empty: #ddd;
-            --star-filled: #ffc107;
-            --input-bg: #f0f0f0;
-            --modal-bg: #ffffff;
-            --badge-bg: #ff3b30;
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --secondary-bg: #f5f5f5;
+            --button-color: #3390ec;
+            --hint-color: #999999;
+            --border-color: #e0e0e0;
+            --tile-bg: transparent;
+            --orange-btn: #ff9500;
         }
 
-        .dark-theme {
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2c2c2e;
-            --bg-card: #2c2c2e;
-            --text-primary: #ffffff;
-            --text-secondary: #aaaaaa;
-            --text-tertiary: #666666;
-            --border-color: #3a3a3c;
-            --accent-color: #0a84ff;
-            --accent-green: #30d158;
-            --accent-blue: #0a84ff;
-            --search-bg: #2c2c2e;
-            --bottom-nav-bg: #1a1a1a;
-            --message-sent: #0a84ff;
-            --message-received: #2c2c2e;
-            --overlay-bg: rgba(0,0,0,0.7);
-            --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            --star-empty: #444;
-            --star-filled: #ffc107;
-            --input-bg: #2c2c2e;
-            --modal-bg: #2c2c2e;
-            --badge-bg: #ff3b30;
+        [data-theme="dark"] {
+            --bg-color: #1c1c1e;
+            --text-color: #ffffff;
+            --secondary-bg: #2c2c2e;
+            --button-color: #3390ec;
+            --hint-color: #8e8e93;
+            --border-color: #38383a;
+            --tile-bg: transparent;
+            --orange-btn: #ff9500;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 80px;
             transition: background-color 0.3s, color 0.3s;
-            padding-bottom: 70px;
         }
 
-        .app-container {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* ===== BOTTOM NAVIGATION ===== */
-        .bottom-nav {
+        .header {
             position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
-            background: var(--bottom-nav-bg);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 6px 0;
-            padding-bottom: max(6px, env(safe-area-inset-bottom));
-            z-index: 1000;
-            transition: background-color 0.3s, border-color 0.3s;
-            height: 64px;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            cursor: pointer;
-            padding: 6px 24px;
-            border-radius: 12px;
-            transition: all 0.2s;
-            position: relative;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            border: none;
-            background: none;
-        }
-
-        .nav-item:active {
-            transform: scale(0.92);
-            background: var(--bg-secondary);
-        }
-
-        .nav-item.active {
-            background: var(--bg-secondary);
-        }
-
-        .nav-item .nav-icon {
-            width: 26px;
-            height: 26px;
-            fill: var(--text-tertiary);
-            transition: fill 0.2s;
-        }
-
-        .nav-item.active .nav-icon {
-            fill: var(--accent-color);
-        }
-
-        .nav-item .nav-label {
-            font-size: 10px;
-            color: var(--text-tertiary);
-            transition: color 0.2s;
-            font-weight: 500;
-        }
-
-        .nav-item.active .nav-label {
-            color: var(--accent-color);
-            font-weight: 700;
-        }
-
-        .nav-badge {
-            position: absolute;
-            top: 2px;
-            right: 14px;
-            background: var(--badge-bg);
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            min-width: 16px;
-            height: 16px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 4px;
-        }
-
-        /* ===== PAGES ===== */
-        .page {
-            display: none;
-            min-height: calc(100vh - 70px);
-        }
-
-        .page.active {
-            display: block;
-            animation: pageIn 0.25s ease;
-        }
-
-        @keyframes pageIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== MAIN PAGE ===== */
-        .search-container {
-            padding: 12px 16px;
-            position: sticky;
             top: 0;
-            background: var(--bg-primary);
-            z-index: 100;
-            transition: background-color 0.3s;
+            left: 0;
+            right: 0;
+            background: var(--bg-color);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .close-btn {
+            background: var(--secondary-bg);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .header-right {
+            width: 80px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .search-container {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            padding: 10px 15px;
+            background: var(--bg-color);
+            z-index: 999;
         }
 
         .search-bar {
-            display: flex;
-            align-items: center;
-            background: var(--search-bg);
-            border-radius: 12px;
-            padding: 10px 14px;
-            gap: 8px;
-            transition: background-color 0.3s;
-        }
-
-        .search-bar svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--text-tertiary);
-            flex-shrink: 0;
-        }
-
-        .search-bar input {
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 15px;
-            color: var(--text-primary);
             width: 100%;
-            font-family: inherit;
+            padding: 12px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            background: var(--secondary-bg);
+            color: var(--text-color);
+            font-size: 16px;
+            outline: none;
         }
 
-        .search-bar input::placeholder {
-            color: var(--text-tertiary);
+        .search-bar::placeholder {
+            color: var(--hint-color);
         }
 
-        .categories-row {
-            display: flex;
-            gap: 8px;
-            padding: 0 16px 12px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .categories-row::-webkit-scrollbar {
+        .tab-content {
             display: none;
+            padding-top: 110px;
+            min-height: 100vh;
         }
 
-        .category-chip {
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            font-size: 13px;
-            white-space: nowrap;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        .category-chip.active {
-            background: var(--accent-color);
-            color: white;
+        .tab-content.active {
+            display: block;
         }
 
         .listings-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            padding: 0 12px 12px;
-        }
-
-        .listing-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .listing-card:active {
-            transform: scale(0.97);
-        }
-
-        .listing-card-image {
-            width: 100%;
-            aspect-ratio: 1;
-            background: var(--bg-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .listing-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .listing-card-info {
             padding: 10px;
         }
 
-        .listing-card-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.3;
-        }
-
-        .listing-card-city {
-            font-size: 11px;
-            color: var(--text-tertiary);
-            margin-bottom: 4px;
-        }
-
-        .listing-card-price {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        /* ===== LISTING DETAIL PAGE ===== */
-        .detail-page {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            z-index: 2000;
-            overflow-y: auto;
-            transform: translateX(100%);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .detail-page.open {
-            transform: translateX(0);
-        }
-
-        .detail-back-btn {
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.4);
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 2001;
-        }
-
-        .detail-back-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-        }
-
-        .detail-image-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .detail-images-slider {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .detail-images-slider::-webkit-scrollbar {
-            display: none;
-        }
-
-        .detail-image-slide {
-            min-width: 100%;
-            aspect-ratio: 1;
-            scroll-snap-align: start;
-        }
-
-        .detail-image-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .image-counter {
-            position: absolute;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 4px 12px;
+        .listing-card {
+            background: var(--tile-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .detail-content {
-            padding: 20px 16px 100px;
-        }
-
-        .detail-price {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .detail-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            line-height: 1.3;
-        }
-
-        .detail-city {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-        }
-
-        .detail-seller-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            margin-bottom: 20px;
-        }
-
-        .detail-seller-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .detail-seller-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .detail-seller-rating {
-            font-size: 13px;
-            color: var(--text-tertiary);
-        }
-
-        .detail-description {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .detail-action-btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 16px;
-            border: none;
-            font-size: 16px;
-            font-weight: 700;
+            overflow: hidden;
             cursor: pointer;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
+            transition: transform 0.2s;
         }
 
-        .detail-action-btn:active {
+        .listing-card:active {
             transform: scale(0.98);
         }
 
-        .btn-message {
-            background: var(--accent-blue);
-            color: white;
+        .listing-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: var(--secondary-bg);
         }
 
-        .btn-message svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
+        .listing-info {
+            padding: 10px;
         }
 
-        /* ===== MESSAGES PAGE ===== */
-        .page-header {
-            padding: 16px;
-            font-size: 22px;
+        .listing-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .listing-city {
+            font-size: 12px;
+            color: var(--hint-color);
+            margin-bottom: 5px;
+        }
+
+        .listing-price {
+            font-size: 16px;
             font-weight: 700;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            background: var(--bg-primary);
-            z-index: 50;
+            color: var(--text-color);
         }
 
-        .chat-list {
+        .messages-list {
             padding: 0;
         }
 
         .chat-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
+            padding: 15px;
             border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
         .chat-item:active {
-            background: var(--bg-secondary);
+            background: var(--secondary-bg);
         }
 
         .chat-avatar {
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            flex-shrink: 0;
+            margin-right: 15px;
         }
 
         .chat-info {
             flex: 1;
-            min-width: 0;
         }
 
         .chat-name {
-            font-size: 15px;
             font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 2px;
+            margin-bottom: 5px;
         }
 
         .chat-last-message {
-            font-size: 13px;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-meta {
-            text-align: right;
-            flex-shrink: 0;
-        }
-
-        .chat-time {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            margin-bottom: 4px;
-        }
-
-        .chat-unread {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--accent-blue);
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: auto;
-        }
-
-        .empty-chats {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 20px;
-            text-align: center;
-        }
-
-        .empty-chats svg {
-            width: 64px;
-            height: 64px;
-            fill: var(--text-tertiary);
-            margin-bottom: 16px;
-        }
-
-        .empty-chats p {
-            color: var(--text-tertiary);
             font-size: 14px;
-            line-height: 1.5;
+            color: var(--hint-color);
         }
 
-        /* ===== CHAT VIEW ===== */
-        .chat-view {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .chat-view.open {
-            transform: translateX(0);
-        }
-
-        .chat-view.closing {
-            transform: translateX(100%);
-        }
-
-        .chat-view-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-primary);
-        }
-
-        .chat-back-btn {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            padding: 0;
-        }
-
-        .chat-back-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--text-primary);
-        }
-
-        .chat-view-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .chat-view-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 14px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-
-        .message.sent {
-            align-self: flex-end;
-            background: var(--message-sent);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.received {
-            align-self: flex-start;
-            background: var(--message-received);
-            color: var(--text-primary);
-            border-bottom-left-radius: 4px;
-        }
-
-        .message-time {
-            font-size: 10px;
-            opacity: 0.7;
-            margin-top: 4px;
-            text-align: right;
-        }
-
-        .chat-input-area {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            border-top: 1px solid var(--border-color);
-            background: var(--bg-primary);
-            padding-bottom: max(10px, env(safe-area-inset-bottom));
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            background: var(--input-bg);
-            color: var(--text-primary);
-            font-size: 15px;
-            outline: none;
-            font-family: inherit;
-        }
-
-        .chat-input:focus {
-            border-color: var(--accent-color);
-        }
-
-        .chat-send-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--accent-blue);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .chat-send-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-        }
-
-        /* ===== PROFILE PAGE ===== */
         .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 20px 16px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
         }
 
         .profile-avatar {
-            width: 72px;
-            height: 72px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .profile-info {
-            flex: 1;
+            margin-bottom: 15px;
         }
 
         .profile-name {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .profile-rating-container {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            padding: 4px 0;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .profile-rating-stars {
-            display: flex;
-            gap: 2px;
-        }
-
-        .profile-rating-text {
-            font-size: 13px;
-            color: var(--text-secondary);
+        .profile-stats {
+            color: var(--hint-color);
+            font-size: 14px;
+            margin-bottom: 20px;
         }
 
         .theme-toggle {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            background: none;
             border: none;
-            background: var(--bg-secondary);
+            padding: 5px;
+        }
+
+        .profile-menu {
+            padding: 0 20px;
+        }
+
+        .menu-item {
+            padding: 15px;
+            font-size: 18px;
+            border-bottom: 1px solid var(--border-color);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
         }
 
-        .theme-toggle svg {
-            width: 22px;
-            height: 22px;
-            fill: var(--text-primary);
+        .menu-item:last-child {
+            border-bottom: none;
         }
 
-        .theme-toggle:active {
-            transform: scale(0.9);
-        }
-
-        .profile-section {
-            padding: 0 16px;
-            margin-bottom: 16px;
-        }
-
-        .profile-section-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .profile-menu-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
-            background: var(--bg-card);
-            border-radius: 14px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--card-shadow);
-            border: none;
-            width: 100%;
-            text-align: left;
-            font-family: inherit;
-        }
-
-        .profile-menu-item:active {
-            transform: scale(0.98);
-        }
-
-        .profile-menu-item svg.menu-icon {
-            width: 22px;
-            height: 22px;
-            fill: var(--accent-color);
-            flex-shrink: 0;
-        }
-
-        .profile-menu-item span {
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-primary);
-            flex: 1;
-        }
-
-        .profile-menu-item .arrow {
-            width: 20px;
-            height: 20px;
-            fill: var(--text-tertiary);
-            flex-shrink: 0;
-        }
-
-        .create-listing-btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            border: 2px dashed var(--accent-color);
-            background: transparent;
-            color: var(--accent-color);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 8px;
-            transition: all 0.2s;
-        }
-
-        .create-listing-btn:active {
-            background: var(--accent-color);
+        .create-ad-btn {
+            width: calc(100% - 40px);
+            margin: 20px;
+            padding: 15px;
+            background: var(--orange-btn);
             color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
         }
 
-        .create-listing-btn svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
+        .user-listings {
+            padding: 0 10px;
         }
 
-        /* ===== MY LISTINGS PAGE ===== */
-        .my-listings-page {
+        .user-listings-title {
+            padding: 15px 20px 10px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-listing-item {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff3b30;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .detail-page {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
+            right: 0;
+            bottom: 0;
+            background: var(--bg-color);
             z-index: 2000;
             overflow-y: auto;
-            transform: translateX(100%);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-bottom: 100px;
         }
 
-        .my-listings-page.open {
-            transform: translateX(0);
+        .detail-page.active {
+            display: block;
         }
 
-        .my-listings-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            background: var(--bg-primary);
-            z-index: 50;
-        }
-
-        .my-listings-back {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .my-listings-back svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--text-primary);
-        }
-
-        .my-listings-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .my-listings-content {
-            padding: 16px;
-        }
-
-        .my-listing-item {
-            display: flex;
-            gap: 12px;
-            padding: 12px;
-            background: var(--bg-card);
-            border-radius: 14px;
-            margin-bottom: 10px;
-            box-shadow: var(--card-shadow);
-        }
-
-        .my-listing-thumb {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
+        .detail-image {
+            width: 100%;
+            aspect-ratio: 1;
             object-fit: cover;
-            flex-shrink: 0;
+            background: var(--secondary-bg);
         }
 
-        .my-listing-info {
-            flex: 1;
-            min-width: 0;
+        .detail-info {
+            padding: 20px;
         }
 
-        .my-listing-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .my-listing-price {
-            font-size: 15px;
+        .detail-title {
+            font-size: 24px;
             font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 4px;
+            margin-bottom: 10px;
         }
 
-        .my-listing-city {
-            font-size: 12px;
-            color: var(--text-tertiary);
+        .detail-city {
+            font-size: 16px;
+            color: var(--hint-color);
+            margin-bottom: 10px;
         }
 
-        .my-listing-delete {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: none;
-            cursor: pointer;
+        .detail-price {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .dealer-info {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
             display: flex;
+            gap: 10px;
+            padding: 0 20px;
+            position: fixed;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 15px;
+            background: #34c759;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 15px;
+            background: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            align-self: flex-start;
-            padding: 0;
+            padding: 5px;
+            cursor: pointer;
+            color: var(--hint-color);
+            transition: color 0.2s;
         }
 
-        .my-listing-delete svg {
-            width: 20px;
-            height: 20px;
-            fill: #ff3b30;
+        .nav-item.active {
+            color: var(--button-color);
         }
 
-        .empty-listings {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-tertiary);
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
         }
 
-        /* ===== CREATE LISTING MODAL ===== */
-        .modal-overlay {
+        .nav-label {
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--overlay-bg);
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
             z-index: 3000;
-            display: none;
             align-items: flex-end;
             justify-content: center;
         }
 
-        .modal-overlay.open {
+        .modal.active {
             display: flex;
         }
 
         .modal-content {
-            background: var(--modal-bg);
-            border-radius: 20px 20px 0 0;
+            background: var(--bg-color);
             width: 100%;
-            max-width: 480px;
             max-height: 90vh;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
             overflow-y: auto;
-            padding: 20px 16px;
-            padding-bottom: max(20px, env(safe-area-inset-bottom));
-            animation: slideUp 0.3s ease;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .modal-handle {
-            width: 40px;
-            height: 4px;
-            background: var(--border-color);
-            border-radius: 2px;
-            margin: 0 auto 16px;
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .modal-title {
             font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            text-align: center;
+            font-weight: 600;
         }
 
-        .photo-upload-area {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            margin-bottom: 16px;
-            scrollbar-width: none;
-        }
-
-        .photo-upload-area::-webkit-scrollbar {
-            display: none;
-        }
-
-        .photo-thumb {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .photo-add-btn {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            border: 2px dashed var(--border-color);
-            background: transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.2s;
-        }
-
-        .photo-add-btn svg {
-            width: 28px;
-            height: 28px;
-            fill: var(--text-tertiary);
-        }
-
-        .photo-add-btn:active {
-            border-color: var(--accent-color);
-        }
-
-        .photo-add-btn.disabled {
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .photo-remove-btn {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #ff3b30;
+        .close-modal {
+            background: none;
             border: none;
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 24px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-            padding: 0;
-        }
-
-        .photo-thumb-wrapper {
-            position: relative;
-            flex-shrink: 0;
+            color: var(--text-color);
         }
 
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 20px;
         }
 
         .form-label {
             display: block;
-            font-size: 13px;
+            margin-bottom: 8px;
             font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
         }
 
-        .form-input {
+        .form-input, .form-textarea {
             width: 100%;
-            padding: 12px 14px;
-            border-radius: 12px;
+            padding: 12px;
             border: 1px solid var(--border-color);
-            background: var(--input-bg);
-            color: var(--text-primary);
-            font-size: 15px;
-            outline: none;
-            font-family: inherit;
-            transition: border-color 0.2s;
-        }
-
-        .form-input:focus {
-            border-color: var(--accent-color);
-        }
-
-        .form-submit-btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            border: none;
-            background: var(--accent-blue);
-            color: white;
+            border-radius: 8px;
+            background: var(--secondary-bg);
+            color: var(--text-color);
             font-size: 16px;
-            font-weight: 700;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .photo-upload {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
             cursor: pointer;
-            font-family: inherit;
-            margin-top: 8px;
-            transition: all 0.2s;
+            margin-bottom: 10px;
         }
 
-        .form-submit-btn:active {
-            transform: scale(0.98);
+        .photo-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
         }
 
-        .form-submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .photo-preview img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 8px;
         }
 
-        /* ===== RATING MODAL ===== */
-        .rating-modal {
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--orange-btn);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .chat-view {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--overlay-bg);
-            z-index: 3000;
-            display: none;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-color);
+            z-index: 2500;
+            flex-direction: column;
+        }
+
+        .chat-view.active {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 15px;
         }
 
-        .rating-modal.open {
-            display: flex;
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
         }
 
-        .rating-modal-content {
-            background: var(--modal-bg);
-            border-radius: 20px;
-            padding: 24px;
-            width: 280px;
-            text-align: center;
-            animation: scaleIn 0.2s ease;
+        .message {
+            margin-bottom: 15px;
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
         }
 
-        @keyframes scaleIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .rating-modal-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-        }
-
-        .rating-stars-input {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .rating-star-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            transition: transform 0.1s;
-        }
-
-        .rating-star-btn:active {
-            transform: scale(0.8);
-        }
-
-        .rating-star-btn svg {
-            width: 36px;
-            height: 36px;
-        }
-
-        .rating-confirm-btn {
-            padding: 10px 32px;
-            border-radius: 12px;
-            border: none;
-            background: var(--accent-blue);
+        .message.sent {
+            background: var(--button-color);
             color: white;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
+            margin-left: auto;
         }
 
-        .rating-cancel-btn {
-            padding: 10px 32px;
-            border-radius: 12px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            margin-left: 8px;
+        .message.received {
+            background: var(--secondary-bg);
+            color: var(--text-color);
         }
 
-        /* ===== SWIPE HINT ===== */
-        .swipe-hint {
-            position: fixed;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 80px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 0 20px 20px 0;
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
             display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2001;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
+            gap: 10px;
         }
 
-        .swipe-hint.visible {
-            opacity: 1;
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: var(--secondary-bg);
+            color: var(--text-color);
+            outline: none;
         }
 
-        .swipe-hint svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
+        .send-btn {
+            background: var(--button-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
         }
 
-        /* ===== TOAST ===== */
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--text-primary);
-            color: var(--bg-primary);
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 5000;
-            transition: transform 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        ::-webkit-scrollbar {
-            width: 0;
-        }
-
-        .no-select {
-            -webkit-user-select: none;
-            user-select: none;
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="app-container" id="app">
-
-        <!-- ===== MAIN PAGE ===== -->
-        <div class="page active" id="page-main">
-            <div class="search-container">
-                <div class="search-bar">
-                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                    <input type="text" id="search-input" placeholder="Поиск объявлений...">
-                </div>
-            </div>
-
-            <div class="categories-row" id="categories-row">
-                <button class="category-chip active" data-category="all">Все</button>
-                <button class="category-chip" data-category="auto">Авто</button>
-                <button class="category-chip" data-category="electronics">Электроника</button>
-                <button class="category-chip" data-category="clothing">Одежда</button>
-                <button class="category-chip" data-category="home">Для дома</button>
-                <button class="category-chip" data-category="other">Другое</button>
-            </div>
-
-            <div class="listings-grid" id="listings-grid"></div>
-        </div>
-
-        <!-- ===== MESSAGES PAGE ===== -->
-        <div class="page" id="page-messages">
-            <div class="page-header">Сообщения</div>
-            <div class="chat-list" id="chat-list"></div>
-        </div>
-
-        <!-- ===== PROFILE PAGE ===== -->
-        <div class="page" id="page-profile">
-            <div class="profile-header">
-                <img class="profile-avatar" id="profile-avatar" src="" alt="Avatar">
-                <div class="profile-info">
-                    <div class="profile-name" id="profile-name">Загрузка...</div>
-                    <div class="profile-rating-container" id="rating-container">
-                        <div class="profile-rating-stars" id="profile-stars"></div>
-                        <span class="profile-rating-text" id="profile-rating-text">0.0</span>
-                    </div>
-                </div>
-                <button class="theme-toggle" id="theme-toggle">
-                    <svg id="theme-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-                </button>
-            </div>
-
-            <div class="profile-section">
-                <div class="profile-section-title">Меню</div>
-                <button class="profile-menu-item" id="my-listings-btn">
-                    <svg class="menu-icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 16H4V8h16v12z"/></svg>
-                    <span>Мои объявления</span>
-                    <svg class="arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                </button>
-
-                <button class="create-listing-btn" id="create-listing-btn">
-                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                    Создать объявление
-                </button>
-            </div>
-        </div>
-
-        <!-- ===== BOTTOM NAVIGATION ===== -->
-        <nav class="bottom-nav" id="bottom-nav">
-            <button class="nav-item active" data-page="main" onclick="switchPage('main')">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <span class="nav-label">Главная</span>
-            </button>
-            <button class="nav-item" data-page="messages" id="nav-messages" onclick="switchPage('messages')">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-                <span class="nav-label">Сообщения</span>
-                <div class="nav-badge" id="messages-badge" style="display:none">0</div>
-            </button>
-            <button class="nav-item" data-page="profile" onclick="switchPage('profile')">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span class="nav-label">Профиль</span>
-            </button>
-        </nav>
-
-        <!-- ===== LISTING DETAIL ===== -->
-        <div class="detail-page" id="detail-page">
-            <button class="detail-back-btn" id="detail-back-btn">
-                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            </button>
-            <div class="detail-image-container" id="detail-image-container">
-                <div class="detail-images-slider" id="detail-images-slider"></div>
-                <div class="image-counter" id="image-counter">1 из 1</div>
-            </div>
-            <div class="detail-content">
-                <div class="detail-price" id="detail-price"></div>
-                <div class="detail-title" id="detail-title"></div>
-                <div class="detail-city" id="detail-city"></div>
-                <div class="detail-seller-info" id="detail-seller-info">
-                    <img class="detail-seller-avatar" id="detail-seller-avatar" src="" alt="">
-                    <div>
-                        <div class="detail-seller-name" id="detail-seller-name"></div>
-                        <div class="detail-seller-rating" id="detail-seller-rating"></div>
-                    </div>
-                </div>
-                <div class="detail-description" id="detail-description"></div>
-                <button class="detail-action-btn btn-message" id="detail-message-btn">
-                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-                    Написать сообщение
-                </button>
-            </div>
-        </div>
-
-        <!-- ===== CHAT VIEW ===== -->
-        <div class="chat-view" id="chat-view">
-            <div class="chat-view-header">
-                <button class="chat-back-btn" id="chat-back-btn">
-                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                </button>
-                <img class="chat-view-avatar" id="chat-view-avatar" src="" alt="">
-                <div class="chat-view-name" id="chat-view-name"></div>
-            </div>
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input-area">
-                <input class="chat-input" id="chat-input" placeholder="Сообщение..." type="text">
-                <button class="chat-send-btn" id="chat-send-btn">
-                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- ===== MY LISTINGS PAGE ===== -->
-        <div class="my-listings-page" id="my-listings-page">
-            <div class="my-listings-header">
-                <button class="my-listings-back" id="my-listings-back">
-                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                </button>
-                <div class="my-listings-title">Мои объявления</div>
-            </div>
-            <div class="my-listings-content" id="my-listings-content"></div>
-        </div>
-
-        <!-- ===== CREATE LISTING MODAL ===== -->
-        <div class="modal-overlay" id="create-listing-modal">
-            <div class="modal-content">
-                <div class="modal-handle"></div>
-                <div class="modal-title">Новое объявление</div>
-
-                <div class="photo-upload-area" id="photo-upload-area">
-                    <button class="photo-add-btn" id="photo-add-btn" type="button">
-                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                    </button>
-                </div>
-                <input type="file" id="photo-input" accept="image/*" multiple style="display:none">
-
-                <div class="form-group">
-                    <label class="form-label">Название товара</label>
-                    <input class="form-input" id="listing-title-input" placeholder="Например: iPhone 15 Pro" type="text" maxlength="100">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Город</label>
-                    <input class="form-input" id="listing-city-input" placeholder="Например: Москва" type="text" maxlength="50">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Цена (₽)</label>
-                    <input class="form-input" id="listing-price-input" placeholder="Например: 50000" type="number" min="0">
-                </div>
-
-                <button class="form-submit-btn" id="listing-submit-btn" disabled>Опубликовать</button>
-            </div>
-        </div>
-
-        <!-- ===== RATING MODAL ===== -->
-        <div class="rating-modal" id="rating-modal">
-            <div class="rating-modal-content">
-                <div class="rating-modal-title">Ваша оценка</div>
-                <div class="rating-stars-input" id="rating-stars-input"></div>
-                <button class="rating-confirm-btn" id="rating-confirm-btn">Подтвердить</button>
-                <button class="rating-cancel-btn" id="rating-cancel-btn">Отмена</button>
-            </div>
-        </div>
-
-        <!-- ===== SWIPE HINT ===== -->
-        <div class="swipe-hint" id="swipe-hint">
-            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-        </div>
-
-        <!-- ===== TOAST ===== -->
-        <div class="toast" id="toast"></div>
+    <div class="header" id="mainHeader">
+        <button class="close-btn" onclick="Telegram.WebApp.close()">✕ Закрыть</button>
+        <div class="app-title">SWAPKA</div>
+        <div class="header-right"></div>
     </div>
 
-    <script>
-        // ===== TELEGRAM WEB APP =====
-        const tg = window.Telegram?.WebApp;
-        if (tg) {
-            tg.ready();
-            tg.expand();
-        }
-
-        // ===== STATE =====
-        const state = {
-            currentUser: null,
-            listings: [],
-            myListingImages: [],
-            chats: {},
-            currentChatId: null,
-            currentListingId: null,
-            selectedRating: 0,
-            isDarkTheme: false,
-            activeCategory: 'all',
-            searchQuery: '',
-        };
-
-        // ===== SAMPLE DATA =====
-        const sampleUsers = [
-            { id: 'u1', name: 'Александр М.', avatar: null, rating: 4.5 },
-            { id: 'u2', name: 'Екатерина К.', avatar: null, rating: 3.8 },
-            { id: 'u3', name: 'Дмитрий В.', avatar: null, rating: 5.0 },
-            { id: 'u4', name: 'Мария С.', avatar: null, rating: 4.2 },
-        ];
-
-        const sampleListings = [
-            { id: 'l1', title: 'BMW X5 2023 в идеальном состоянии', price: 5500000, city: 'Москва', category: 'auto', images: [], sellerId: 'u1', description: 'Продаю BMW X5 2023 года, пробег 15000 км, в идеальном состоянии. Один владелец, не бит, не крашен. Полный комплект ключей и документов.' },
-            { id: 'l2', title: 'iPhone 15 Pro Max 256GB', price: 120000, city: 'Санкт-Петербург', category: 'electronics', images: [], sellerId: 'u2', description: 'iPhone 15 Pro Max, 256GB, цвет титановый чёрный. Состояние 10/10, полный комплект. На гарантии Apple до 2025 года.' },
-            { id: 'l3', title: 'Nike Air Max 90 размер 43', price: 8500, city: 'Казань', category: 'clothing', images: [], sellerId: 'u3', description: 'Оригинальные Nike Air Max 90, размер 43. Новые, в коробке. Покупал для себя, но не подошёл размер.' },
-            { id: 'l4', title: 'PlayStation 5 + 2 геймпада', price: 45000, city: 'Новосибирск', category: 'electronics', images: [], sellerId: 'u4', description: 'PlayStation 5 дисковая версия в комплекте 2 геймпада и 3 игры. Состояние отличное, всё работает.' },
-            { id: 'l5', title: 'Диван-кровать IKEA угловой', price: 25000, city: 'Екатеринбург', category: 'home', images: [], sellerId: 'u1', description: 'Угловой диван-кровать IKEA, серого цвета. Пользовались 1 год, в хорошем состоянии. Самовывоз.' },
-            { id: 'l6', title: 'MacBook Pro 14" M3 Pro', price: 180000, city: 'Москва', category: 'electronics', images: [], sellerId: 'u2', description: 'MacBook Pro 14 дюймов с чипом M3 Pro, 18GB RAM, 512GB SSD. Идеальное состояние, циклов батареи 45.' },
-            { id: 'l7', title: 'Зимняя куртка Columbia мужская L', price: 12000, city: 'Ростов-на-Дону', category: 'clothing', images: [], sellerId: 'u3', description: 'Мужская зимняя куртка Columbia, размер L. Тёплая, водонепроницаемая. Носил один сезон.' },
-            { id: 'l8', title: 'Коляска Bugaboo Fox 5', price: 65000, city: 'Краснодар', category: 'other', images: [], sellerId: 'u4', description: 'Коляска Bugaboo Fox 5 в отличном состоянии. Полный комплект: люлька, прогулочный блок, дождевик.' },
-        ];
-
-        const sampleChats = {
-            'chat1': {
-                id: 'chat1', userId: 'u1', listingId: 'l1',
-                messages: [
-                    { sender: 'user', text: 'Здравствуйте! Ещё актуально?', time: '14:30' },
-                    { sender: 'seller', text: 'Да, конечно! Когда можете посмотреть?', time: '14:32' },
-                ]
-            },
-            'chat2': {
-                id: 'chat2', userId: 'u3', listingId: 'l3',
-                messages: [
-                    { sender: 'seller', text: 'Добрый день! Да, кроссовки ещё в наличии.', time: '10:15' },
-                ]
-            }
-        };
-
-        // ===== INIT =====
-        function init() {
-            loadTheme();
-            loadUserData();
-            loadListings();
-            loadChats();
-            renderListings();
-            renderChats();
-            bindEvents();
-        }
-
-        function loadTheme() {
-            if (localStorage.getItem('swapka-theme') === 'dark') {
-                state.isDarkTheme = true;
-                document.body.classList.add('dark-theme');
-                updateThemeIcon();
-            }
-        }
-
-        function loadUserData() {
-            if (tg?.initDataUnsafe?.user) {
-                const u = tg.initDataUnsafe.user;
-                state.currentUser = {
-                    id: u.id?.toString() || 'current',
-                    name: [u.first_name, u.last_name].filter(Boolean).join(' ') || 'Пользователь',
-                    avatar: u.photo_url || null,
-                    rating: 0,
-                    ratings: JSON.parse(localStorage.getItem('swapka-my-ratings') || '[]'),
-                };
-                document.getElementById('profile-avatar').src = u.photo_url || generateAvatarURL(state.currentUser.name);
-                document.getElementById('profile-name').textContent = state.currentUser.name;
-            } else {
-                state.currentUser = {
-                    id: 'current', name: 'Пользователь', avatar: null, rating: 0, ratings: []
-                };
-                document.getElementById('profile-avatar').src = generateAvatarURL('П');
-            }
-            updateUserRating();
-        }
-
-        function generateAvatarURL(name) {
-            const colors = ['#007bff','#34c759','#ff9500','#ff3b30','#5856d6'];
-            const color = colors[name.charCodeAt(0) % colors.length];
-            const letter = name.charAt(0).toUpperCase();
-            return 'data:image/svg+xml;base64,' + btoa(
-                `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
-                    <rect width="100" height="100" fill="${color}" rx="50"/>
-                    <text x="50" y="65" font-family="Arial" font-size="40" fill="white" text-anchor="middle" font-weight="bold">${letter}</text>
-                </svg>`
-            );
-        }
-
-        function loadListings() {
-            const saved = localStorage.getItem('swapka-listings');
-            state.listings = saved ? JSON.parse(saved) : [...sampleListings];
-            if (!saved) saveListings();
-        }
-
-        function saveListings() {
-            localStorage.setItem('swapka-listings', JSON.stringify(state.listings));
-        }
-
-        function loadChats() {
-            const saved = localStorage.getItem('swapka-chats');
-            state.chats = saved ? JSON.parse(saved) : { ...sampleChats };
-            if (!saved) saveChats();
-        }
-
-        function saveChats() {
-            localStorage.setItem('swapka-chats', JSON.stringify(state.chats));
-        }
-
-        // ===== RENDER LISTINGS =====
-        function renderListings() {
-            const grid = document.getElementById('listings-grid');
-            let filtered = state.listings;
-
-            if (state.activeCategory !== 'all') {
-                filtered = filtered.filter(l => l.category === state.activeCategory);
-            }
-            if (state.searchQuery) {
-                const q = state.searchQuery.toLowerCase();
-                filtered = filtered.filter(l => l.title.toLowerCase().includes(q));
-            }
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--text-tertiary)">
-                        <p>Ничего не найдено</p>
-                    </div>`;
-                return;
-            }
-
-            grid.innerHTML = filtered.map(listing => {
-                const imgSrc = listing.images?.length ? listing.images[0] : generateListingPlaceholder(listing.title);
-                return `
-                    <div class="listing-card" data-id="${listing.id}">
-                        <div class="listing-card-image"><img src="${imgSrc}" alt="${escapeHtml(listing.title)}" loading="lazy"></div>
-                        <div class="listing-card-info">
-                            <div class="listing-card-title">${escapeHtml(listing.title)}</div>
-                            <div class="listing-card-city">${escapeHtml(listing.city)}</div>
-                            <div class="listing-card-price">${formatPrice(listing.price)} ₽</div>
-                        </div>
-                    </div>`;
-            }).join('');
-
-            grid.querySelectorAll('.listing-card').forEach(card => {
-                card.addEventListener('click', () => openListing(card.dataset.id));
-            });
-        }
-
-        function generateListingPlaceholder(title) {
-            const colors = ['#e8f5e9','#e3f2fd','#fff3e0','#fce4ec','#f3e5f5','#e0f7fa','#fffde7'];
-            const color = colors[title.charCodeAt(0) % colors.length];
-            const letter = title.charAt(0).toUpperCase();
-            return 'data:image/svg+xml;base64,' + btoa(
-                `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
-                    <rect width="400" height="400" fill="${color}"/>
-                    <text x="200" y="210" font-family="Arial" font-size="64" fill="#999" text-anchor="middle" font-weight="bold">${letter}</text>
-                </svg>`
-            );
-        }
-
-        function formatPrice(p) {
-            return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-        }
-
-        function escapeHtml(t) {
-            const d = document.createElement('div');
-            d.textContent = t;
-            return d.innerHTML;
-        }
-
-        // ===== PAGE SWITCHING — КЛЮЧЕВАЯ ФУНКЦИЯ =====
-        function switchPage(pageName) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-
-            // Show target page
-            const targetPage = document.getElementById('page-' + pageName);
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-
-            // Update nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            const activeNav = document.querySelector(`.nav-item[data-page="${pageName}"]`);
-            if (activeNav) {
-                activeNav.classList.add('active');
-            }
-
-            // Close any open overlays
-            if (pageName === 'messages') {
-                renderChats();
-            }
-        }
-
-        // ===== OPEN LISTING DETAIL =====
-        function openListing(id) {
-            const listing = state.listings.find(l => l.id === id);
-            if (!listing) return;
-
-            state.currentListingId = id;
-            const detailPage = document.getElementById('detail-page');
-            const seller = sampleUsers.find(u => u.id === listing.sellerId);
-            const sellerName = seller ? seller.name : 'Продавец';
-
-            const images = listing.images?.length ? listing.images : [generateListingPlaceholder(listing.title)];
-            document.getElementById('detail-images-slider').innerHTML = images.map(img =>
-                `<div class="detail-image-slide"><img src="${img}" alt=""></div>`
-            ).join('');
-            document.getElementById('image-counter').textContent = images.length > 1 ? `1 из ${images.length}` : '1';
-
-            const slider = document.getElementById('detail-images-slider');
-            slider.onscroll = () => {
-                const idx = Math.round(slider.scrollLeft / slider.offsetWidth) + 1;
-                document.getElementById('image-counter').textContent = images.length > 1 ? `${idx} из ${images.length}` : '1';
-            };
-
-            document.getElementById('detail-price').textContent = formatPrice(listing.price) + ' ₽';
-            document.getElementById('detail-title').textContent = listing.title;
-            document.getElementById('detail-city').textContent = '📍 ' + listing.city;
-            document.getElementById('detail-seller-name').textContent = sellerName;
-            document.getElementById('detail-seller-rating').textContent = seller ? `⭐ ${seller.rating}` : '⭐ 0.0';
-            document.getElementById('detail-seller-avatar').src = seller?.avatar || generateAvatarURL(sellerName);
-            document.getElementById('detail-description').textContent = listing.description || 'Без описания';
-
-            document.getElementById('detail-message-btn').onclick = () => {
-                openChatWithSeller(listing.sellerId, listing.id);
-            };
-
-            detailPage.classList.add('open');
-            document.body.style.overflow = 'hidden';
-            setupSwipeListener(detailPage);
-        }
-
-        function closeListing() {
-            const dp = document.getElementById('detail-page');
-            dp.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
-            dp.classList.remove('open');
-            setTimeout(() => {
-                document.body.style.overflow = '';
-                state.currentListingId = null;
-                dp.style.transition = '';
-            }, 350);
-        }
-
-        function setupSwipeListener(element) {
-            let startX = 0, isDragging = false;
-
-            element.addEventListener('touchstart', e => {
-                startX = e.touches[0].clientX;
-                isDragging = true;
-                element.style.transition = 'none';
-            }, { passive: true });
-
-            element.addEventListener('touchmove', e => {
-                if (!isDragging) return;
-                const diff = e.touches[0].clientX - startX;
-                if (diff > 0 && diff < 250) {
-                    element.style.transform = `translateX(${diff}px)`;
-                    document.getElementById('swipe-hint').classList.toggle('visible', diff > 30);
-                }
-            }, { passive: true });
-
-            element.addEventListener('touchend', () => {
-                if (!isDragging) return;
-                isDragging = false;
-                const diff = element.getBoundingClientRect().x;
-                element.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
-                document.getElementById('swipe-hint').classList.remove('visible');
-
-                if (diff > 80) {
-                    closeListing();
-                } else {
-                    element.style.transform = 'translateX(0)';
-                }
-            });
-        }
-
-        // ===== CHAT SYSTEM =====
-        function openChatWithSeller(sellerId, listingId) {
-            let chatId = Object.keys(state.chats).find(
-                key => state.chats[key].userId === sellerId && state.chats[key].listingId === listingId
-            );
-
-            if (!chatId) {
-                chatId = 'chat_' + Date.now();
-                state.chats[chatId] = {
-                    id: chatId, userId: sellerId, listingId: listingId,
-                    messages: [{ sender: 'system', text: `Чат по объявлению`, time: getCurrentTime() }]
-                };
-                saveChats();
-            }
-
-            closeListing();
-            setTimeout(() => openChat(chatId), 400);
-        }
-
-        function openChat(chatId) {
-            const chat = state.chats[chatId];
-            if (!chat) return;
-
-            state.currentChatId = chatId;
-            const chatView = document.getElementById('chat-view');
-            const seller = sampleUsers.find(u => u.id === chat.userId);
-            const sellerName = seller ? seller.name : 'Продавец';
-
-            document.getElementById('chat-view-name').textContent = sellerName;
-            document.getElementById('chat-view-avatar').src = seller?.avatar || generateAvatarURL(sellerName);
-
-            renderMessages(chat);
-            chatView.classList.add('open');
-            document.body.style.overflow = 'hidden';
-
-            setTimeout(() => {
-                const msgs = document.getElementById('chat-messages');
-                msgs.scrollTop = msgs.scrollHeight;
-            }, 100);
-        }
-
-        function renderMessages(chat) {
-            document.getElementById('chat-messages').innerHTML = chat.messages.map(msg => {
-                if (msg.sender === 'system') {
-                    return `<div style="text-align:center;color:var(--text-tertiary);font-size:12px;padding:8px">${escapeHtml(msg.text)}</div>`;
-                }
-                return `<div class="message ${msg.sender === 'user' ? 'sent' : 'received'}">${escapeHtml(msg.text)}<div class="message-time">${msg.time}</div></div>`;
-            }).join('');
-        }
-
-        function closeChat() {
-            const cv = document.getElementById('chat-view');
-            cv.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
-            cv.classList.remove('open');
-            setTimeout(() => {
-                document.body.style.overflow = '';
-                state.currentChatId = null;
-                cv.style.transition = '';
-            }, 350);
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if (!text || !state.currentChatId) return;
-
-            const chat = state.chats[state.currentChatId];
-            chat.messages.push({ sender: 'user', text, time: getCurrentTime() });
-            saveChats();
-            renderMessages(chat);
-            input.value = '';
-
-            const msgs = document.getElementById('chat-messages');
-            msgs.scrollTop = msgs.scrollHeight;
-
-            // Auto-reply
-            setTimeout(() => {
-                const replies = ['Спасибо за сообщение!', 'Хорошо, договорились!', 'Можете подъехать посмотреть?', 'Да, товар ещё в наличии.', 'Отправлю вам фото подробнее.', 'Цена ещё актуальна.'];
-                chat.messages.push({ sender: 'seller', text: replies[Math.floor(Math.random() * replies.length)], time: getCurrentTime() });
-                saveChats();
-                if (state.currentChatId) {
-                    renderMessages(chat);
-                    msgs.scrollTop = msgs.scrollHeight;
-                }
-                renderChats();
-            }, 1500);
-
-            renderChats();
-        }
-
-        function renderChats() {
-            const list = document.getElementById('chat-list');
-            const entries = Object.values(state.chats);
-
-            if (!entries.length) {
-                list.innerHTML = `
-                    <div class="empty-chats">
-                        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-                        <p>У вас пока нет сообщений.<br>Напишите продавцу из объявления!</p>
-                    </div>`;
-                return;
-            }
-
-            list.innerHTML = entries.map(chat => {
-                const seller = sampleUsers.find(u => u.id === chat.userId);
-                const sellerName = seller ? seller.name : 'Продавец';
-                const lastMsg = chat.messages[chat.messages.length - 1];
-                return `
-                    <div class="chat-item" data-chat-id="${chat.id}">
-                        <img class="chat-avatar" src="${seller?.avatar || generateAvatarURL(sellerName)}" alt="">
-                        <div class="chat-info">
-                            <div class="chat-name">${escapeHtml(sellerName)}</div>
-                            <div class="chat-last-message">${escapeHtml(lastMsg ? lastMsg.text.substring(0, 40) + (lastMsg.text.length > 40 ? '...' : '') : '')}</div>
-                        </div>
-                        <div class="chat-meta"><div class="chat-time">${lastMsg ? lastMsg.time : ''}</div></div>
-                    </div>`;
-            }).join('');
-
-            list.querySelectorAll('.chat-item').forEach(item => {
-                item.addEventListener('click', () => openChat(item.dataset.chatId));
-            });
-        }
-
-        function getCurrentTime() {
-            const n = new Date();
-            return n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0');
-        }
-
-        // ===== PROFILE =====
-        function updateUserRating() {
-            if (!state.currentUser?.ratings?.length) {
-                state.currentUser.rating = 0;
-            } else {
-                state.currentUser.rating = state.currentUser.ratings.reduce((a, b) => a + b, 0) / state.currentUser.ratings.length;
-            }
-            document.getElementById('profile-rating-text').textContent = state.currentUser.rating.toFixed(1);
-            renderStars('profile-stars', state.currentUser.rating);
-        }
-
-        function renderStars(containerId, rating, editable = false) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            let html = '';
-            for (let i = 1; i <= 5; i++) {
-                const filled = i <= Math.round(rating);
-                const color = filled ? 'var(--star-filled)' : 'var(--star-empty)';
-                if (editable) {
-                    html += `<button class="rating-star-btn" data-value="${i}"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="${color}"/></svg></button>`;
-                } else {
-                    html += `<svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="${color}"/></svg>`;
-                }
-            }
-            container.innerHTML = html;
-        }
-
-        function showRatingModal() {
-            state.selectedRating = 0;
-            renderStars('rating-stars-input', 0, true);
-            document.getElementById('rating-modal').classList.add('open');
-
-            document.querySelectorAll('#rating-stars-input .rating-star-btn').forEach(star => {
-                star.onclick = () => {
-                    state.selectedRating = parseInt(star.dataset.value);
-                    renderStars('rating-stars-input', state.selectedRating, true);
-                };
-            });
-        }
-
-        function hideRatingModal() {
-            document.getElementById('rating-modal').classList.remove('open');
-        }
-
-        function confirmRating() {
-            if (state.selectedRating > 0 && state.currentUser) {
-                if (!state.currentUser.ratings) state.currentUser.ratings = [];
-                state.currentUser.ratings.push(state.selectedRating);
-                localStorage.setItem('swapka-my-ratings', JSON.stringify(state.currentUser.ratings));
-                updateUserRating();
-            }
-            hideRatingModal();
-        }
-
-        // ===== MY LISTINGS =====
-        function openMyListings() {
-            const content = document.getElementById('my-listings-content');
-            const myListings = state.listings.filter(l => l.sellerId === 'current');
-
-            if (!myListings.length) {
-                content.innerHTML = '<div class="empty-listings"><p>У вас пока нет объявлений.<br>Создайте первое!</p></div>';
-            } else {
-                content.innerHTML = myListings.map(listing => {
-                    const imgSrc = listing.images?.length ? listing.images[0] : generateListingPlaceholder(listing.title);
-                    return `
-                        <div class="my-listing-item">
-                            <img class="my-listing-thumb" src="${imgSrc}" alt="">
-                            <div class="my-listing-info">
-                                <div class="my-listing-title">${escapeHtml(listing.title)}</div>
-                                <div class="my-listing-price">${formatPrice(listing.price)} ₽</div>
-                                <div class="my-listing-city">${escapeHtml(listing.city)}</div>
-                            </div>
-                            <button class="my-listing-delete" data-id="${listing.id}">
-                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                            </button>
-                        </div>`;
-                }).join('');
-
-                content.querySelectorAll('.my-listing-delete').forEach(btn => {
-                    btn.onclick = () => {
-                        state.listings = state.listings.filter(l => l.id !== btn.dataset.id);
-                        saveListings();
-                        renderListings();
-                        openMyListings();
-                    };
-                });
-            }
-
-            document.getElementById('my-listings-page').classList.add('open');
-        }
-
-        function closeMyListings() {
-            document.getElementById('my-listings-page').classList.remove('open');
-        }
-
-        // ===== CREATE LISTING =====
-        function openCreateListing() {
-            state.myListingImages = [];
-            updatePhotoUploadArea();
-            document.getElementById('listing-title-input').value = '';
-            document.getElementById('listing-city-input').value = '';
-            document.getElementById('listing-price-input').value = '';
-            document.getElementById('listing-submit-btn').disabled = true;
-            document.getElementById('create-listing-modal').classList.add('open');
-        }
-
-        function closeCreateListing() {
-            document.getElementById('create-listing-modal').classList.remove('open');
-            state.myListingImages = [];
-        }
-
-        function updatePhotoUploadArea() {
-            const area = document.getElementById('photo-upload-area');
-            const addBtn = document.getElementById('photo-add-btn');
-
-            area.querySelectorAll('.photo-thumb-wrapper').forEach(el => el.remove());
-
-            state.myListingImages.forEach((img, idx) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'photo-thumb-wrapper';
-                wrapper.innerHTML = `<img class="photo-thumb" src="${img}"><button class="photo-remove-btn" data-idx="${idx}">×</button>`;
-                area.insertBefore(wrapper, addBtn);
-            });
-
-            addBtn.classList.toggle('disabled', state.myListingImages.length >= 10);
-
-            const title = document.getElementById('listing-title-input').value.trim();
-            const city = document.getElementById('listing-city-input').value.trim();
-            const price = document.getElementById('listing-price-input').value.trim();
-            document.getElementById('listing-submit-btn').disabled = !(title && city && price && state.myListingImages.length >= 1);
-
-            // Bind remove buttons
-            area.querySelectorAll('.photo-remove-btn').forEach(btn => {
-                btn.onclick = (e) => {
-                    e.stopPropagation();
-                    state.myListingImages.splice(parseInt(btn.dataset.idx), 1);
-                    updatePhotoUploadArea();
-                };
-            });
-        }
-
-        function addPhotos(files) {
-            const remaining = 10 - state.myListingImages.length;
-            Array.from(files).slice(0, remaining).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    state.myListingImages.push(e.target.result);
-                    updatePhotoUploadArea();
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function submitListing() {
-            const title = document.getElementById('listing-title-input').value.trim();
-            const city = document.getElementById('listing-city-input').value.trim();
-            const price = parseInt(document.getElementById('listing-price-input').value);
-
-            if (!title || !city || !price || !state.myListingImages.length) return;
-
-            state.listings.unshift({
-                id: 'l_' + Date.now(),
-                title, price, city, category: 'other',
-                images: [...state.myListingImages],
-                sellerId: 'current', description: ''
-            });
-            saveListings();
-            renderListings();
-            closeCreateListing();
-            showToast('Объявление опубликовано!');
-        }
-
-        // ===== THEME =====
-        function toggleTheme() {
-            state.isDarkTheme = !state.isDarkTheme;
-            document.body.classList.toggle('dark-theme', state.isDarkTheme);
-            localStorage.setItem('swapka-theme', state.isDarkTheme ? 'dark' : 'light');
-            updateThemeIcon();
-        }
-
-        function updateThemeIcon() {
-            document.getElementById('theme-icon').innerHTML = state.isDarkTheme
-                ? '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>'
-                : '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
-        }
-
-        // ===== TOAST =====
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        // ===== EVENT BINDING =====
-        function bindEvents() {
-            // === NAVIGATION — onclick handlers in HTML ===
-            // switchPage() is called directly via onclick="switchPage('main')" etc.
-
-            // Search
-            document.getElementById('search-input').addEventListener('input', e => {
-                state.searchQuery = e.target.value;
-                renderListings();
-            });
-
-            // Categories
-            document.getElementById('categories-row').addEventListener('click', e => {
-                const chip = e.target.closest('.category-chip');
-                if (!chip) return;
-                document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
-                state.activeCategory = chip.dataset.category;
-                renderListings();
-            });
-
-            // Detail back
-            document.getElementById('detail-back-btn').addEventListener('click', closeListing);
-
-            // Chat back
-            document.getElementById('chat-back-btn').addEventListener('click', closeChat);
-
-            // Chat send
-            document.getElementById('chat-send-btn').addEventListener('click', sendMessage);
-            document.getElementById('chat-input').addEventListener('keypress', e => {
-                if (e.key === 'Enter') sendMessage();
-            });
-
-            // My listings
-            document.getElementById('my-listings-btn').addEventListener('click', openMyListings);
-            document.getElementById('my-listings-back').addEventListener('click', closeMyListings);
-
-            // Create listing
-            document.getElementById('create-listing-btn').addEventListener('click', openCreateListing);
-
-            // Modal overlay click
-            document.getElementById('create-listing-modal').addEventListener('click', e => {
-                if (e.target === e.currentTarget) closeCreateListing();
-            });
-
-            // Photo upload
-            document.getElementById('photo-add-btn').addEventListener('click', () => {
-                document.getElementById('photo-input').click();
-            });
-
-            document.getElementById('photo-input').addEventListener('change', e => {
-                if (e.target.files.length) addPhotos(e.target.files);
-                e.target.value = '';
-            });
-
-            // Form validation
-            ['listing-title-input', 'listing-city-input', 'listing-price-input'].forEach(id => {
-                document.getElementById(id).addEventListener('input', updatePhotoUploadArea);
-            });
-
-            // Submit
-            document.getElementById('listing-submit-btn').addEventListener('click', submitListing);
-
-            // Theme
-            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-
-            // Rating
-            document.getElementById('rating-container').addEventListener('click', showRatingModal);
-            document.getElementById('rating-confirm-btn').addEventListener('click', confirmRating);
-            document.getElementById('rating-cancel-btn').addEventListener('click', hideRatingModal);
-            document.getElementById('rating-modal').addEventListener('click', e => {
-                if (e.target === e.currentTarget) hideRatingModal();
-            });
-
-            // Telegram back button
-            if (tg) {
-                tg.BackButton.onClick(() => {
-                    if (document.getElementById('detail-page').classList.contains('open')) {
-                        closeListing();
-                    } else if (document.getElementById('chat-view').classList.contains('open')) {
-                        closeChat();
-                    } else if (document.getElementById('my-listings-page').classList.contains('open')) {
-                        closeMyListings();
-                    }
-                });
-            }
-        }
-
-        // ===== START =====
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
-</body>
-</html>
-
+    <div class="header hidden" id="detailHeader">
+        <button class="close-btn" onclick="closeDetail()">← Назад</button>
+        <div class="app-title">SWAPKA</div>
+        <div class="header-right"></div>
+    </div>
+
+    <div class="search-container" id="searchContainer">
+        <input type="text" class="search-bar" id="searchInput" placeholder="Поиск..." oninput="searchListings()">
+    </div>
+
+    <div class
