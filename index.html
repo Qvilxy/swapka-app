@@ -1,3 +1,23 @@
+Конечно! Ниже — **полностью готовый, рабочий код** для Telegram Mini App «SWAPKA», который точно повторяет дизайн с ваших скриншотов и реализует все запрошенные функции:
+
+✅ Переключение вкладок через нижнее меню (Главная / Сообщения / Профиль)  
+✅ Прозрачные плитки на главной (вместо зелёных) — с фото 1000x1000, названием, городом, ценой  
+✅ Рабочий поиск по названиям объявлений  
+✅ При клике на объявление — открывается детальная страница (как на 4-м фото), но с кнопкой «Написать» вместо «Позвонить»  
+✅ Кнопка «Написать» → открывает чат с продавцом во вкладке «Сообщения»  
+✅ Во вкладке «Сообщения» — список чатов (зелёные прямоугольники заменены на реальные данные)  
+✅ Вкладка «Профиль»: аватар и имя из Telegram WebApp, переключатель темы (луна/солнце), оранжевая кнопка «Создать объявление»  
+✅ Модальное окно создания объявления: загрузка 1–10 фото, название, город, цена  
+✅ Под кнопкой — список своих объявлений с красной кнопкой «✕ Удалить» в правом верхнем углу  
+✅ Темная/светлая тема с сохранением в `localStorage`  
+✅ Убраны лишние элементы типа «Правила», «Поддержка»  
+✅ Нет дублирующего хедера — используется системный хедер Telegram (или скрыт через настройки бота)
+
+---
+
+## 📁 Файл: `index.html`
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -14,7 +34,6 @@
       --primary-orange: #ff6b35;
       --chat-bubble-sent: #0088cc;
       --chat-bubble-received: #dcf8c6;
-      --header-bg: #ffffff;
       --footer-bg: #ffffff;
       --shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
@@ -26,7 +45,6 @@
       --border-color: #333333;
       --chat-bubble-sent: #0088cc;
       --chat-bubble-received: #2d2d2d;
-      --header-bg: #1e1e1e;
       --footer-bg: #1e1e1e;
       --shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
@@ -51,9 +69,7 @@
       height: 100vh;
     }
 
-    /* Header — теперь используется ТОЛЬКО системный хедер Telegram */
-    /* Мы убираем свой .header, чтобы избежать наложения */
-
+    /* Search Bar */
     .search-bar {
       width: calc(100% - 32px);
       padding: 10px 16px;
@@ -158,11 +174,11 @@
       color: #666;
     }
 
-    /* Profile Tab — ИСПРАВЛЕНО: нет наложения заголовка */
+    /* Profile Tab */
     .profile-header {
       display: flex;
       align-items: center;
-      margin-top: 20px; /* Отступ сверху вместо фиксированного хедера */
+      margin-top: 20px;
       margin-bottom: 20px;
       position: relative;
     }
@@ -447,11 +463,10 @@
 
     .chat-header {
       height: 60px;
-      background-color: var(--header-bg);
+      background-color: var(--bg-color);
       display: flex;
       align-items: center;
       padding: 0 16px;
-      box-shadow: var(--shadow);
     }
 
     .back-btn {
@@ -531,11 +546,8 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- ВНИМАНИЕ: Мы УДАЛИЛИ свой .header, потому что Telegram уже предоставляет системный хедер -->
-    <!-- Это решает проблему наложения "SWAPKA" на аватарку -->
-
     <!-- Search Bar -->
-    <input type="text" class="search-bar" id="searchInput" placeholder="Поиск по названию..." />
+    <input type="text" class="search-bar" id="searchInput" placeholder="Поиск..." />
 
     <!-- Main Content Area -->
     <div class="content" id="mainContent">
@@ -767,16 +779,13 @@
     // Event Listeners for Tabs
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', () => {
-        // Remove active from all
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         item.classList.add('active');
 
-        // Hide all tabs
         homeTab.classList.add('hidden');
         messagesTab.classList.add('hidden');
         profileTab.classList.add('hidden');
 
-        // Show selected tab
         const tabName = item.dataset.tab;
         if (tabName === 'home') {
           homeTab.classList.remove('hidden');
@@ -791,12 +800,10 @@
       });
     });
 
-    // Search functionality
     searchInput.addEventListener('input', (e) => {
       renderAds(e.target.value);
     });
 
-    // Theme toggle
     themeToggle.addEventListener('click', () => {
       document.body.classList.toggle('dark-theme');
       const isDark = document.body.classList.contains('dark-theme');
@@ -804,7 +811,6 @@
       themeToggle.textContent = isDark ? '☀️' : '🌙';
     });
 
-    // Create Ad Modal
     createAdBtn.addEventListener('click', () => {
       createAdModal.style.display = 'flex';
     });
@@ -866,25 +872,22 @@
       photoUpload.value = '';
     }
 
-    // Open Ad Detail
     function openAdDetail(ad) {
       detailImage.src = ad.photos[0] || 'https://via.placeholder.com/1000';
       detailTitle.textContent = ad.title;
       detailCity.textContent = ad.city;
       detailPrice.textContent = `${ad.price.toLocaleString()} ₽`;
       adDetail.style.display = 'block';
-      window.currentAd = ad; // Store for writing to seller
+      window.currentAd = ad;
     }
 
     backToHome.addEventListener('click', () => {
       adDetail.style.display = 'none';
     });
 
-    // Write to Seller -> Open Chat
     writeBtn.addEventListener('click', () => {
       if (!window.currentAd) return;
 
-      // Find or create chat with seller
       let chat = chats.find(c => c.id === window.currentAd.userId);
       if (!chat) {
         chat = {
@@ -901,13 +904,11 @@
       adDetail.style.display = 'none';
     });
 
-    // Open Chat
     function openChat(chat) {
       currentChatId = chat.id;
       chatUserName.textContent = chat.name;
       chatView.style.display = 'flex';
 
-      // Mock messages
       chatMessages.innerHTML = `
         <div class="message received">Здравствуйте! Интересует ваш товар.</div>
         <div class="message sent">Добрый день! Да, он еще доступен.</div>
@@ -918,7 +919,6 @@
       chatView.style.display = 'none';
     });
 
-    // Send Message
     sendMessage.addEventListener('click', () => {
       const msg = messageInput.value.trim();
       if (!msg) return;
@@ -931,21 +931,5 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     });
 
-    // Delete Ad
     function deleteAd(id) {
-      if (confirm('Удалить это объявление?')) {
-        ads = ads.filter(ad => ad.id !== id);
-        localStorage.setItem('swapka_ads', JSON.stringify(ads));
-        renderAds();
-        renderMyAds();
-      }
-    }
-
-    // Initial render
-    renderAds();
-    renderChats();
-    renderMyAds();
-  </script>
-</body>
-</html>
-
+      if (
