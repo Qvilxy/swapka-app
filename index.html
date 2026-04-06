@@ -9,11 +9,14 @@
         :root {
             --primary-bg: #fff;
             --secondary-bg: #f5f5f5;
-            --accent-pink: #E08E8E; /* Цвет из макета */
-            --accent-yellow: #F5C56B; /* Цвет поиска */
+            --accent-pink: #E08E8E;
+            --accent-yellow: #F5C56B;
             --text-color: #000;
-            --header-gradient: linear-gradient(90deg, #8857ff, #e05288);
             --btn-create-gradient: linear-gradient(90deg, #f5a66b, #e06b6b);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -25,37 +28,37 @@
             overflow-x: hidden;
         }
 
-        /* --- Header --- */
-        .header {
+        /* --- Header Styles --- */
+        .page-header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             background: var(--primary-bg);
             z-index: 100;
-            transition: transform 0.3s ease;
             padding-bottom: 10px;
+            transition: transform 0.3s ease;
         }
 
-        .header.hidden {
+        .page-header.hidden {
             transform: translateY(-100%);
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
-            padding: 10px 0;
+            padding: 15px 0;
         }
 
-        /* СТИЛЬ ДЛЯ ЛОГОТИПА */
         .logo {
-            height: 30px; /* Высота логотипа в шапке */
+            height: 50px; /* Увеличенный логотип */
             width: auto;
             object-fit: contain;
         }
 
+        /* Search bar only for home page */
         .search-bar {
-            padding: 0 15px;
+            padding: 0 15px 10px;
             display: flex;
             gap: 10px;
             align-items: center;
@@ -77,7 +80,7 @@
         }
 
         .filters {
-            padding: 10px 15px;
+            padding: 0 15px 10px;
             display: flex;
             gap: 10px;
         }
@@ -94,7 +97,7 @@
         /* --- Scroll to Top Button --- */
         #scrollTopBtn {
             position: fixed;
-            top: 50px; /* Ниже места где был хедер */
+            top: 80px;
             right: 15px;
             background: white;
             border-radius: 50%;
@@ -112,8 +115,8 @@
         /* --- Main Content Area --- */
         .page {
             display: none;
-            padding-top: 130px; /* Отступ под хедер */
-            padding-bottom: 80px; /* Отступ под нижнее меню */
+            padding-top: 140px;
+            padding-bottom: 80px;
             min-height: 100vh;
         }
 
@@ -177,7 +180,7 @@
         }
 
         .message-item {
-            background: #D3E3C6; /* Зеленый оттенок из макета */
+            background: #D3E3C6;
             padding: 15px;
             border-radius: 15px;
             margin-bottom: 10px;
@@ -294,7 +297,6 @@
         }
 
         .nav-item.active {
-            color: var(--primary-bg); /* Цвет активной иконки будет меняться JS-ом */
             color: #5754A4;
         }
 
@@ -392,7 +394,7 @@
 
         .submit-btn {
             width: 100%;
-            background: var(--header-gradient);
+            background: linear-gradient(90deg, #8857ff, #e05288);
             color: white;
             border: none;
             padding: 15px;
@@ -437,7 +439,7 @@
 
         .detail-logo {
             margin: 0 auto;
-            height: 25px; /* Размер логотипа в детальной странице */
+            height: 40px;
             width: auto;
         }
 
@@ -508,10 +510,9 @@
     <!-- Toast Notification -->
     <div id="toast" class="toast">Объявление успешно создано!</div>
 
-    <!-- Main Header (Only visible on Home tab) -->
-    <div id="mainHeader" class="header">
+    <!-- Home Page Header -->
+    <div id="homeHeader" class="page-header">
         <div class="logo-container">
-            <!-- ЛОГОТИП ЗДЕСЬ -->
             <img src="logo.png" class="logo" alt="Swapka">
         </div>
         <div class="search-bar">
@@ -524,11 +525,23 @@
         </div>
     </div>
 
+    <!-- Messages Page Header -->
+    <div id="messagesHeader" class="page-header" style="display: none;">
+        <div class="logo-container">
+            <img src="logo.png" class="logo" alt="Swapka">
+        </div>
+    </div>
+
+    <!-- Profile Page Header -->
+    <div id="profileHeader" class="page-header" style="display: none;">
+        <div class="logo-container">
+            <img src="logo.png" class="logo" alt="Swapka">
+        </div>
+    </div>
+
     <!-- Scroll to Top Button -->
     <div id="scrollTopBtn">↑</div>
 
-    <!-- Pages -->
-    
     <!-- 1. Home Page -->
     <div id="homePage" class="page active">
         <div class="ads-grid" id="homeGrid">
@@ -612,7 +625,6 @@
     <div id="detailPage" class="detail-page">
         <div class="detail-header">
             <span class="back-btn" onclick="closeDetail()">←</span>
-            <!-- Логотип в детальной странице -->
             <img src="logo.png" class="detail-logo" alt="Swapka">
         </div>
         <div class="detail-image-container">
@@ -658,8 +670,8 @@
             { id: 4, title: "Ноутбук", price: "40000", city: "Москва", desc: "Для работы", img: null }
         ];
 
-        let userAds = []; // Array to store ads created by the user
-        let uploadedImages = []; // Temp storage for new ad images
+        let userAds = [];
+        let uploadedImages = [];
 
         // --- Init ---
         window.onload = function() {
@@ -686,22 +698,16 @@
         function switchTab(tabName) {
             // Hide all pages
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.page-header').forEach(h => h.style.display = 'none');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-            // Show selected
+            // Show selected page and header
             document.getElementById(tabName + 'Page').classList.add('active');
+            document.getElementById(tabName + 'Header').style.display = 'block';
             
             // Highlight nav
             const navIndex = tabName === 'home' ? 0 : tabName === 'messages' ? 1 : 2;
             document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
-
-            // Header logic
-            const header = document.getElementById('mainHeader');
-            if (tabName === 'home') {
-                header.style.display = 'block';
-            } else {
-                header.style.display = 'none'; // Hide header on other tabs
-            }
 
             if (tabName === 'profile') {
                 renderMyAds();
@@ -731,8 +737,6 @@
         }
 
         function createAdCard(ad) {
-            const imgSrc = ad.img ? ad.img : ''; 
-            // Если есть картинка - показываем, если нет - розовый плейсхолдер (через CSS класс)
             const imgTag = ad.img 
                 ? `<img src="${ad.img}" class="ad-image" alt="${ad.title}">` 
                 : `<div class="ad-placeholder"></div>`;
@@ -756,15 +760,15 @@
 
         // --- Scroll Logic (Hide Header) ---
         const homePage = document.getElementById('homePage');
-        const mainHeader = document.getElementById('mainHeader');
+        const homeHeader = document.getElementById('homeHeader');
         const scrollTopBtn = document.getElementById('scrollTopBtn');
 
         homePage.addEventListener('scroll', () => {
             if (homePage.scrollTop > 50) {
-                mainHeader.classList.add('hidden');
+                homeHeader.classList.add('hidden');
                 scrollTopBtn.style.display = 'flex';
             } else {
-                mainHeader.classList.remove('hidden');
+                homeHeader.classList.remove('hidden');
                 scrollTopBtn.style.display = 'none';
             }
         });
@@ -776,7 +780,6 @@
         // --- Create Ad Modal ---
         function openModal() {
             document.getElementById('createModal').classList.add('active');
-            // Clear form
             document.getElementById('adTitle').value = '';
             document.getElementById('adPrice').value = '';
             document.getElementById('adCity').value = '';
@@ -836,11 +839,11 @@
                 price: price,
                 city: city,
                 desc: desc,
-                img: uploadedImages[0] // Use first image for grid preview
+                img: uploadedImages[0]
             };
 
-            ads.unshift(newAd); // Add to global list (Home)
-            userAds.unshift(newAd); // Add to user list (Profile)
+            ads.unshift(newAd);
+            userAds.unshift(newAd);
 
             renderHome();
             closeModal();
@@ -857,7 +860,6 @@
 
         // --- Detail View ---
         function openDetail(id) {
-            // Find ad in both arrays
             let ad = ads.find(a => a.id === id) || userAds.find(a => a.id === id);
             if (!ad) return;
 
@@ -871,7 +873,6 @@
                 detailImg.src = ad.img;
                 detailImg.style.display = 'block';
             } else {
-                // Fallback pink background logic handled by CSS container, but let's hide img tag
                 detailImg.style.display = 'none'; 
             }
 
@@ -880,7 +881,6 @@
 
         function closeDetail() {
             document.getElementById('detailPage').classList.remove('active');
-            // Ensure we are back on Home tab
             switchTab('home');
         }
 
