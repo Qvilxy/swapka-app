@@ -47,13 +47,11 @@
             padding: 10px 0;
         }
 
+        /* СТИЛЬ ДЛЯ ЛОГОТИПА */
         .logo {
-            background: var(--header-gradient);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
+            height: 30px; /* Высота логотипа в шапке */
+            width: auto;
+            object-fit: contain;
         }
 
         .search-bar {
@@ -439,12 +437,8 @@
 
         .detail-logo {
             margin: 0 auto;
-            background: var(--header-gradient);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
+            height: 25px; /* Размер логотипа в детальной странице */
+            width: auto;
         }
 
         .detail-image-container {
@@ -517,7 +511,8 @@
     <!-- Main Header (Only visible on Home tab) -->
     <div id="mainHeader" class="header">
         <div class="logo-container">
-            <div class="logo">Swapka</div>
+            <!-- ЛОГОТИП ЗДЕСЬ -->
+            <img src="logo.png" class="logo" alt="Swapka">
         </div>
         <div class="search-bar">
             <input type="text" id="searchInput" class="search-input" placeholder="Поиск">
@@ -617,7 +612,8 @@
     <div id="detailPage" class="detail-page">
         <div class="detail-header">
             <span class="back-btn" onclick="closeDetail()">←</span>
-            <div class="detail-logo">Swapka</div>
+            <!-- Логотип в детальной странице -->
+            <img src="logo.png" class="detail-logo" alt="Swapka">
         </div>
         <div class="detail-image-container">
             <img id="detailImg" src="" alt="Item">
