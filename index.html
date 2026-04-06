@@ -2,586 +2,1797 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SWAPKA</title>
-    <!-- Подключаем скрипт Telegram WebApp -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Swapka</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* === ОСНОВНЫЕ СТИЛИ И ПЕРЕМЕННЫЕ === */
-        :root {
-            --bg-color: #F2F2F7;
-            --text-color: #000000;
-            --secondary-text-color: #8E8E93;
-            --card-bg: #FFFFFF;
-            --border-color: #C6C6C8;
-            --button-bg: #007AFF;
-            --button-text: #FFFFFF;
-            --search-bg: #E3E3E8;
-            --nav-bg: rgba(255, 255, 255, 0.8);
-            --nav-active: #007AFF;
-            --nav-inactive: #8E8E93;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #000000;
-            --text-color: #FFFFFF;
-            --secondary-text-color: #8E8E93;
-            --card-bg: #1C1C1E;
-            --border-color: #3A3A3C;
-            --button-bg: #0A84FF;
-            --button-text: #FFFFFF;
-            --search-bg: #1C1C1E;
-            --nav-bg: rgba(28, 28, 30, 0.8);
-            --nav-active: #0A84FF;
-            --nav-inactive: #8E8E93;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-tertiary: #999999;
+            --border-color: #e5e5e5;
+            --accent-color: #007bff;
+            --accent-green: #34c759;
+            --accent-blue: #007bff;
+            --search-bg: #f0f0f0;
+            --bottom-nav-bg: #ffffff;
+            --message-sent: #007bff;
+            --message-received: #f0f0f0;
+            --overlay-bg: rgba(0,0,0,0.5);
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --star-empty: #ddd;
+            --star-filled: #ffc107;
+            --input-bg: #f0f0f0;
+            --modal-bg: #ffffff;
+            --badge-bg: #ff3b30;
+        }
+
+        .dark-theme {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2c2c2e;
+            --bg-card: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --text-tertiary: #666666;
+            --border-color: #3a3a3c;
+            --accent-color: #0a84ff;
+            --accent-green: #30d158;
+            --accent-blue: #0a84ff;
+            --search-bg: #2c2c2e;
+            --bottom-nav-bg: #1a1a1a;
+            --message-sent: #0a84ff;
+            --message-received: #2c2c2e;
+            --overlay-bg: rgba(0,0,0,0.7);
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --star-empty: #444;
+            --star-filled: #ffc107;
+            --input-bg: #2c2c2e;
+            --modal-bg: #2c2c2e;
+            --badge-bg: #ff3b30;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
             overflow-x: hidden;
-            padding-bottom: 80px; /* Отступ для нижней панели */
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        .app-header {
-            text-align: center;
-            padding: 15px 0;
-            font-size: 20px;
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ===== BOTTOM NAVIGATION ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: var(--bottom-nav-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            z-index: 1000;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            padding: 6px 20px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .nav-item.active {
+            background: var(--bg-secondary);
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-tertiary);
+            transition: fill 0.2s;
+        }
+
+        .nav-item.active svg {
+            fill: var(--accent-color);
+        }
+
+        .nav-item span {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            transition: color 0.2s;
+        }
+
+        .nav-item.active span {
+            color: var(--accent-color);
             font-weight: 600;
-            letter-spacing: 2px;
-            position: sticky;
+        }
+
+        .nav-badge {
+            position: absolute;
             top: 0;
-            background-color: var(--bg-color);
-            z-index: 100;
+            right: 10px;
+            background: var(--badge-bg);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
         }
 
-        .container {
-            padding: 0 10px;
-        }
-
-        /* === СТРАНИЦЫ === */
+        /* ===== PAGES ===== */
         .page {
             display: none;
+            padding-bottom: 80px;
+            min-height: 100vh;
+            animation: fadeIn 0.3s ease;
         }
+
         .page.active {
             display: block;
         }
 
-        /* === ГЛАВНАЯ СТРАНИЦА === */
-        .search-container {
-            padding: 10px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 10px;
-            background-color: var(--search-bg);
-            color: var(--text-color);
-            font-size: 17px;
-            outline: none;
-        }
-        .search-input::placeholder {
-            color: var(--secondary-text-color);
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .ads-grid {
+        /* ===== MAIN PAGE ===== */
+        .search-container {
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            background: var(--bg-primary);
+            z-index: 100;
+            transition: background-color 0.3s;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--search-bg);
+            border-radius: 12px;
+            padding: 10px 14px;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .search-bar svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-tertiary);
+            flex-shrink: 0;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 15px;
+            color: var(--text-primary);
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .categories-row {
+            display: flex;
+            gap: 8px;
+            padding: 0 16px 12px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .categories-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .category-chip.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .listings-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
+            padding: 0 12px;
+        }
+
+        .listing-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .listing-card:active {
+            transform: scale(0.97);
+        }
+
+        .listing-card-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .listing-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .listing-card-image .placeholder-img {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--border-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .listing-card-info {
             padding: 10px;
         }
 
-        .ad-card {
-            background-color: var(--card-bg);
-            border-radius: 10px;
+        .listing-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            box-shadow: 0 2px 8px var(--shadow-color);
+            line-height: 1.3;
         }
-        .ad-image {
+
+        .listing-card-city {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .listing-card-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* ===== LISTING DETAIL PAGE ===== */
+        .detail-page {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 150px;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 2000;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .detail-page.open {
+            transform: translateX(0);
+        }
+
+        .detail-page.closing {
+            transform: translateX(100%);
+        }
+
+        .detail-back-btn {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--overlay-bg);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        .detail-back-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .detail-image-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .detail-images-slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .detail-images-slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        .detail-image-slide {
+            min-width: 100%;
+            aspect-ratio: 1;
+            scroll-snap-align: start;
+        }
+
+        .detail-image-slide img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            background-color: var(--search-bg);
         }
-        .ad-info {
-            padding: 10px;
+
+        .image-counter {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
         }
-        .ad-title {
+
+        .detail-content {
+            padding: 20px 16px;
+        }
+
+        .detail-price {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .detail-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .detail-city {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .detail-seller-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .detail-seller-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--bg-secondary);
+        }
+
+        .detail-seller-name {
             font-size: 15px;
             font-weight: 600;
-            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .detail-seller-rating {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .detail-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .detail-action-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .detail-action-btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-message {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-message svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* ===== MESSAGES PAGE ===== */
+        .page-header {
+            padding: 16px;
+            font-size: 20px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background: var(--bg-primary);
+            z-index: 50;
+        }
+
+        .chat-list {
+            padding: 0;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chat-item:active {
+            background: var(--bg-secondary);
+        }
+
+        .chat-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--bg-secondary);
+            flex-shrink: 0;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .chat-last-message {
+            font-size: 13px;
+            color: var(--text-tertiary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .ad-city {
-            font-size: 13px;
-            color: var(--secondary-text-color);
+
+        .chat-meta {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
             margin-bottom: 4px;
         }
-        .ad-price {
-            font-size: 16px;
-            font-weight: 700;
-        }
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--secondary-text-color);
-        }
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
 
-        /* === СТРАНИЦА ПРОФИЛЯ === */
-        .profile-page {
-            padding: 20px;
-        }
-        .profile-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        .profile-user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .profile-avatar {
-            width: 64px;
-            height: 64px;
+        .chat-unread {
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            object-fit: cover;
-            background-color: var(--search-bg);
-        }
-        .profile-details h2 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        .profile-stats {
-            font-size: 14px;
-            color: var(--secondary-text-color);
-        }
-        .theme-toggle-btn {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            padding: 5px;
-        }
-        .menu-list {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .menu-item {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 17px;
-            cursor: pointer;
-        }
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-        .menu-item:active {
-            background-color: var(--search-bg);
-        }
-
-        /* === СТРАНИЦА СООБЩЕНИЙ === */
-        .messages-page {
-            padding: 20px;
-            text-align: center;
-            color: var(--secondary-text-color);
-        }
-        .messages-icon {
-            font-size: 64px;
-            margin-bottom: 10px;
-        }
-
-        /* === НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ === */
-        .bottom-nav {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 400px;
-            background-color: var(--nav-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
+            background: var(--accent-blue);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
             display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            z-index: 1000;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
         }
-        .nav-item {
-            flex: 1;
+
+        .empty-chats {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 5px;
-            cursor: pointer;
-            color: var(--nav-inactive);
-            transition: color 0.2s;
-        }
-        .nav-item.active {
-            color: var(--nav-active);
-        }
-        .nav-icon {
-            font-size: 24px;
-            margin-bottom: 2px;
-        }
-        .nav-label {
-            font-size: 11px;
-            font-weight: 500;
+            padding: 60px 20px;
+            text-align: center;
         }
 
-        /* === МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ОБЪЯВЛЕНИЯ === */
-        .modal {
-            display: none;
+        .empty-chats svg {
+            width: 64px;
+            height: 64px;
+            fill: var(--text-tertiary);
+            margin-bottom: 16px;
+        }
+
+        .empty-chats p {
+            color: var(--text-tertiary);
+            font-size: 14px;
+        }
+
+        /* ===== CHAT VIEW ===== */
+        .chat-view {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
             z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chat-view.open {
+            transform: translateX(0);
+        }
+
+        .chat-view.closing {
+            transform: translateX(100%);
+        }
+
+        .chat-view-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+
+        .chat-back-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .chat-back-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-primary);
+        }
+
+        .chat-view-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chat-view-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: var(--message-sent);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: var(--message-received);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .chat-input-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .chat-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .chat-send-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* ===== PROFILE PAGE ===== */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 16px;
+        }
+
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--bg-secondary);
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-rating-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 4px 0;
+        }
+
+        .profile-rating-stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .profile-rating-stars svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .profile-rating-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--text-primary);
+            transition: fill 0.3s;
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.9);
+        }
+
+        .profile-section {
+            padding: 0 16px;
+            margin-bottom: 16px;
+        }
+
+        .profile-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .profile-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: var(--bg-card);
+            border-radius: 14px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--card-shadow);
+        }
+
+        .profile-menu-item:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+
+        .profile-menu-item svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--accent-color);
+            flex-shrink: 0;
+        }
+
+        .profile-menu-item span {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .profile-menu-item .arrow {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-tertiary);
+        }
+
+        .create-listing-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: 2px dashed var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .create-listing-btn:active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .create-listing-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        /* ===== MY LISTINGS ===== */
+        .my-listings-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 2000;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .my-listings-page.open {
+            transform: translateX(0);
+        }
+
+        .my-listings-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .my-listings-back {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .my-listings-back svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-primary);
+        }
+
+        .my-listings-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .my-listings-content {
+            padding: 16px;
+        }
+
+        .my-listing-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-card);
+            border-radius: 14px;
+            margin-bottom: 10px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .my-listing-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .my-listing-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .my-listing-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .my-listing-price {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 4px;
+        }
+
+        .my-listing-city {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .my-listing-delete {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: flex-start;
+        }
+
+        .my-listing-delete svg {
+            width: 20px;
+            height: 20px;
+            fill: #ff3b30;
+        }
+
+        .empty-listings {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-tertiary);
+        }
+
+        /* ===== CREATE LISTING MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay-bg);
+            z-index: 3000;
+            display: none;
             align-items: flex-end;
             justify-content: center;
         }
-        .modal.active {
+
+        .modal-overlay.open {
             display: flex;
         }
+
         .modal-content {
-            background-color: var(--card-bg);
+            background: var(--modal-bg);
+            border-radius: 20px 20px 0 0;
             width: 100%;
-            max-width: 600px;
-            border-radius: 15px 15px 0 0;
-            padding: 20px;
+            max-width: 480px;
             max-height: 90vh;
             overflow-y: auto;
-            animation: slideUp 0.3s ease-out;
+            padding: 20px 16px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            animation: slideUp 0.3s ease;
         }
+
         @keyframes slideUp {
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
         }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            margin: 0 auto 16px;
         }
+
         .modal-title {
             font-size: 20px;
-            font-weight: 600;
-        }
-        .close-modal-btn {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            color: var(--text-color);
-        }
-        .form-group {
+            font-weight: 700;
+            color: var(--text-primary);
             margin-bottom: 20px;
+            text-align: center;
         }
+
+        .photo-upload-area {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+
+        .photo-upload-area::-webkit-scrollbar {
+            display: none;
+        }
+
+        .photo-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .photo-add-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            border: 2px dashed var(--border-color);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .photo-add-btn svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--text-tertiary);
+        }
+
+        .photo-add-btn:active {
+            border-color: var(--accent-color);
+        }
+
+        .photo-add-btn.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
         .form-label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 15px;
-            font-weight: 500;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
         }
+
         .form-input {
             width: 100%;
-            padding: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 10px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-size: 17px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 15px;
             outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s;
         }
-        .photo-upload-area {
-            border: 2px dashed var(--border-color);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
+
+        .form-input:focus {
+            border-color: var(--accent-color);
         }
-        .photo-upload-area.has-image {
-            border-style: solid;
-            padding: 5px;
-        }
-        .upload-preview {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        .submit-ad-btn {
+
+        .form-submit-btn {
             width: 100%;
-            padding: 15px;
-            background-color: var(--button-bg);
-            color: var(--button-text);
+            padding: 14px;
+            border-radius: 14px;
             border: none;
-            border-radius: 10px;
-            font-size: 17px;
+            background: var(--accent-blue);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .form-submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .form-submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== RATING MODAL ===== */
+        .rating-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay-bg);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rating-modal.open {
+            display: flex;
+        }
+
+        .rating-modal-content {
+            background: var(--modal-bg);
+            border-radius: 20px;
+            padding: 24px;
+            width: 280px;
+            text-align: center;
+            animation: scaleIn 0.2s ease;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .rating-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .rating-stars-input {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .rating-star-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            transition: transform 0.1s;
+        }
+
+        .rating-star-btn:active {
+            transform: scale(0.8);
+        }
+
+        .rating-star-btn svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        .rating-confirm-btn {
+            padding: 10px 32px;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent-blue);
+            color: white;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
+            font-family: inherit;
         }
-        .hidden {
-            display: none !important;
+
+        .rating-cancel-btn {
+            padding: 10px 32px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            margin-left: 8px;
+        }
+
+        /* ===== SWIPE HINT ===== */
+        .swipe-hint {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 80px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0 20px 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2001;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .swipe-hint.visible {
+            opacity: 1;
+        }
+
+        .swipe-hint svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 0;
+        }
+
+        /* ===== NO SELECT ===== */
+        .no-select {
+            -webkit-user-select: none;
+            user-select: none;
         }
     </style>
 </head>
 <body>
-
-    <!-- Заголовок приложения -->
-    <header class="app-header">SWAPKA</header>
-
-    <!-- === ВКЛАДКА "ГЛАВНАЯ" === -->
-    <div id="mainPage" class="page active">
-        <div class="search-container">
-            <input type="text" class="search-input" id="searchInput" placeholder="Поиск...">
-        </div>
-        <div class="ads-grid" id="adsGrid">
-            <div class="empty-state">
-                <div class="empty-state-icon">📦</div>
-                <p>Объявлений пока нет</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- === ВКЛАДКА "СООБЩЕНИЯ" === -->
-    <div id="messagesPage" class="page messages-page">
-        <div class="messages-icon">💬</div>
-        <h3>Сообщения</h3>
-        <p>Здесь будут ваши чаты</p>
-    </div>
-
-    <!-- === ВКЛАДКА "ПРОФИЛЬ" === -->
-    <div id="profilePage" class="page profile-page">
-        <div class="profile-header">
-            <div class="profile-user-info">
-                <img src="" alt="Avatar" class="profile-avatar" id="profileAvatar">
-                <div class="profile-details">
-                    <h2 id="profileName">Загрузка...</h2>
-                    <div class="profile-stats">
-                        <p>Рейтинг: 4/5</p>
-                        <p>Подписчики: 67</p>
-                    </div>
+    <div class="app-container" id="app">
+        <!-- ===== MAIN PAGE ===== -->
+        <div class="page active" id="page-main">
+            <div class="search-container">
+                <div class="search-bar">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" id="search-input" placeholder="Поиск объявлений...">
                 </div>
             </div>
-            <button class="theme-toggle-btn" id="themeToggleBtn">🌙</button>
-        </div>
-        <div class="menu-list">
-            <div class="menu-item" id="createAdBtn">Создать объявление</div>
-            <div class="menu-item">Мои объявления</div>
-            <div class="menu-item">Поддержка</div>
-            <div class="menu-item">Правила</div>
-        </div>
-    </div>
 
-    <!-- === МОДАЛЬНОЕ ОКНО ДЛЯ СОЗДАНИЯ ОБЪЯВЛЕНИЯ === -->
-    <div class="modal" id="createAdModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Новое объявление</h3>
-                <button class="close-modal-btn" id="closeModalBtn">&times;</button>
+            <div class="categories-row" id="categories-row">
+                <button class="category-chip active" data-category="all">Все</button>
+                <button class="category-chip" data-category="auto">Авто</button>
+                <button class="category-chip" data-category="electronics">Электроника</button>
+                <button class="category-chip" data-category="clothing">Одежда</button>
+                <button class="category-chip" data-category="home">Для дома</button>
+                <button class="category-chip" data-category="other">Другое</button>
             </div>
-            <form id="adForm">
-                <div class="form-group">
-                    <label class="form-label">Название</label>
-                    <input type="text" class="form-input" id="adTitle" required placeholder="Например, iPhone 13">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Фотография</label>
-                    <div class="photo-upload-area" id="photoUploadArea">
-                        <div id="uploadPlaceholder">
-                            <p>Нажмите, чтобы добавить фото</p>
+
+            <div class="listings-grid" id="listings-grid">
+                <!-- Listings will be rendered here -->
+            </div>
+        </div>
+
+        <!-- ===== MESSAGES PAGE ===== -->
+        <div class="page" id="page-messages">
+            <div class="page-header">Сообщения</div>
+            <div class="chat-list" id="chat-list">
+                <!-- Chats will be rendered here -->
+            </div>
+        </div>
+
+        <!-- ===== PROFILE PAGE ===== -->
+        <div class="page" id="page-profile">
+            <div class="profile-header">
+                <img class="profile-avatar" id="profile-avatar" src="" alt="Avatar">
+                <div class="profile-info">
+                    <div class="profile-name" id="profile-name">Загрузка...</div>
+                    <div class="profile-rating-container" id="rating-container">
+                        <div class="profile-rating-stars" id="profile-stars">
+                            <!-- Stars rendered by JS -->
                         </div>
-                        <img id="imagePreview" class="upload-preview hidden">
+                        <span class="profile-rating-text" id="profile-rating-text">0.0</span>
                     </div>
-                    <input type="file" id="adPhotoInput" accept="image/*" class="hidden">
                 </div>
+                <button class="theme-toggle" id="theme-toggle" title="Сменить тему">
+                    <svg id="theme-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                </button>
+            </div>
+
+            <div class="profile-section">
+                <div class="profile-section-title">Меню</div>
+                <div class="profile-menu-item" id="my-listings-btn">
+                    <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 16H4V8h16v12z"/></svg>
+                    <span>Мои объявления</span>
+                    <svg class="arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                </div>
+
+                <button class="create-listing-btn" id="create-listing-btn">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    Создать объявление
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== BOTTOM NAVIGATION ===== -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" data-page="main">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>Главная</span>
+            </div>
+            <div class="nav-item" data-page="messages" id="nav-messages">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                <span>Сообщения</span>
+                <div class="nav-badge" id="messages-badge" style="display:none">0</div>
+            </div>
+            <div class="nav-item" data-page="profile">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>Профиль</span>
+            </div>
+        </nav>
+
+        <!-- ===== LISTING DETAIL PAGE ===== -->
+        <div class="detail-page" id="detail-page">
+            <button class="detail-back-btn" id="detail-back-btn">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <div class="detail-image-container" id="detail-image-container">
+                <div class="detail-images-slider" id="detail-images-slider">
+                    <!-- Images rendered by JS -->
+                </div>
+                <div class="image-counter" id="image-counter">1 из 1</div>
+            </div>
+            <div class="detail-content">
+                <div class="detail-price" id="detail-price"></div>
+                <div class="detail-title" id="detail-title"></div>
+                <div class="detail-city" id="detail-city"></div>
+                <div class="detail-seller-info" id="detail-seller-info">
+                    <img class="detail-seller-avatar" id="detail-seller-avatar" src="" alt="">
+                    <div>
+                        <div class="detail-seller-name" id="detail-seller-name"></div>
+                        <div class="detail-seller-rating" id="detail-seller-rating"></div>
+                    </div>
+                </div>
+                <div class="detail-description" id="detail-description"></div>
+                <button class="detail-action-btn btn-message" id="detail-message-btn">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                    Написать сообщение
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== CHAT VIEW ===== -->
+        <div class="chat-view" id="chat-view">
+            <div class="chat-view-header">
+                <button class="chat-back-btn" id="chat-back-btn">
+                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </button>
+                <img class="chat-view-avatar" id="chat-view-avatar" src="" alt="">
+                <div class="chat-view-name" id="chat-view-name"></div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages rendered by JS -->
+            </div>
+            <div class="chat-input-area">
+                <input class="chat-input" id="chat-input" placeholder="Сообщение..." type="text">
+                <button class="chat-send-btn" id="chat-send-btn">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== MY LISTINGS PAGE ===== -->
+        <div class="my-listings-page" id="my-listings-page">
+            <div class="my-listings-header">
+                <button class="my-listings-back" id="my-listings-back">
+                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </button>
+                <div class="my-listings-title">Мои объявления</div>
+            </div>
+            <div class="my-listings-content" id="my-listings-content">
+                <!-- My listings rendered by JS -->
+            </div>
+        </div>
+
+        <!-- ===== CREATE LISTING MODAL ===== -->
+        <div class="modal-overlay" id="create-listing-modal">
+            <div class="modal-content">
+                <div class="modal-handle"></div>
+                <div class="modal-title">Новое объявление</div>
+
+                <div class="photo-upload-area" id="photo-upload-area">
+                    <button class="photo-add-btn" id="photo-add-btn">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    </button>
+                </div>
+                <input type="file" id="photo-input" accept="image/*" multiple style="display:none">
+
                 <div class="form-group">
-                    <label class="form-label">Цена (₽)</label>
-                    <input type="number" class="form-input" id="adPrice" required placeholder="50000">
+                    <label class="form-label">Название товара</label>
+                    <input class="form-input" id="listing-title-input" placeholder="Например: iPhone 15 Pro" type="text" maxlength="100">
                 </div>
+
                 <div class="form-group">
                     <label class="form-label">Город</label>
-                    <input type="text" class="form-input" id="adCity" required placeholder="Москва">
+                    <input class="form-input" id="listing-city-input" placeholder="Например: Москва" type="text" maxlength="50">
                 </div>
-                <button type="submit" class="submit-ad-btn">Опубликовать</button>
-            </form>
+
+                <div class="form-group">
+                    <label class="form-label">Цена (₽)</label>
+                    <input class="form-input" id="listing-price-input" placeholder="Например: 50000" type="number" min="0">
+                </div>
+
+                <button class="form-submit-btn" id="listing-submit-btn" disabled>Опубликовать</button>
+            </div>
+        </div>
+
+        <!-- ===== RATING MODAL ===== -->
+        <div class="rating-modal" id="rating-modal">
+            <div class="rating-modal-content">
+                <div class="rating-modal-title">Ваша оценка</div>
+                <div class="rating-stars-input" id="rating-stars-input">
+                    <!-- Stars rendered by JS -->
+                </div>
+                <button class="rating-confirm-btn" id="rating-confirm-btn">Подтвердить</button>
+                <button class="rating-cancel-btn" id="rating-cancel-btn">Отмена</button>
+            </div>
+        </div>
+
+        <!-- ===== SWIPE HINT ===== -->
+        <div class="swipe-hint" id="swipe-hint">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         </div>
     </div>
 
-    <!-- === НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ === -->
-    <nav class="bottom-nav">
-        <div class="nav-item active" data-page="main">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">Главная</span>
-        </div>
-        <div class="nav-item" data-page="messages">
-            <span class="nav-icon">💬</span>
-            <span class="nav-label">Сообщения</span>
-        </div>
-        <div class="nav-item" data-page="profile">
-            <span class="nav-icon">👤</span>
-            <span class="nav-label">Профиль</span>
-        </div>
-    </nav>
-
     <script>
-        // === ИНИЦИАЛИЗАЦИЯ TELEGRAM WEBAPP ===
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем приложение на весь экран
+        // ===== TELEGRAM WEB APP INIT =====
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
 
-        // === СОСТОЯНИЕ ПРИЛОЖЕНИЯ ===
-        let ads = JSON.parse(localStorage.getItem('swapka_ads')) || [];
-        let currentTheme = localStorage.getItem('swapka_theme') || 'light';
-        let userData = null;
-
-        // === DOM ЭЛЕМЕНТЫ ===
-        const pages = {
-            main: document.getElementById('mainPage'),
-            messages: document.getElementById('messagesPage'),
-            profile: document.getElementById('profilePage')
+        // ===== STATE =====
+        const state = {
+            currentUser: null,
+            listings: [],
+            myListingImages: [],
+            chats: {},
+            currentChatId: null,
+            currentListingId: null,
+            selectedRating: 0,
+            isDarkTheme: false,
+            activeCategory: 'all',
+            searchQuery: '',
+            touchStartX: 0,
+            touchCurrentX: 0,
+            isSwiping: false,
         };
-        const navItems = document.querySelectorAll('.nav-item');
-        const adsGrid = document.getElementById('adsGrid');
-        const searchInput = document.getElementById('searchInput');
-        const createAdModal = document.getElementById('createAdModal');
-        const createAdBtn = document.getElementById('createAdBtn');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const adForm = document.getElementById('adForm');
-        const photoUploadArea = document.getElementById('photoUploadArea');
-        const adPhotoInput = document.getElementById('adPhotoInput');
-        const imagePreview = document.getElementById('imagePreview');
-        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const profileNameEl = document.getElementById('profileName');
-        const profileAvatarEl = document.getElementById('profileAvatar');
 
-        // === ФУНКЦИИ ===
+        // ===== SAMPLE DATA =====
+        const sampleUsers = [
+            { id: 'u1', name: 'Александр М.', avatar: null, rating: 4.5 },
+            { id: 'u2', name: 'Екатерина К.', avatar: null, rating: 3.8 },
+            { id: 'u3', name: 'Дмитрий В.', avatar: null, rating: 5.0 },
+            { id: 'u4', name: 'Мария С.', avatar: null, rating: 4.2 },
+        ];
 
-        function init() {
-            // Получаем данные пользователя из Telegram
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                userData = tg.initDataUnsafe.user;
-            } else {
-                // Демо-данные, если открыто не в Telegram
-                userData = { first_name: 'Тимур', last_name: 'Артыков', photo_url: '' };
+        const sampleListings = [
+            {
+                id: 'l1',
+                title: 'BMW X5 2023 в идеальном состоянии',
+                price: 5500000,
+                city: 'Москва',
+                category: 'auto',
+                images: [],
+                sellerId: 'u1',
+                description: 'Продаю BMW X5 2023 года, пробег 15000 км, в идеальном состоянии. Один владелец, не бит, не крашен. Полный комплект ключей и документов.',
+            },
+            {
+                id: 'l2',
+                title: 'iPhone 15 Pro Max 256GB',
+                price: 120000,
+                city: 'Санкт-Петербург',
+                category: 'electronics',
+                images: [],
+                sellerId: 'u2',
+                description: 'iPhone 15 Pro Max, 256GB, цвет титановый чёрный. Состояние 10/10, полный комплект. На гарантии Apple до 2025 года.',
+            },
+            {
+                id: 'l3',
+                title: 'Nike Air Max 90 размер 43',
+                price: 8500,
+                city: 'Казань',
+                category: 'clothing',
+                images: [],
+                sellerId: 'u3',
+                description: 'Оригинальные Nike Air Max 90, размер 43. Новые, в коробке. Покупал для себя, но не подошёл размер.',
+            },
+            {
+                id: 'l4',
+                title: 'PlayStation 5 + 2 геймпада',
+                price: 45000,
+                city: 'Новосибирск',
+                category: 'electronics',
+                images: [],
+                sellerId: 'u4',
+                description: 'PlayStation 5 дисковая версия в комплекте 2 геймпада и 3 игры. Состояние отличное, всё работает.',
+            },
+            {
+                id: 'l5',
+                title: 'Диван-кровать IKEA угловой',
+                price: 25000,
+                city: 'Екатеринбург',
+                category: 'home',
+                images: [],
+                sellerId: 'u1',
+                description: 'Угловой диван-кровать IKEA, серого цвета. Пользовались 1 год, в хорошем состоянии. Самовывоз.',
+            },
+            {
+                id: 'l6',
+                title: 'MacBook Pro 14" M3 Pro',
+                price: 180000,
+                city: 'Москва',
+                category: 'electronics',
+                images: [],
+                sellerId: 'u2',
+                description: 'MacBook Pro 14 дюймов с чипом M3 Pro, 18GB RAM, 512GB SSD. Идеальное состояние, циклов батареи 45.',
+            },
+            {
+                id: 'l7',
+                title: 'Зимняя куртка Columbia мужская L',
+                price: 12000,
+                city: 'Ростов-на-Дону',
+                category: 'clothing',
+                images: [],
+                sellerId: 'u3',
+                description: 'Мужская зимняя куртка Columbia, размер L. Тёплая, водонепроницаемая. Носил один сезон.',
+            },
+            {
+                id: 'l8',
+                title: 'Коляска Bugaboo Fox 5',
+                price: 65000,
+                city: 'Краснодар',
+                category: 'other',
+                images: [],
+                sellerId: 'u4',
+                description: 'Коляска Bugaboo Fox 5 в отличном состоянии. Полный комплект: люлька, прогулочный блок, дождевик.',
+            },
+        ];
+
+        const sampleChats = {
+            'chat1': {
+                id: 'chat1',
+                userId: 'u1',
+                listingId: 'l1',
+                messages: [
+                    { sender: 'user', text: 'Здравствуйте! Ещё актуально?', time: '14:30' },
+                    { sender: 'seller', text: 'Да, конечно! Когда можете посмотреть?', time: '14:32' },
+                ]
+            },
+            'chat2': {
+                id: 'chat2',
+                userId: 'u3',
+                listingId: 'l3',
+                messages: [
+                    { sender: 'seller', text: 'Добрый день! Да, кроссовки ещё в наличии.', time: '10:15' },
+                ]
             }
-            updateProfileUI();
-            applyTheme(currentTheme);
-            renderAds(ads);
+        };
+
+        // ===== INITIALIZATION =====
+        function init() {
+            loadTheme();
+            loadUserData();
+            loadListings();
+            loadChats();
+            renderListings();
+            renderChats();
             setupEventListeners();
         }
 
-        function updateProfileUI() {
-            const fullName = `${userData.first_name} ${userData.last_name || ''}`.trim();
-            profileNameEl.textContent = fullName;
-            
-            if (userData.photo_url) {
-                profileAvatarEl.src = userData.photo_url;
-            } else {
-                // Генерируем аватарку с инициалами, если фото нет
-                const initial = fullName.charAt(0).toUpperCase();
-                profileAvatarEl.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23ccc" width="100" height="100"/><text fill="%23666" font-size="40" x="50" y="60" text-anchor="middle">${initial}</text></svg>`;
+        function loadTheme() {
+            const saved = localStorage.getItem('swapka-theme');
+            if (saved === 'dark') {
+                state.isDarkTheme = true;
+                document.body.classList.add('dark-theme');
+                updateThemeIcon();
             }
         }
 
-        function applyTheme(theme) {
-            if (theme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                themeToggleBtn.textContent = '☀️';
+        function loadUserData() {
+            if (tg?.initDataUnsafe?.user) {
+                const user = tg.initDataUnsafe.user;
+                state.currentUser = {
+                    id: user.id?.toString() || 'current',
+                    name: [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Пользователь',
+                    avatar: user.photo_url || null,
+                    rating: 0,
+                    ratings: JSON.parse(localStorage.getItem('swapka-my-ratings') || '[]'),
+                };
+
+                const avatarEl = document.getElementById('profile-avatar');
+                avatarEl.src = user.photo_url || generateAvatarURL(state.currentUser.name);
+                document.getElementById('profile-name').textContent = state.currentUser.name;
             } else {
-                document.documentElement.removeAttribute('data-theme');
-                themeToggleBtn.textContent = '🌙';
+                state.currentUser = {
+                    id: 'current',
+                    name: 'Пользователь',
+                    avatar: null,
+                    rating: 0,
+                    ratings: [],
+                };
+                document.getElementById('profile-avatar').src = generateAvatarURL('П');
             }
-            currentTheme = theme;
-            localStorage.setItem('swapka_theme', theme);
+            updateUserRating();
         }
 
-        function switchPage(pageName) {
-            // Скрываем все страницы
-            Object.values(pages).forEach(page => page.classList.remove('active'));
-            // Показываем нужную
-            pages[pageName].classList.add('active');
-            
-            // Обновляем активный элемент навигации
-            navItems.forEach(item => {
-                item.classList.toggle('active', item.dataset.page === pageName);
+        function generateAvatarURL(name) {
+            const colors = ['#007bff', '#34c759', '#ff9500', '#ff3b30', '#5856d6'];
+            const color = colors[name.charCodeAt(0) % colors.length];
+            const letter = name.charAt(0).toUpperCase();
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                <rect width="100" height="100" fill="${color}" rx="50"/>
+                <text x="50" y="65" font-family="Arial" font-size="40" fill="white" text-anchor="middle" font-weight="bold">${letter}</text>
+            </svg>`;
+            return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
+
+        function loadListings() {
+            const saved = localStorage.getItem('swapka-listings');
+            if (saved) {
+                state.listings = JSON.parse(saved);
+            } else {
+                state.listings = [...sampleListings];
+                saveListings();
+            }
+        }
+
+        function saveListings() {
+            localStorage.setItem('swapka-listings', JSON.stringify(state.listings));
+        }
+
+        function loadChats() {
+            const saved = localStorage.getItem('swapka-chats');
+            if (saved) {
+                state.chats = JSON.parse(saved);
+            } else {
+                state.chats = { ...sampleChats };
+                saveChats();
+            }
+        }
+
+        function saveChats() {
+            localStorage.setItem('swapka-chats', JSON.stringify(state.chats));
+        }
+
+        // ===== RENDER LISTINGS =====
+        function renderListings() {
+            const grid = document.getElementById('listings-grid');
+            let filtered = state.listings;
+
+            if (state.activeCategory !== 'all') {
+                filtered = filtered.filter(l => l.category === state.activeCategory);
+            }
+
+            if (state.searchQuery) {
+                const q = state.searchQuery.toLowerCase();
+                filtered = filtered.filter(l => l.title.toLowerCase().includes(q));
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-tertiary);">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--text-tertiary)" style="margin-bottom:12px"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <p>Ничего не найдено</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(listing => {
+                const seller = sampleUsers.find(u => u.id === listing.sellerId);
+                const sellerName = seller ? seller.name : 'Продавец';
+                const imgSrc = listing.images && listing.images.length > 0
+                    ? listing.images[0]
+                    : generateListingPlaceholder(listing.title);
+
+                return `
+                    <div class="listing-card" data-id="${listing.id}">
+                        <div class="listing-card-image">
+                            <img src="${imgSrc}" alt="${listing.title}" loading="lazy">
+                        </div>
+                        <div class="listing-card-info">
+                            <div class="listing-card-title">${escapeHtml(listing.title)}</div>
+                            <div class="listing-card-city">${escapeHtml(listing.city)}</div>
+                            <div class="listing-card-price">${formatPrice(listing.price)} ₽</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Attach click handlers
+            grid.querySelectorAll('.listing-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    openListing(card.dataset.id);
+                });
             });
         }
 
-        function renderAds(adsToRender) {
-            if (adsToRender.length === 0) {
-                adsGrid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📦</div><p>Объявлений пока нет</p></div>`;
-                return;
-            }
-            adsGrid.innerHTML = adsToRender.map(ad => `
-                <div class="ad-card">
-                    <img src="${ad.photo}" alt="${ad.title}" class="ad-image">
-                    <div class="ad-info">
-                        <div class="ad-title">${escapeHtml(ad.title)}</div>
-                        <div class="ad-city">Город</div>
-                        <div class="ad-price">${parseInt(ad.price).toLocaleString()} руб.</div>
-                    </div>
-                </div>
-            `).join('');
+        function generateListingPlaceholder(title) {
+            const colors = ['#e8f5e9', '#e3f2fd', '#fff3e0', '#fce4ec', '#f3e5f5', '#e0f7fa', '#fffde7'];
+            const color = colors[title.charCodeAt(0) % colors.length];
+            const letter = title.charAt(0).toUpperCase();
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+                <rect width="400" height="400" fill="${color}"/>
+                <text x="200" y="210" font-family="Arial" font-size="64" fill="#999" text-anchor="middle" font-weight="bold">${letter}</text>
+            </svg>`;
+            return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
-        function createAd() {
-            const title = document.getElementById('adTitle').value;
-            const price = document.getElementById('adPrice').value;
-            const city = document.getElementById('adCity').value;
-            const photo = imagePreview.src;
-
-            const newAd = {
-                id: Date.now(),
-                title,
-                price,
-                city,
-                photo,
-            };
-
-            ads.unshift(newAd); // Добавляем в начало массива
-            localStorage.setItem('swapka_ads', JSON.stringify(ads));
-            
-            renderAds(ads);
-            closeAdModal();
-            tg.showAlert('Объявление успешно создано!');
-            switchPage('main'); // Переходим на главную
-        }
-
-        function closeAdModal() {
-            createAdModal.classList.remove('active');
-            adForm.reset();
-            imagePreview.classList.add('hidden');
-            uploadPlaceholder.classList.remove('hidden');
-            photoUploadArea.classList.remove('has-image');
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         }
 
         function escapeHtml(text) {
@@ -590,60 +1801,651 @@
             return div.innerHTML;
         }
 
-        function setupEventListeners() {
-            // Навигация
-            navItems.forEach(item => {
-                item.addEventListener('click', () => switchPage(item.dataset.page));
+        // ===== OPEN LISTING DETAIL =====
+        function openListing(id) {
+            const listing = state.listings.find(l => l.id === id);
+            if (!listing) return;
+
+            state.currentListingId = id;
+            const detailPage = document.getElementById('detail-page');
+            const seller = sampleUsers.find(u => u.id === listing.sellerId);
+            const sellerName = seller ? seller.name : 'Продавец';
+
+            // Images
+            const slider = document.getElementById('detail-images-slider');
+            const images = listing.images && listing.images.length > 0 ? listing.images : [generateListingPlaceholder(listing.title)];
+            slider.innerHTML = images.map((img, i) => `
+                <div class="detail-image-slide">
+                    <img src="${img}" alt="${listing.title}">
+                </div>
+            `).join('');
+
+            document.getElementById('image-counter').textContent = `${images.length > 1 ? '1 из ' + images.length : '1'}`;
+
+            slider.addEventListener('scroll', () => {
+                const idx = Math.round(slider.scrollLeft / slider.offsetWidth) + 1;
+                document.getElementById('image-counter').textContent = images.length > 1 ? `${idx} из ${images.length}` : '1';
             });
 
-            // Поиск
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                const filteredAds = ads.filter(ad => 
-                    ad.title.toLowerCase().includes(query) || 
-                    ad.city.toLowerCase().includes(query)
-                );
-                renderAds(filteredAds);
-            });
+            // Info
+            document.getElementById('detail-price').textContent = formatPrice(listing.price) + ' ₽';
+            document.getElementById('detail-title').textContent = listing.title;
+            document.getElementById('detail-city').textContent = '📍 ' + listing.city;
+            document.getElementById('detail-seller-name').textContent = sellerName;
+            document.getElementById('detail-seller-rating').textContent = seller ? `⭐ ${seller.rating}` : '⭐ 0.0';
 
-            // Модальное окно
-            createAdBtn.addEventListener('click', () => createAdModal.classList.add('active'));
-            closeModalBtn.addEventListener('click', closeAdModal);
-            createAdModal.addEventListener('click', (e) => {
-                if (e.target === createAdModal) closeAdModal();
-            });
+            const avatarSrc = seller?.avatar || generateAvatarURL(sellerName);
+            document.getElementById('detail-seller-avatar').src = avatarSrc;
 
-            // Загрузка фото
-            photoUploadArea.addEventListener('click', () => adPhotoInput.click());
-            adPhotoInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        imagePreview.src = e.target.result;
-                        imagePreview.classList.remove('hidden');
-                        uploadPlaceholder.classList.add('hidden');
-                        photoUploadArea.classList.add('has-image');
-                    };
-                    reader.readAsDataURL(file);
+            document.getElementById('detail-description').textContent = listing.description || 'Без описания';
+
+            // Message button
+            const msgBtn = document.getElementById('detail-message-btn');
+            msgBtn.onclick = () => {
+                openChatWithSeller(listing.sellerId, listing.id);
+            };
+
+            // Show page
+            detailPage.classList.add('open');
+            detailPage.classList.remove('closing');
+            document.body.style.overflow = 'hidden';
+
+            // Setup swipe
+            setupSwipeListener(detailPage);
+        }
+
+        function closeListing() {
+            const detailPage = document.getElementById('detail-page');
+            detailPage.classList.add('closing');
+            detailPage.classList.remove('open');
+
+            setTimeout(() => {
+                document.body.style.overflow = '';
+                state.currentListingId = null;
+            }, 300);
+        }
+
+        // ===== SWIPE TO CLOSE =====
+        function setupSwipeListener(element) {
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+            const threshold = 80;
+
+            element.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+                element.style.transition = 'none';
+            }, { passive: true });
+
+            element.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentX = e.touches[0].clientX;
+                const diff = currentX - startX;
+
+                if (diff > 0 && diff < 200) {
+                    element.style.transform = `translateX(${diff}px)`;
+                    const opacity = Math.min(diff / 200, 0.5);
+                    document.getElementById('swipe-hint').classList.add('visible');
                 }
-            });
+            }, { passive: true });
 
-            // Форма создания объявления
-            adForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                createAd();
-            });
+            element.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                const diff = currentX - startX;
+                element.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                document.getElementById('swipe-hint').classList.remove('visible');
 
-            // Переключение темы
-            themeToggleBtn.addEventListener('click', () => {
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                applyTheme(newTheme);
+                if (diff > threshold) {
+                    closeListing();
+                } else {
+                    element.style.transform = 'translateX(0)';
+                }
+                currentX = 0;
             });
         }
 
-        // Запуск приложения
-        init();
+        // ===== CHAT SYSTEM =====
+        function openChatWithSeller(sellerId, listingId) {
+            // Find or create chat
+            let chatId = Object.keys(state.chats).find(
+                key => state.chats[key].userId === sellerId && state.chats[key].listingId === listingId
+            );
+
+            if (!chatId) {
+                chatId = 'chat_' + Date.now();
+                const seller = sampleUsers.find(u => u.id === sellerId);
+                state.chats[chatId] = {
+                    id: chatId,
+                    userId: sellerId,
+                    listingId: listingId,
+                    messages: [
+                        { sender: 'system', text: `Чат по объявлению "${state.listings.find(l => l.id === listingId)?.title}"`, time: getCurrentTime() }
+                    ]
+                };
+                saveChats();
+            }
+
+            // Close detail page
+            closeListing();
+
+            setTimeout(() => {
+                openChat(chatId);
+            }, 350);
+        }
+
+        function openChat(chatId) {
+            const chat = state.chats[chatId];
+            if (!chat) return;
+
+            state.currentChatId = chatId;
+            const chatView = document.getElementById('chat-view');
+            const seller = sampleUsers.find(u => u.id === chat.userId);
+            const sellerName = seller ? seller.name : 'Продавец';
+
+            document.getElementById('chat-view-name').textContent = sellerName;
+            const avatarSrc = seller?.avatar || generateAvatarURL(sellerName);
+            document.getElementById('chat-view-avatar').src = avatarSrc;
+
+            renderMessages(chat);
+
+            chatView.classList.add('open');
+            chatView.classList.remove('closing');
+            document.body.style.overflow = 'hidden';
+
+            // Scroll to bottom
+            setTimeout(() => {
+                const msgs = document.getElementById('chat-messages');
+                msgs.scrollTop = msgs.scrollHeight;
+            }, 100);
+        }
+
+        function renderMessages(chat) {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = chat.messages.map(msg => {
+                if (msg.sender === 'system') {
+                    return `<div style="text-align:center; color:var(--text-tertiary); font-size:12px; padding:8px;">${escapeHtml(msg.text)}</div>`;
+                }
+                const isSent = msg.sender === 'user';
+                return `
+                    <div class="message ${isSent ? 'sent' : 'received'}">
+                        ${escapeHtml(msg.text)}
+                        <div class="message-time">${msg.time}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function closeChat() {
+            const chatView = document.getElementById('chat-view');
+            chatView.classList.add('closing');
+            chatView.classList.remove('open');
+
+            setTimeout(() => {
+                document.body.style.overflow = '';
+                state.currentChatId = null;
+            }, 300);
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text || !state.currentChatId) return;
+
+            const chat = state.chats[state.currentChatId];
+            chat.messages.push({
+                sender: 'user',
+                text: text,
+                time: getCurrentTime()
+            });
+
+            saveChats();
+            renderMessages(chat);
+            input.value = '';
+
+            const msgs = document.getElementById('chat-messages');
+            msgs.scrollTop = msgs.scrollHeight;
+
+            // Simulate reply
+            setTimeout(() => {
+                const replies = [
+                    'Спасибо за сообщение!',
+                    'Хорошо, договорились!',
+                    'Можете подъехать посмотреть?',
+                    'Да, товар ещё в наличии.',
+                    'Отправлю вам фото подробнее.',
+                    'Цена ещё актуальна.',
+                ];
+                const reply = replies[Math.floor(Math.random() * replies.length)];
+                chat.messages.push({
+                    sender: 'seller',
+                    text: reply,
+                    time: getCurrentTime()
+                });
+                saveChats();
+                if (state.currentChatId) {
+                    renderMessages(chat);
+                    msgs.scrollTop = msgs.scrollHeight;
+                }
+                renderChats();
+                updateMessagesBadge();
+            }, 1500);
+
+            renderChats();
+            updateMessagesBadge();
+        }
+
+        function renderChats() {
+            const list = document.getElementById('chat-list');
+            const chatEntries = Object.values(state.chats);
+
+            if (chatEntries.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-chats">
+                        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                        <p>У вас пока нет сообщений.<br>Напишите продавцу из объявления!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = chatEntries.map(chat => {
+                const seller = sampleUsers.find(u => u.id === chat.userId);
+                const sellerName = seller ? seller.name : 'Продавец';
+                const avatarSrc = seller?.avatar || generateAvatarURL(sellerName);
+                const lastMsg = chat.messages[chat.messages.length - 1];
+                const lastText = lastMsg ? (lastMsg.text.length > 40 ? lastMsg.text.substring(0, 40) + '...' : lastMsg.text) : '';
+                const lastTime = lastMsg ? lastMsg.time : '';
+
+                return `
+                    <div class="chat-item" data-chat-id="${chat.id}">
+                        <img class="chat-avatar" src="${avatarSrc}" alt="${sellerName}">
+                        <div class="chat-info">
+                            <div class="chat-name">${escapeHtml(sellerName)}</div>
+                            <div class="chat-last-message">${escapeHtml(lastText)}</div>
+                        </div>
+                        <div class="chat-meta">
+                            <div class="chat-time">${lastTime}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            list.querySelectorAll('.chat-item').forEach(item => {
+                item.addEventListener('click', () => openChat(item.dataset.chatId));
+            });
+        }
+
+        function updateMessagesBadge() {
+            const badge = document.getElementById('messages-badge');
+            const unread = 0; // Could track unread count
+            if (unread > 0) {
+                badge.textContent = unread;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        }
+
+        // ===== PROFILE =====
+        function updateUserRating() {
+            if (!state.currentUser?.ratings?.length) {
+                state.currentUser.rating = 0;
+            } else {
+                const sum = state.currentUser.ratings.reduce((a, b) => a + b, 0);
+                state.currentUser.rating = (sum / state.currentUser.ratings.length);
+            }
+
+            const ratingText = document.getElementById('profile-rating-text');
+            ratingText.textContent = state.currentUser.rating.toFixed(1);
+
+            renderStars('profile-stars', state.currentUser.rating);
+        }
+
+        function renderStars(containerId, rating, editable = false) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                const filled = i <= Math.round(rating);
+                const color = filled ? 'var(--star-filled)' : 'var(--star-empty)';
+                if (editable) {
+                    html += `<button class="rating-star-btn" data-value="${i}">
+                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="${color}"/></svg>
+                    </button>`;
+                } else {
+                    html += `<svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="${color}"/></svg>`;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        function showRatingModal() {
+            const modal = document.getElementById('rating-modal');
+            state.selectedRating = 0;
+            renderStars('rating-stars-input', 0, true);
+            modal.classList.add('open');
+
+            // Star click handlers
+            const stars = document.querySelectorAll('#rating-stars-input .rating-star-btn');
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    state.selectedRating = parseInt(star.dataset.value);
+                    renderStars('rating-stars-input', state.selectedRating, true);
+                });
+            });
+        }
+
+        function hideRatingModal() {
+            document.getElementById('rating-modal').classList.remove('open');
+        }
+
+        function confirmRating() {
+            if (state.selectedRating > 0 && state.currentUser) {
+                if (!state.currentUser.ratings) state.currentUser.ratings = [];
+                state.currentUser.ratings.push(state.selectedRating);
+                localStorage.setItem('swapka-my-ratings', JSON.stringify(state.currentUser.ratings));
+                updateUserRating();
+            }
+            hideRatingModal();
+        }
+
+        // ===== MY LISTINGS =====
+        function openMyListings() {
+            const page = document.getElementById('my-listings-page');
+            const content = document.getElementById('my-listings-content');
+
+            const myListings = state.listings.filter(l => l.sellerId === 'current');
+
+            if (myListings.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-listings">
+                        <p>У вас пока нет объявлений.<br>Создайте первое!</p>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = myListings.map(listing => {
+                    const imgSrc = listing.images && listing.images.length > 0
+                        ? listing.images[0]
+                        : generateListingPlaceholder(listing.title);
+
+                    return `
+                        <div class="my-listing-item" data-id="${listing.id}">
+                            <img class="my-listing-thumb" src="${imgSrc}" alt="${listing.title}">
+                            <div class="my-listing-info">
+                                <div class="my-listing-title">${escapeHtml(listing.title)}</div>
+                                <div class="my-listing-price">${formatPrice(listing.price)} ₽</div>
+                                <div class="my-listing-city">${escapeHtml(listing.city)}</div>
+                            </div>
+                            <button class="my-listing-delete" data-id="${listing.id}">
+                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                // Delete handlers
+                content.querySelectorAll('.my-listing-delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = btn.dataset.id;
+                        state.listings = state.listings.filter(l => l.id !== id);
+                        saveListings();
+                        renderListings();
+                        openMyListings(); // Re-render
+                    });
+                });
+            }
+
+            page.classList.add('open');
+        }
+
+        function closeMyListings() {
+            document.getElementById('my-listings-page').classList.remove('open');
+        }
+
+        // ===== CREATE LISTING =====
+        function openCreateListing() {
+            state.myListingImages = [];
+            updatePhotoUploadArea();
+            document.getElementById('listing-title-input').value = '';
+            document.getElementById('listing-city-input').value = '';
+            document.getElementById('listing-price-input').value = '';
+            document.getElementById('listing-submit-btn').disabled = true;
+            document.getElementById('create-listing-modal').classList.add('open');
+        }
+
+        function closeCreateListing() {
+            document.getElementById('create-listing-modal').classList.remove('open');
+            state.myListingImages = [];
+        }
+
+        function updatePhotoUploadArea() {
+            const area = document.getElementById('photo-upload-area');
+            const addBtn = document.getElementById('photo-add-btn');
+
+            // Remove existing thumbs (not the add button)
+            area.querySelectorAll('.photo-thumb').forEach(t => t.remove());
+            area.querySelectorAll('.photo-remove-btn').forEach(b => b.remove());
+
+            // Add existing image thumbs
+            state.myListingImages.forEach((img, idx) => {
+                const thumb = document.createElement('img');
+                thumb.className = 'photo-thumb';
+                thumb.src = img;
+                thumb.style.position = 'relative';
+                area.insertBefore(thumb, addBtn);
+
+                // Add remove button overlay
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'photo-remove-btn';
+                removeBtn.style.cssText = `
+                    position:absolute; top:-4px; right:-4px; width:20px; height:20px;
+                    border-radius:50%; background:#ff3b30; border:none; color:white;
+                    font-size:12px; cursor:pointer; display:flex; align-items:center;
+                    justify-content:center; z-index:1;
+                `;
+                removeBtn.textContent = '×';
+                removeBtn.style.position = 'relative';
+                removeBtn.style.marginLeft = '-88px';
+                removeBtn.style.marginTop = '-72px';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    state.myListingImages.splice(idx, 1);
+                    updatePhotoUploadArea();
+                };
+                area.insertBefore(removeBtn, addBtn);
+            });
+
+            // Disable add button if max reached
+            if (state.myListingImages.length >= 10) {
+                addBtn.classList.add('disabled');
+            } else {
+                addBtn.classList.remove('disabled');
+            }
+
+            // Update submit button
+            const title = document.getElementById('listing-title-input').value.trim();
+            const city = document.getElementById('listing-city-input').value.trim();
+            const price = document.getElementById('listing-price-input').value.trim();
+            const hasPhotos = state.myListingImages.length >= 1;
+            document.getElementById('listing-submit-btn').disabled = !(title && city && price && hasPhotos);
+        }
+
+        function addPhotos(files) {
+            const remaining = 10 - state.myListingImages.length;
+            const toAdd = Array.from(files).slice(0, remaining);
+
+            toAdd.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    state.myListingImages.push(e.target.result);
+                    updatePhotoUploadArea();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function submitListing() {
+            const title = document.getElementById('listing-title-input').value.trim();
+            const city = document.getElementById('listing-city-input').value.trim();
+            const price = parseInt(document.getElementById('listing-price-input').value);
+
+            if (!title || !city || !price || state.myListingImages.length < 1) return;
+
+            const newListing = {
+                id: 'l_' + Date.now(),
+                title: title,
+                price: price,
+                city: city,
+                category: 'other',
+                images: [...state.myListingImages],
+                sellerId: 'current',
+                description: '',
+            };
+
+            state.listings.unshift(newListing);
+            saveListings();
+            renderListings();
+            closeCreateListing();
+        }
+
+        // ===== THEME =====
+        function toggleTheme() {
+            state.isDarkTheme = !state.isDarkTheme;
+            document.body.classList.toggle('dark-theme', state.isDarkTheme);
+            localStorage.setItem('swapka-theme', state.isDarkTheme ? 'dark' : 'light');
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = document.getElementById('theme-icon');
+            if (state.isDarkTheme) {
+                icon.innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+            } else {
+                icon.innerHTML = '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
+            }
+        }
+
+        // ===== NAVIGATION =====
+        function switchPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById('page-' + pageName).classList.add('active');
+            document.querySelector(`.nav-item[data-page="${pageName}"]`).classList.add('active');
+
+            if (pageName === 'messages') {
+                renderChats();
+            }
+        }
+
+        // ===== EVENT LISTENERS =====
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => switchPage(item.dataset.page));
+            });
+
+            // Search
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                state.searchQuery = e.target.value;
+                renderListings();
+            });
+
+            // Categories
+            document.getElementById('categories-row').addEventListener('click', (e) => {
+                if (e.target.classList.contains('category-chip')) {
+                    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+                    e.target.classList.add('active');
+                    state.activeCategory = e.target.dataset.category;
+                    renderListings();
+                }
+            });
+
+            // Detail page back button
+            document.getElementById('detail-back-btn').addEventListener('click', closeListing);
+
+            // Chat back button
+            document.getElementById('chat-back-btn').addEventListener('click', closeChat);
+
+            // Chat send
+            document.getElementById('chat-send-btn').addEventListener('click', sendMessage);
+            document.getElementById('chat-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+
+            // My listings
+            document.getElementById('my-listings-btn').addEventListener('click', openMyListings);
+            document.getElementById('my-listings-back').addEventListener('click', closeMyListings);
+
+            // Create listing
+            document.getElementById('create-listing-btn').addEventListener('click', openCreateListing);
+
+            // Close modal on overlay click
+            document.getElementById('create-listing-modal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeCreateListing();
+            });
+
+            // Photo upload
+            document.getElementById('photo-add-btn').addEventListener('click', () => {
+                document.getElementById('photo-input').click();
+            });
+
+            document.getElementById('photo-input').addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    addPhotos(e.target.files);
+                }
+                e.target.value = '';
+            });
+
+            // Form inputs validation
+            ['listing-title-input', 'listing-city-input', 'listing-price-input'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updatePhotoUploadArea);
+            });
+
+            // Submit listing
+            document.getElementById('listing-submit-btn').addEventListener('click', submitListing);
+
+            // Theme toggle
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+            // Rating
+            document.getElementById('rating-container').addEventListener('click', showRatingModal);
+            document.getElementById('rating-confirm-btn').addEventListener('click', confirmRating);
+            document.getElementById('rating-cancel-btn').addEventListener('click', hideRatingModal);
+            document.getElementById('rating-modal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) hideRatingModal();
+            });
+
+            // Telegram back button
+            if (tg) {
+                tg.BackButton.onClick(() => {
+                    const detailPage = document.getElementById('detail-page');
+                    const chatView = document.getElementById('chat-view');
+                    const myListingsPage = document.getElementById('my-listings-page');
+
+                    if (detailPage.classList.contains('open')) {
+                        closeListing();
+                    } else if (chatView.classList.contains('open')) {
+                        closeChat();
+                    } else if (myListingsPage.classList.contains('open')) {
+                        closeMyListings();
+                    }
+                });
+            }
+        }
+
+        // ===== START APP =====
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
+
