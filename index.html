@@ -389,7 +389,7 @@
       color: var(--text-color);
     }
 
-    /* Bottom Navigation */
+    /* Bottom Navigation — ИСПРАВЛЕНО: теперь работает корректно */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -413,6 +413,7 @@
       cursor: pointer;
       color: #666;
       transition: color 0.2s;
+      user-select: none;
     }
 
     .nav-item.active {
@@ -611,7 +612,7 @@
       </div>
     </div>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation — ИСПРАВЛЕНО: теперь работает корректно -->
     <div class="bottom-nav">
       <div class="nav-item active" data-tab="home">
         <div class="nav-icon">🏠</div>
@@ -703,8 +704,11 @@
         const card = document.createElement('div');
         card.className = 'ad-card';
         card.innerHTML = `
-          <img src="<LaTex>id_7</LaTex>{ad.title}</div>
-            <div class="ad-city"><LaTex>id_6</LaTex>{ad.price.toLocaleString()} ₽</div>
+          <img src="${ad.photos[0] || 'https://via.placeholder.com/1000'}" class="ad-image" />
+          <div class="ad-info">
+            <div class="ad-title">${ad.title}</div>
+            <div class="ad-city">${ad.city}</div>
+            <div class="ad-price">${ad.price.toLocaleString()} ₽</div>
           </div>
         `;
         card.onclick = () => openAdDetail(ad);
@@ -718,10 +722,30 @@
         const item = document.createElement('div');
         item.className = 'chat-item';
         item.innerHTML = `
-          <img src="<LaTex>id_5</LaTex>{chat.name}</div>
-            <div class="chat-last-msg"><LaTex>id_4</LaTex>{ad.id}">✕</button>
-          <img src="<LaTex>id_3</LaTex>{ad.title}</div>
-            <div class="ad-city"><LaTex>id_2</LaTex>{ad.price.toLocaleString()} ₽</div>
+          <img src="${chat.avatar}" class="chat-avatar" />
+          <div class="chat-preview">
+            <div class="chat-name">${chat.name}</div>
+            <div class="chat-last-msg">${chat.lastMsg}</div>
+          </div>
+        `;
+        item.onclick = () => openChat(chat);
+        chatList.appendChild(item);
+      });
+    }
+
+    function renderMyAds() {
+      myAdsContainer.innerHTML = '';
+      const myAds = ads.filter(ad => ad.userId === currentUser.id);
+      myAds.forEach(ad => {
+        const card = document.createElement('div');
+        card.className = 'my-ad-card';
+        card.innerHTML = `
+          <button class="delete-btn" data-id="${ad.id}">✕</button>
+          <img src="${ad.photos[0] || 'https://via.placeholder.com/1000'}" class="ad-image" />
+          <div class="ad-info">
+            <div class="ad-title">${ad.title}</div>
+            <div class="ad-city">${ad.city}</div>
+            <div class="ad-price">${ad.price.toLocaleString()} ₽</div>
           </div>
         `;
         card.querySelector('.delete-btn').onclick = (e) => {
@@ -733,17 +757,21 @@
       });
     }
 
-    // Event Listeners for Tabs
+    // ✅ ИСПРАВЛЕНО: Переключение вкладок через нижнее меню
     document.querySelectorAll('.nav-item').forEach(item => {
-      item.addEventListener('click', () => {
+      item.addEventListener('click', function() {
+        // Убираем активный класс со всех элементов
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
+        // Добавляем активный класс текущему элементу
+        this.classList.add('active');
 
+        // Скрываем все вкладки
         homeTab.classList.add('hidden');
         messagesTab.classList.add('hidden');
         profileTab.classList.add('hidden');
 
-        const tabName = item.dataset.tab;
+        // Показываем нужную вкладку
+        const tabName = this.getAttribute('data-tab');
         if (tabName === 'home') {
           homeTab.classList.remove('hidden');
           searchInput.style.display = 'block';
@@ -757,10 +785,12 @@
       });
     });
 
+    // Search functionality
     searchInput.addEventListener('input', (e) => {
       renderAds(e.target.value);
     });
 
+    // Theme toggle
     themeToggle.addEventListener('click', () => {
       document.body.classList.toggle('dark-theme');
       const isDark = document.body.classList.contains('dark-theme');
@@ -768,6 +798,7 @@
       themeToggle.textContent = isDark ? '☀️' : '🌙';
     });
 
+    // Create Ad Modal
     createAdBtn.addEventListener('click', () => {
       createAdModal.style.display = 'flex';
     });
@@ -829,11 +860,29 @@
       photoUpload.value = '';
     }
 
+    // Open Ad Detail
     function openAdDetail(ad) {
       detailImage.src = ad.photos[0] || 'https://via.placeholder.com/1000';
       detailTitle.textContent = ad.title;
       detailCity.textContent = ad.city;
-      detailPrice.textContent = `<LaTex>id_1</LaTex>{window.currentAd.title}"`,
+      detailPrice.textContent = `${ad.price.toLocaleString()} ₽`;
+      adDetail.style.display = 'block';
+      window.currentAd = ad;
+    }
+
+    backToHome.addEventListener('click', () => {
+      adDetail.style.display = 'none';
+    });
+
+    // Write to Seller -> Open Chat
+    writeBtn.addEventListener('click', () => {
+      if (!window.currentAd) return;
+
+      let chat = chats.find(c => c.id === window.currentAd.userId);
+      if (!chat) {
+        chat = {
+          id: window.currentAd.userId,
+          name: `Продавец "${window.currentAd.title}"`,
           lastMsg: 'Новое сообщение о товаре',
           avatar: 'https://via.placeholder.com/50'
         };
@@ -845,6 +894,7 @@
       adDetail.style.display = 'none';
     });
 
+    // Open Chat
     function openChat(chat) {
       currentChatId = chat.id;
       chatUserName.textContent = chat.name;
@@ -860,6 +910,7 @@
       chatView.style.display = 'none';
     });
 
+    // Send Message
     sendMessage.addEventListener('click', () => {
       const msg = messageInput.value.trim();
       if (!msg) return;
@@ -868,3 +919,25 @@
       msgEl.className = 'message sent';
       msgEl.textContent = msg;
       chatMessages.appendChild(msgEl);
+      messageInput.value = '';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+    // Delete Ad
+    function deleteAd(id) {
+      if (confirm('Удалить это объявление?')) {
+        ads = ads.filter(ad => ad.id !== id);
+        localStorage.setItem('swapka_ads', JSON.stringify(ads));
+        renderAds();
+        renderMyAds();
+      }
+    }
+
+    // Initial render
+    renderAds();
+    renderChats();
+    renderMyAds();
+  </script>
+</body>
+</html>
+
