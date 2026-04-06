@@ -2,286 +2,321 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Marketplace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swapka</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
         :root {
-            --bg-color: #ffffff;
-            --text-color: #000000;
+            --primary-bg: #fff;
             --secondary-bg: #f5f5f5;
-            --card-bg: #ffffff;
-            --border-color: #e0e0e0;
-            --button-bg: #3390ec;
-            --button-text: #ffffff;
-            --search-bg: #f0f0f0;
-            --nav-active: #3390ec;
-            --nav-inactive: #999999;
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #1c1c1e;
-            --text-color: #ffffff;
-            --secondary-bg: #2c2c2e;
-            --card-bg: #2c2c2e;
-            --border-color: #3a3a3c;
-            --button-bg: #3390ec;
-            --button-text: #ffffff;
-            --search-bg: #3a3a3c;
-            --nav-active: #3390ec;
-            --nav-inactive: #8e8e93;
+            --accent-pink: #E08E8E; /* Цвет из макета */
+            --accent-yellow: #F5C56B; /* Цвет поиска */
+            --text-color: #000;
+            --header-gradient: linear-gradient(90deg, #8857ff, #e05288);
+            --btn-create-gradient: linear-gradient(90deg, #f5a66b, #e06b6b);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-bg);
             color: var(--text-color);
-            padding-bottom: 80px;
-            transition: background-color 0.3s ease, color 0.3s ease;
             overflow-x: hidden;
         }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 10px;
+        /* --- Header --- */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--primary-bg);
+            z-index: 100;
+            transition: transform 0.3s ease;
+            padding-bottom: 10px;
         }
 
-        /* === SEARCH BAR === */
-        .search-container {
-            position: sticky;
-            top: 0;
-            background-color: var(--bg-color);
-            padding: 10px;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .logo {
+            background: var(--header-gradient);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .search-bar {
+            padding: 0 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .search-input {
-            width: 100%;
-            padding: 12px 20px;
+            flex-grow: 1;
+            background-color: var(--accent-yellow);
             border: none;
-            border-radius: 25px;
-            background-color: var(--search-bg);
-            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 12px;
             font-size: 16px;
             outline: none;
-            transition: background-color 0.3s;
         }
 
-        .search-input::placeholder {
-            color: #999;
+        .heart-icon {
+            color: #E06B6B;
+            font-size: 24px;
         }
 
-        /* === ADS GRID === */
+        .filters {
+            padding: 10px 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* --- Scroll to Top Button --- */
+        #scrollTopBtn {
+            position: fixed;
+            top: 50px; /* Ниже места где был хедер */
+            right: 15px;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 90;
+            cursor: pointer;
+        }
+
+        /* --- Main Content Area --- */
+        .page {
+            display: none;
+            padding-top: 130px; /* Отступ под хедер */
+            padding-bottom: 80px; /* Отступ под нижнее меню */
+            min-height: 100vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* --- Grid Layout --- */
         .ads-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             padding: 10px;
         }
 
         .ad-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
+            background: white;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
-        }
-
-        .ad-card:active {
-            transform: scale(0.98);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .ad-image {
             width: 100%;
             height: 150px;
+            background-color: var(--accent-pink);
             object-fit: cover;
-            background-color: var(--secondary-bg);
+        }
+        
+        .ad-placeholder {
+            width: 100%;
+            height: 150px;
+            background-color: var(--accent-pink);
+            opacity: 0.6;
         }
 
         .ad-info {
-            padding: 10px;
+            padding: 8px;
         }
 
         .ad-title {
+            font-weight: bold;
             font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--text-color);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .ad-price {
+            font-size: 13px;
+            color: #555;
         }
 
         .ad-city {
             font-size: 12px;
-            color: #999;
-            margin-bottom: 5px;
+            color: #888;
         }
 
-        .ad-price {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--button-bg);
+        /* --- Messages Tab --- */
+        .messages-list {
+            padding: 10px;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-            grid-column: 1 / -1;
-        }
-
-        .empty-state-icon {
-            font-size: 48px;
+        .message-item {
+            background: #D3E3C6; /* Зеленый оттенок из макета */
+            padding: 15px;
+            border-radius: 15px;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .message-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: #eee;
+            padding: 10px;
+            border-radius: 15px;
         }
 
-        /* === BOTTOM NAVIGATION === */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ccc;
+            object-fit: cover;
+        }
+
+        .msg-info {
+            flex-grow: 1;
+        }
+
+        .msg-name {
+            font-weight: bold;
+        }
+
+        .msg-preview {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .msg-badge {
+            background: red;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+        }
+
+        /* --- Profile Tab --- */
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-bottom: 10px;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .rating {
+            color: #FFD700;
+            margin: 5px 0 15px 0;
+        }
+
+        .create-btn {
+            background: var(--btn-create-gradient);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        /* --- Bottom Navigation --- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
-            right: 0;
-            background-color: var(--card-bg);
-            border-top: 1px solid var(--border-color);
+            width: 100%;
+            background: white;
             display: flex;
             justify-content: space-around;
-            padding: 8px 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+            border-radius: 20px 20px 0 0;
         }
 
         .nav-item {
-            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 5px;
+            font-size: 10px;
+            color: #888;
             cursor: pointer;
-            color: var(--nav-inactive);
-            transition: color 0.2s, transform 0.1s;
         }
 
         .nav-item.active {
-            color: var(--nav-active);
-        }
-
-        .nav-item:active {
-            transform: scale(0.95);
+            color: var(--primary-bg); /* Цвет активной иконки будет меняться JS-ом */
+            color: #5754A4;
         }
 
         .nav-icon {
-            font-size: 24px;
-            margin-bottom: 3px;
-        }
-
-        .nav-label {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        /* === PROFILE PAGE === */
-        .profile-page {
-            display: none;
-            padding: 20px;
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-            justify-content: space-between;
-        }
-
-        .profile-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .profile-avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            background-color: var(--secondary-bg);
-            border: 2px solid var(--border-color);
-        }
-
-        .profile-details h2 {
             font-size: 20px;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
 
-        .profile-stats {
-            font-size: 14px;
-            color: #999;
-        }
-
-        .theme-toggle {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 50%;
-            transition: background-color 0.2s;
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--secondary-bg);
-        }
-
-        .menu-list {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .menu-item {
-            padding: 18px 20px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-
-        .menu-item:active {
-            background-color: var(--secondary-bg);
-        }
-
-        /* === CREATE AD MODAL === */
+        /* --- Create Ad Modal --- */
         .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 2000;
-            align-items: flex-end;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
             justify-content: center;
+            align-items: flex-end;
         }
 
         .modal.active {
@@ -289,19 +324,18 @@
         }
 
         .modal-content {
-            background-color: var(--bg-color);
+            background: white;
             width: 100%;
-            max-width: 600px;
             border-radius: 20px 20px 0 0;
             padding: 20px;
             max-height: 90vh;
             overflow-y: auto;
-            animation: slideUp 0.3s ease-out;
+            animation: slideUp 0.3s ease;
         }
 
         @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
 
         .modal-header {
@@ -311,490 +345,549 @@
             margin-bottom: 20px;
         }
 
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 28px;
+        .close-modal {
+            font-size: 24px;
             cursor: pointer;
-            color: var(--text-color);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background-color 0.2s;
-        }
-
-        .close-btn:hover {
-            background-color: var(--secondary-bg);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
-        .form-label {
+        .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
+            font-weight: bold;
             font-size: 14px;
-            font-weight: 500;
         }
 
-        .form-input {
+        .form-group input, .form-group textarea {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .form-input:focus {
-            border-color: var(--button-bg);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
         }
 
         .photo-upload {
-            border: 2px dashed var(--border-color);
-            border-radius: 12px;
-            padding: 30px;
+            border: 2px dashed #ccc;
+            padding: 20px;
             text-align: center;
-            cursor: pointer;
-            transition: border-color 0.2s, background-color 0.2s;
-        }
-
-        .photo-upload:hover {
-            border-color: var(--button-bg);
-            background-color: var(--secondary-bg);
-        }
-
-        .photo-upload.has-image {
-            border-style: solid;
-            padding: 10px;
-        }
-
-        .upload-preview {
-            max-width: 100%;
-            max-height: 200px;
             border-radius: 8px;
-            object-fit: cover;
+            cursor: pointer;
         }
 
-        .upload-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
+        .preview-images {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .preview-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
         }
 
         .submit-btn {
             width: 100%;
-            padding: 16px;
-            background-color: var(--button-bg);
-            color: var(--button-text);
+            background: var(--header-gradient);
+            color: white;
             border: none;
-            border-radius: 12px;
+            padding: 15px;
+            border-radius: 10px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: bold;
             cursor: pointer;
-            transition: opacity 0.2s;
         }
 
-        .submit-btn:active {
-            opacity: 0.8;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .page {
+        /* --- Detail Page --- */
+        .detail-page {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 150;
+            overflow-y: auto;
         }
 
-        .page.active {
+        .detail-page.active {
             display: block;
         }
 
-        /* === MESSAGES PAGE (Placeholder) === */
-        .messages-page {
-            display: none;
-            padding: 20px;
-            text-align: center;
-            color: #999;
+        .detail-header {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
         }
 
-        .messages-icon {
-            font-size: 64px;
-            margin-bottom: 10px;
+        .back-btn {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 15px;
         }
+
+        .detail-logo {
+            margin: 0 auto;
+            background: var(--header-gradient);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .detail-image-container {
+            width: 100%;
+            height: 300px;
+            background: var(--accent-pink);
+            margin-bottom: 15px;
+        }
+        
+        .detail-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-content {
+            padding: 0 15px;
+        }
+
+        .detail-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .detail-price {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .detail-city {
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .detail-desc-box {
+            background: #E0A66B;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 100px;
+        }
+
+        /* --- Toast Notification --- */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 300;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+
     </style>
 </head>
 <body>
-    <!-- MAIN PAGE -->
-    <div id="mainPage" class="page active">
-        <div class="search-container">
-            <input type="text" class="search-input" id="searchInput" placeholder="Поиск...">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Объявление успешно создано!</div>
+
+    <!-- Main Header (Only visible on Home tab) -->
+    <div id="mainHeader" class="header">
+        <div class="logo-container">
+            <div class="logo">Swapka</div>
         </div>
-        
-        <div class="ads-grid" id="adsGrid">
-            <div class="empty-state">
-                <div class="empty-state-icon">📦</div>
-                <div>Пока нет объявлений</div>
-                <div style="font-size: 14px; margin-top: 5px;">Создайте первое объявление!</div>
-            </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="Поиск">
+            <span class="heart-icon">♥</span>
+        </div>
+        <div class="filters">
+            <div class="filter-btn">Категория</div>
+            <div class="filter-btn">Город</div>
         </div>
     </div>
 
-    <!-- MESSAGES PAGE -->
-    <div id="messagesPage" class="messages-page">
-        <div class="messages-icon">💬</div>
-        <h3>Сообщения</h3>
-        <p>Здесь будут ваши чаты с продавцами</p>
+    <!-- Scroll to Top Button -->
+    <div id="scrollTopBtn">↑</div>
+
+    <!-- Pages -->
+    
+    <!-- 1. Home Page -->
+    <div id="homePage" class="page active">
+        <div class="ads-grid" id="homeGrid">
+            <!-- Items will be injected here -->
+        </div>
     </div>
 
-    <!-- PROFILE PAGE -->
-    <div id="profilePage" class="profile-page">
-        <div class="profile-header">
-            <div class="profile-info">
-                <img src="" alt="Avatar" class="profile-avatar" id="profileAvatar">
-                <div class="profile-details">
-                    <h2 id="profileName">Загрузка...</h2>
-                    <div class="profile-stats">
-                        <div>Рейтинг: <span id="userRating">4/5</span></div>
-                        <div>Подписчики: <span id="userSubscribers">67</span></div>
-                    </div>
+    <!-- 2. Messages Page -->
+    <div id="messagesPage" class="page">
+        <div class="messages-list">
+            <div class="message-top">
+                <img src="https://via.placeholder.com/40" class="avatar" alt="User">
+                <div class="msg-info">
+                    <div class="msg-name">Продавец 1</div>
+                    <div class="msg-preview">Есть не прочитанное сообщение</div>
                 </div>
+                <div class="msg-badge">1</div>
             </div>
-            <button class="theme-toggle" id="themeToggle">🌙</button>
-        </div>
-
-        <div class="menu-list">
-            <div class="menu-item" id="createAdBtn">
-                <span>➕</span> Создать объявление
+            <div class="message-item">
+                <div class="msg-info"><div class="msg-name">Чат 1</div></div>
             </div>
-            <div class="menu-item">
-                <span>📢</span> Мои объявления
+            <div class="message-item">
+                <div class="msg-info"><div class="msg-name">Чат 2</div></div>
             </div>
-            <div class="menu-item">
-                <span>💬</span> Поддержка
-            </div>
-            <div class="menu-item">
-                <span>📋</span> Правила
+            <div class="message-item">
+                <div class="msg-info"><div class="msg-name">Чат 3</div></div>
             </div>
         </div>
     </div>
 
-    <!-- CREATE AD MODAL -->
-    <div class="modal" id="createAdModal">
+    <!-- 3. Profile Page -->
+    <div id="profilePage" class="page">
+        <div class="profile-header">
+            <img id="profileAvatar" src="" class="profile-avatar" alt="Avatar">
+            <div id="profileName" class="profile-name">User Name</div>
+            <div class="rating">☆☆☆</div>
+            <button class="create-btn" onclick="openModal()">Создать объявление</button>
+        </div>
+        <h3 style="padding-left: 15px;">Мои объявления</h3>
+        <div class="ads-grid" id="myAdsGrid">
+            <!-- My ads will be injected here -->
+        </div>
+    </div>
+
+    <!-- Create Ad Modal -->
+    <div id="createModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Новое объявление</h3>
-                <button class="close-btn" id="closeModal">&times;</button>
+                <h3>Создать объявление</h3>
+                <span class="close-modal" onclick="closeModal()">×</span>
             </div>
-            
-            <form id="adForm">
-                <div class="form-group">
-                    <label class="form-label">Название товара</label>
-                    <input type="text" class="form-input" id="adTitle" required placeholder="Например: iPhone 13">
+            <div class="form-group">
+                <label>Фотографии (1-4 шт)</label>
+                <div class="photo-upload" onclick="document.getElementById('fileInput').click()">
+                    Нажмите, чтобы добавить фото
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">Фотография</label>
-                    <div class="photo-upload" id="photoUpload">
-                        <div id="uploadPlaceholder">
-                            <div class="upload-icon">📷</div>
-                            <div>Нажмите чтобы добавить фото</div>
-                        </div>
-                        <img id="imagePreview" class="upload-preview hidden">
-                    </div>
-                    <input type="file" id="adPhoto" accept="image/*" class="hidden">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Цена (руб.)</label>
-                    <input type="number" class="form-input" id="adPrice" required placeholder="500000">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Город</label>
-                    <input type="text" class="form-input" id="adCity" required placeholder="Москва">
-                </div>
-
-                <button type="submit" class="submit-btn">Опубликовать</button>
-            </form>
+                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                <div class="preview-images" id="previewImages"></div>
+            </div>
+            <div class="form-group">
+                <label>Название товара *</label>
+                <input type="text" id="adTitle" required>
+            </div>
+            <div class="form-group">
+                <label>Цена *</label>
+                <input type="number" id="adPrice" required>
+            </div>
+            <div class="form-group">
+                <label>Город *</label>
+                <input type="text" id="adCity" required>
+            </div>
+            <div class="form-group">
+                <label>Описание (необязательно)</label>
+                <textarea id="adDesc" rows="3"></textarea>
+            </div>
+            <button class="submit-btn" onclick="submitAd()">Создать</button>
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
-    <nav class="bottom-nav">
-        <div class="nav-item active" data-page="main">
-            <div class="nav-icon">🏠</div>
-            <div class="nav-label">Главная</div>
+    <!-- Detail View Page -->
+    <div id="detailPage" class="detail-page">
+        <div class="detail-header">
+            <span class="back-btn" onclick="closeDetail()">←</span>
+            <div class="detail-logo">Swapka</div>
         </div>
-        <div class="nav-item" data-page="messages">
-            <div class="nav-icon">💬</div>
-            <div class="nav-label">Сообщения</div>
+        <div class="detail-image-container">
+            <img id="detailImg" src="" alt="Item">
         </div>
-        <div class="nav-item" data-page="profile">
-            <div class="nav-icon">👤</div>
-            <div class="nav-label">Профиль</div>
+        <div class="detail-content">
+            <div id="detailTitle" class="detail-title">Название товара</div>
+            <div id="detailPrice" class="detail-price">Цена</div>
+            <div id="detailCity" class="detail-city">Город</div>
+            <div id="detailDescLabel" style="margin-bottom:5px; font-size:12px; color:#555;">Описание:</div>
+            <div class="detail-desc-box">
+                <div id="detailDesc">Тут описание товара</div>
+            </div>
         </div>
-    </nav>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home')">
+            <span class="nav-icon">🏠</span>
+            <span>Главная</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('messages')">
+            <span class="nav-icon">💬</span>
+            <span>Сообщения</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('profile')">
+            <span class="nav-icon">👤</span>
+            <span>Профиль</span>
+        </div>
+    </div>
 
     <script>
-        // Initialize Telegram WebApp
+        // Telegram Web App Initialization
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // State
-        let ads = JSON.parse(localStorage.getItem('ads')) || [];
-        let currentTheme = localStorage.getItem('theme') || 'light';
-        let userData = null;
+        // Mock Data
+        let ads = [
+            { id: 1, title: "Велосипед", price: "5000", city: "Москва", desc: "Отличное состояние", img: null },
+            { id: 2, title: "iPhone 11", price: "25000", city: "Спб", desc: "", img: null },
+            { id: 3, title: "Диван", price: "15000", city: "Казань", desc: "Самовывоз", img: null },
+            { id: 4, title: "Ноутбук", price: "40000", city: "Москва", desc: "Для работы", img: null }
+        ];
 
-        // DOM Elements
-        const mainPage = document.getElementById('mainPage');
-        const messagesPage = document.getElementById('messagesPage');
-        const profilePage = document.getElementById('profilePage');
-        const adsGrid = document.getElementById('adsGrid');
-        const searchInput = document.getElementById('searchInput');
-        const createAdModal = document.getElementById('createAdModal');
-        const createAdBtn = document.getElementById('createAdBtn');
-        const closeModal = document.getElementById('closeModal');
-        const adForm = document.getElementById('adForm');
-        const photoUpload = document.getElementById('photoUpload');
-        const adPhoto = document.getElementById('adPhoto');
-        const imagePreview = document.getElementById('imagePreview');
-        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-        const themeToggle = document.getElementById('themeToggle');
-        const navItems = document.querySelectorAll('.nav-item');
+        let userAds = []; // Array to store ads created by the user
+        let uploadedImages = []; // Temp storage for new ad images
 
-        // Initialize App
-        function init() {
-            // Get Telegram user data
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                userData = tg.initDataUnsafe.user;
-                updateProfileUI();
-            } else {
-                // Demo data if not in Telegram
-                userData = {
-                    first_name: 'Тимур',
-                    last_name: 'Артыков',
-                    username: 'timur_art',
-                    photo_url: ''
-                };
-                updateProfileUI();
-            }
+        // --- Init ---
+        window.onload = function() {
+            renderHome();
+            setupTelegramUser();
+        };
 
-            // Apply theme
-            applyTheme(currentTheme);
-
-            // Render ads
-            renderAds(ads);
-
-            // Setup event listeners
-            setupEventListeners();
-        }
-
-        function updateProfileUI() {
-            const name = `${userData.first_name} ${userData.last_name || ''}`.trim();
-            document.getElementById('profileName').textContent = name;
-            
-            if (userData.photo_url) {
-                document.getElementById('profileAvatar').src = userData.photo_url;
-            } else {
-                // Fallback avatar with initials
-                const initial = name.charAt(0).toUpperCase();
-                document.getElementById('profileAvatar').src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23ccc" width="100" height="100"/><text fill="%23666" font-size="40" x="50" y="60" text-anchor="middle">${initial}</text></svg>`;
-            }
-        }
-
-        function applyTheme(theme) {
-            if (theme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = '☀️';
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-                themeToggle.textContent = '🌙';
-            }
-            currentTheme = theme;
-            localStorage.setItem('theme', theme);
-        }
-
-        function setupEventListeners() {
-            // Navigation
-            navItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const page = item.dataset.page;
-                    switchPage(page);
-                    
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-                });
-            });
-
-            // Search
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                const filteredAds = ads.filter(ad => 
-                    ad.title.toLowerCase().includes(query) ||
-                    ad.city.toLowerCase().includes(query)
-                );
-                renderAds(filteredAds);
-            });
-
-            // Create Ad Modal
-            createAdBtn.addEventListener('click', () => {
-                createAdModal.classList.add('active');
-            });
-
-            closeModal.addEventListener('click', () => {
-                createAdModal.classList.remove('active');
-                resetForm();
-            });
-
-            createAdModal.addEventListener('click', (e) => {
-                if (e.target === createAdModal) {
-                    createAdModal.classList.remove('active');
-                    resetForm();
+        function setupTelegramUser() {
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                document.getElementById('profileName').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+                if (user.photo_url) {
+                    document.getElementById('profileAvatar').src = user.photo_url;
+                } else {
+                    document.getElementById('profileAvatar').src = 'https://via.placeholder.com/80?text=User';
                 }
-            });
-
-            // Photo Upload
-            photoUpload.addEventListener('click', () => {
-                adPhoto.click();
-            });
-
-            adPhoto.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        imagePreview.src = e.target.result;
-                        imagePreview.classList.remove('hidden');
-                        uploadPlaceholder.classList.add('hidden');
-                        photoUpload.classList.add('has-image');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // Form Submit
-            adForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                createAd();
-            });
-
-            // Theme Toggle
-            themeToggle.addEventListener('click', () => {
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                applyTheme(newTheme);
-            });
+            } else {
+                document.getElementById('profileName').innerText = "Тестовый Пользователь";
+                document.getElementById('profileAvatar').src = 'https://via.placeholder.com/80?text=User';
+            }
         }
 
-        function switchPage(page) {
+        // --- Navigation ---
+        function switchTab(tabName) {
             // Hide all pages
-            mainPage.classList.remove('active');
-            messagesPage.classList.remove('active');
-            profilePage.classList.remove('active');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            // Show selected
+            document.getElementById(tabName + 'Page').classList.add('active');
             
-            // Show selected page
-            if (page === 'main') {
-                mainPage.classList.add('active');
-            } else if (page === 'messages') {
-                messagesPage.classList.add('active');
-            } else if (page === 'profile') {
-                profilePage.classList.add('active');
+            // Highlight nav
+            const navIndex = tabName === 'home' ? 0 : tabName === 'messages' ? 1 : 2;
+            document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+
+            // Header logic
+            const header = document.getElementById('mainHeader');
+            if (tabName === 'home') {
+                header.style.display = 'block';
+            } else {
+                header.style.display = 'none'; // Hide header on other tabs
+            }
+
+            if (tabName === 'profile') {
+                renderMyAds();
             }
         }
 
-        function createAd() {
-            const title = document.getElementById('adTitle').value;
-            const price = document.getElementById('adPrice').value;
-            const city = document.getElementById('adCity').value;
-            const photo = imagePreview.src || null;
+        // --- Rendering ---
+        function renderHome(filterText = '') {
+            const grid = document.getElementById('homeGrid');
+            grid.innerHTML = '';
+            
+            const filteredAds = ads.filter(ad => 
+                ad.title.toLowerCase().includes(filterText.toLowerCase())
+            );
 
-            const newAd = {
-                id: Date.now(),
-                title,
-                price: parseInt(price),
-                city,
-                photo,
-                createdAt: new Date().toISOString(),
-                userId: userData.id || 1
-            };
-
-            ads.unshift(newAd);
-            localStorage.setItem('ads', JSON.stringify(ads));
-            
-            renderAds(ads);
-            createAdModal.classList.remove('active');
-            resetForm();
-            
-            // Show success message
-            tg.showAlert('Объявление успешно создано!');
-            
-            // Switch to main page
-            switchPage('main');
-            navItems.forEach(nav => nav.classList.remove('active'));
-            navItems[0].classList.add('active');
+            filteredAds.forEach(ad => {
+                grid.innerHTML += createAdCard(ad);
+            });
         }
 
-        function resetForm() {
-            adForm.reset();
-            imagePreview.src = '';
-            imagePreview.classList.add('hidden');
-            uploadPlaceholder.classList.remove('hidden');
-            photoUpload.classList.remove('has-image');
+        function renderMyAds() {
+            const grid = document.getElementById('myAdsGrid');
+            grid.innerHTML = '';
+            userAds.forEach(ad => {
+                grid.innerHTML += createAdCard(ad);
+            });
         }
 
-        function renderAds(adsToRender) {
-            if (adsToRender.length === 0) {
-                adsGrid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📦</div>
-                        <div>Объявления не найдены</div>
+        function createAdCard(ad) {
+            const imgSrc = ad.img ? ad.img : ''; 
+            // Если есть картинка - показываем, если нет - розовый плейсхолдер (через CSS класс)
+            const imgTag = ad.img 
+                ? `<img src="${ad.img}" class="ad-image" alt="${ad.title}">` 
+                : `<div class="ad-placeholder"></div>`;
+
+            return `
+                <div class="ad-card" onclick="openDetail(${ad.id})">
+                    ${imgTag}
+                    <div class="ad-info">
+                        <div class="ad-title">${ad.title}</div>
+                        <div class="ad-price">${ad.price} ₽</div>
+                        <div class="ad-city">${ad.city}</div>
                     </div>
-                `;
+                </div>
+            `;
+        }
+
+        // --- Search Logic ---
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderHome(e.target.value);
+        });
+
+        // --- Scroll Logic (Hide Header) ---
+        const homePage = document.getElementById('homePage');
+        const mainHeader = document.getElementById('mainHeader');
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+        homePage.addEventListener('scroll', () => {
+            if (homePage.scrollTop > 50) {
+                mainHeader.classList.add('hidden');
+                scrollTopBtn.style.display = 'flex';
+            } else {
+                mainHeader.classList.remove('hidden');
+                scrollTopBtn.style.display = 'none';
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            homePage.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // --- Create Ad Modal ---
+        function openModal() {
+            document.getElementById('createModal').classList.add('active');
+            // Clear form
+            document.getElementById('adTitle').value = '';
+            document.getElementById('adPrice').value = '';
+            document.getElementById('adCity').value = '';
+            document.getElementById('adDesc').value = '';
+            document.getElementById('previewImages').innerHTML = '';
+            uploadedImages = [];
+        }
+
+        function closeModal() {
+            document.getElementById('createModal').classList.remove('active');
+        }
+
+        // File Input Handling
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (uploadedImages.length + files.length > 4) {
+                alert("Можно добавить не более 4 фотографий");
                 return;
             }
 
-            adsGrid.innerHTML = adsToRender.map(ad => `
-                <div class="ad-card" onclick="showAdDetails(${ad.id})">
-                    <img src="${ad.photo || 'image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/><text fill=%22%23999%22 font-size=%2220%22 x=%2250%22 y=%2255%22 text-anchor=%22middle%22>Нет фото</text></svg>'}" 
-                         alt="${ad.title}" 
-                         class="ad-image">
-                    <div class="ad-info">
-                        <div class="ad-title">${escapeHtml(ad.title)}</div>
-                        <div class="ad-city">📍 ${escapeHtml(ad.city)}</div>
-                        <div class="ad-price">${ad.price.toLocaleString()} руб.</div>
-                    </div>
-                </div>
-            `).join('');
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImages.push(e.target.result);
+                    renderPreviews();
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        function renderPreviews() {
+            const container = document.getElementById('previewImages');
+            container.innerHTML = '';
+            uploadedImages.forEach(src => {
+                container.innerHTML += `<img src="${src}" class="preview-img">`;
+            });
         }
 
-        function showAdDetails(id) {
-            const ad = ads.find(a => a.id === id);
-            if (ad) {
-                tg.showAlert(`${ad.title}\nЦена: ${ad.price.toLocaleString()} руб.\nГород: ${ad.city}`);
+        function submitAd() {
+            const title = document.getElementById('adTitle').value;
+            const price = document.getElementById('adPrice').value;
+            const city = document.getElementById('adCity').value;
+            const desc = document.getElementById('adDesc').value;
+
+            if (uploadedImages.length === 0) {
+                alert("Добавьте хотя бы одну фотографию");
+                return;
             }
+            if (!title || !price || !city) {
+                alert("Заполните обязательные поля (Название, Цена, Город)");
+                return;
+            }
+
+            const newAd = {
+                id: Date.now(),
+                title: title,
+                price: price,
+                city: city,
+                desc: desc,
+                img: uploadedImages[0] // Use first image for grid preview
+            };
+
+            ads.unshift(newAd); // Add to global list (Home)
+            userAds.unshift(newAd); // Add to user list (Profile)
+
+            renderHome();
+            closeModal();
+            showToast();
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
-        // Start app
-        init();
+        // --- Detail View ---
+        function openDetail(id) {
+            // Find ad in both arrays
+            let ad = ads.find(a => a.id === id) || userAds.find(a => a.id === id);
+            if (!ad) return;
+
+            document.getElementById('detailTitle').innerText = ad.title;
+            document.getElementById('detailPrice').innerText = ad.price + " ₽";
+            document.getElementById('detailCity').innerText = ad.city;
+            document.getElementById('detailDesc').innerText = ad.desc || "Описание отсутствует";
+            
+            const detailImg = document.getElementById('detailImg');
+            if (ad.img) {
+                detailImg.src = ad.img;
+                detailImg.style.display = 'block';
+            } else {
+                // Fallback pink background logic handled by CSS container, but let's hide img tag
+                detailImg.style.display = 'none'; 
+            }
+
+            document.getElementById('detailPage').classList.add('active');
+        }
+
+        function closeDetail() {
+            document.getElementById('detailPage').classList.remove('active');
+            // Ensure we are back on Home tab
+            switchTab('home');
+        }
+
     </script>
 </body>
 </html>
-
