@@ -15,7 +15,7 @@
       --shadow: 0 2px 12px rgba(0,0,0,0.08);
       --card-bg: #ffffff;
       --search-bg: #ffffff;
-      --tab-bg: #ffffff; /* ИЗМЕНЕНО: было #f8f8f8, теперь белый */
+      --tab-bg: #ffffff;
       --tab-active: #e8e8e8;
       --modal-overlay: rgba(0,0,0,0.5);
       --chat-bg: #f0f0f0;
@@ -417,14 +417,13 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: var(--tab-bg); /* Теперь #ffffff */
+      background: var(--tab-bg);
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 8px 16px;
       padding-bottom: max(8px, env(safe-area-inset-bottom));
       z-index: 100;
-      border-top: 1px solid var(--border-color);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       transition: background 0.3s;
@@ -435,7 +434,8 @@
       background: var(--card-bg);
       border-radius: 28px;
       padding: 4px;
-      box-shadow: var(--shadow);
+      /* Тень со всех сторон по краям */
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
       width: 100%;
       max-width: 360px;
     }
@@ -1356,17 +1356,4 @@
       const diff = touchStartX - touchEndX;
       const totalSlides = document.querySelectorAll('.carousel-slide').length;
 
-      if (Math.abs(diff) > 50) {
-        if (diff > 0 && currentCarouselIndex < totalSlides - 1) {
-          goToSlide(currentCarouselIndex + 1);
-        } else if (diff < 0 && currentCarouselIndex > 0) {
-          goToSlide(currentCarouselIndex - 1);
-        }
-      }
-    }, { passive: true });
-
-    renderAds();
-    renderMyAds();
-  </script>
-</body>
-</html>
+      if (Math.abs(diff) > 5
