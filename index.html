@@ -14,8 +14,8 @@
             --text-secondary: #555555;
             --text-muted: #888888;
             --header-bg: #ffffff;
-            --input-bg: #ffffff; /* ИЗМЕНЕНИЕ: Белый фон для поиска */
-            --input-border: #eeeeee; /* Легкая рамка для белого фона */
+            --input-bg: #ffffff;
+            --input-border: #eeeeee;
             --border-color: #dddddd;
             --modal-bg: #ffffff;
             --nav-bg: #ffffff;
@@ -83,9 +83,11 @@
             width: 100%;
             background: var(--header-bg);
             z-index: 100;
-            padding-bottom: 8px;
+            padding-bottom: 0; /* Убрал нижний паддинг хедера */
             transition: transform 0.3s ease, background-color 0.3s ease;
             box-shadow: none; 
+            /* Добавил легкую тень снизу для визуального отделения от контента, если нужно */
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
         .page-header.hidden {
@@ -95,7 +97,7 @@
         .logo-container {
             display: flex;
             justify-content: center;
-            padding: 10px 0;
+            padding: 10px 0 5px 0; /* Чуть уменьшил паддинг снизу лого */
             border-bottom: none; 
             box-shadow: none;
         }
@@ -106,8 +108,9 @@
             object-fit: contain;
         }
 
+        /* ИЗМЕНЕНИЕ: Поиск поднят выше и убраны лишние отступы */
         .search-bar {
-            padding: 10px 12px 0; /* Убрал нижний паддинг, так как отступ теперь у фильтров */
+            padding: 5px 12px 0 12px; /* Минимальный отступ сверху */
             display: flex;
             gap: 8px;
             align-items: center;
@@ -116,14 +119,13 @@
 
         .search-input {
             flex-grow: 1;
-            background-color: var(--input-bg); /* Белый цвет */
+            background-color: var(--input-bg);
             border: 1px solid var(--input-border);
             padding: 8px 12px;
             border-radius: 999px;
             font-size: 15px;
             outline: none;
             color: var(--text-color);
-            /* ИЗМЕНЕНИЕ: Тень вокруг поисковой строки */
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
@@ -132,9 +134,9 @@
             font-size: 22px;
         }
 
+        /* ИЗМЕНЕНИЕ: Фильтры прижаты к поиску */
         .filters {
-            /* ИЗМЕНЕНИЕ: Отступ сверху 8px от поиска */
-            padding: 8px 12px 8px; 
+            padding: 4px 12px 8px 12px; /* Минимальный отступ между поиском и фильтрами */
             display: flex;
             gap: 8px;
             background: var(--header-bg);
@@ -184,7 +186,9 @@
             display: block;
         }
 
-        /* Распорка 100px */
+        /* Распорка 100px - ОСТАВИЛ, но она теперь скрыта за фиксированным хедером визуально, 
+           либо можно уменьшить, если контент слишком низко. 
+           Для главной страницы мы будем использовать margin-top у grid, чтобы компенсировать высоту хедера */
         .content-spacer {
             height: 100px;
             width: 100%;
@@ -197,6 +201,9 @@
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             padding: 8px;
+            /* Важно: добавляем отступ сверху, чтобы контент не наезжал на фиксированный хедер, 
+               так как мы убрали spacer из потока или он может вести себя иначе */
+            margin-top: 0; 
         }
 
         .ad-card {
@@ -658,11 +665,23 @@
         .toast.moderator { background: var(--moderator-toast-bg); }
 
         /* --- Empty State --- */
+        /* ИЗМЕНЕНИЕ: Полностью переписаны стили для пустого состояния, чтобы оно было по центру внизу */
         .empty-state {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            padding: 30px 20px;
             color: var(--text-muted);
-            grid-column: 1 / -1;
+            
+            /* Занимает всю ширину грида, но не растягивает ячейки */
+            grid-column: 1 / -1; 
+            
+            /* Поднимаем контент вниз. 
+               Высота экрана (100vh) минус высота хедера (~120px) минус навигация (~80px).
+               Используем margin-top, чтобы оттолкнуть от верха списка */
+            margin-top: 150px; 
+            padding-bottom: 50px;
         }
 
         .empty-state-icon { font-size: 40px; margin-bottom: 8px; }
