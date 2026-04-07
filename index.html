@@ -782,7 +782,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Загрузка объявлений из памяти или создание пустого массива
+        // Инициализация пустого массива (без тестовых данных)
         let ads = JSON.parse(localStorage.getItem('swapka_ads')) || [];
         let userAds = [];
         let uploadedImages = [];
