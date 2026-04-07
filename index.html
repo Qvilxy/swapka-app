@@ -288,7 +288,7 @@
       color: var(--text-secondary);
     }
 
-    /* ===== PROFILE PAGE ===== */
+    /* ===== PROFILE PAGE STYLES ===== */
     .profile-moon-wrapper {
       position: relative;
       height: 50px;
@@ -311,10 +311,16 @@
       transform: scale(0.85);
     }
 
-    .profile-header-section {
+    /* Этот блок поднимает ВСЁ содержимое профиля на 120px вверх */
+    .profile-shifted-content {
+      transform: translateY(-120px);
+    }
+
+    /* Этот блок опускает аватарку и имя на 60px вниз (отрицательный сдвиг) */
+    .profile-user-info {
       padding: 20px 16px;
       text-align: center;
-      transform: translateY(-120px);
+      transform: translateY(60px);
     }
 
     .profile-avatar {
@@ -824,23 +830,29 @@
       <div class="profile-moon-wrapper">
         <button class="moon-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
       </div>
-      <!-- Всё остальное сдвинуто вверх -->
-      <div class="profile-header-section">
-        <div id="profileAvatarContainer"></div>
-        <div class="profile-name" id="profileName">Загрузка...</div>
-        <div class="profile-username" id="profileUsername">@loading</div>
-        <div class="profile-rating">
-          <span>⭐</span><span>☆</span><span>☆</span>
+      
+      <!-- Общий контейнер, сдвигающий всё вверх на 120px -->
+      <div class="profile-shifted-content">
+        
+        <!-- Внутренний контейнер, сдвигающий аватар/имя вниз на 60px -->
+        <div class="profile-user-info">
+          <div id="profileAvatarContainer"></div>
+          <div class="profile-name" id="profileName">Загрузка...</div>
+          <div class="profile-username" id="profileUsername">@loading</div>
+          <div class="profile-rating">
+            <span>⭐</span><span>☆</span><span>☆</span>
+          </div>
         </div>
-      </div>
 
-      <button class="create-ad-btn" onclick="openCreateModal()">Создать объявление</button>
+        <button class="create-ad-btn" onclick="openCreateModal()">Создать объявление</button>
 
-      <div class="my-ads-title">Мои объявления</div>
-      <div class="ads-grid" id="myAdsGrid"></div>
-      <div class="empty-state" id="myAdsEmpty">
-        <div class="empty-state-icon">📝</div>
-        <div class="empty-state-text">У вас пока нет объявлений</div>
+        <div class="my-ads-title">Мои объявления</div>
+        <div class="ads-grid" id="myAdsGrid"></div>
+        <div class="empty-state" id="myAdsEmpty">
+          <div class="empty-state-icon">📝</div>
+          <div class="empty-state-text">У вас пока нет объявлений</div>
+        </div>
+
       </div>
     </div>
   </div>
