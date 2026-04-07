@@ -296,7 +296,7 @@
       justify-content: flex-end;
       align-items: center;
       padding: 0 16px;
-      z-index: 10; /* Чтобы кнопка была поверх всего */
+      z-index: 10;
     }
 
     .moon-btn {
@@ -307,7 +307,7 @@
       padding: 8px;
       transition: transform 0.3s;
       pointer-events: auto;
-      z-index: 1001; /* Гарантируем кликабельность */
+      z-index: 1001;
       position: relative;
     }
 
@@ -427,10 +427,9 @@
       padding: 8px 16px;
       padding-bottom: max(8px, env(safe-area-inset-bottom));
       z-index: 1000;
-      transition: transform 0.3s ease, background 0.3s; /* Плавная анимация скрытия */
+      transition: transform 0.3s ease, background 0.3s;
     }
 
-    /* Класс для скрытия меню */
     .bottom-nav.hidden {
       transform: translateY(100%);
     }
@@ -438,7 +437,7 @@
     .nav-pill {
       display: flex;
       background: var(--card-bg);
-      border-radius: 28px;
+      border-radius: 100px; /* ИЗМЕНЕНО: скругление углов 100 */
       padding: 4px;
       box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
       width: 100%;
@@ -1040,22 +1039,17 @@
       applyTheme(tg.colorScheme === 'dark' ? 'dark' : 'light');
     }
 
-    // ===== ИСПРАВЛЕННАЯ КНОПКА ТЕМЫ =====
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) {
       themeBtn.addEventListener('click', function() {
         const isDark = document.body.classList.contains('dark-theme');
-        
         if (isDark) {
-          // Переключаем на светлую
           applyTheme('light');
           saveTheme('light');
         } else {
-          // Переключаем на темную
           applyTheme('dark');
           saveTheme('dark');
         }
-        
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       });
     }
@@ -1193,8 +1187,6 @@
     });
 
     let selectedPhotos = [];
-
-    // ===== УПРАВЛЕНИЕ МОДАЛКОЙ И МЕНЮ =====
     const bottomNav = document.getElementById('bottomNav');
 
     function openCreateModal() {
@@ -1205,8 +1197,6 @@
       document.getElementById('adCity').value = '';
       
       document.getElementById('createModal').classList.add('active');
-      
-      // Скрываем меню-панель
       bottomNav.classList.add('hidden');
       
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
@@ -1214,11 +1204,9 @@
 
     function closeCreateModal() {
       document.getElementById('createModal').classList.remove('active');
-      // Показываем меню-панель обратно
       bottomNav.classList.remove('hidden');
     }
 
-    // Кнопка открытия окна
     document.getElementById('openCreateBtn').addEventListener('click', openCreateModal);
 
     function resetPhotoSlots() {
@@ -1316,7 +1304,7 @@
       ads.unshift(newAd);
       saveAds(ads);
 
-      closeCreateModal(); // Меню вернется
+      closeCreateModal();
       renderAds();
       renderMyAds();
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
