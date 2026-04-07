@@ -289,18 +289,13 @@
     }
 
     /* ===== PROFILE PAGE ===== */
-    .profile-header-section {
-      padding: 20px 16px;
-      text-align: center;
-      margin-top: -120px;
-    }
-
-    .profile-top {
+    .profile-moon-wrapper {
+      position: relative;
+      height: 50px;
       display: flex;
+      justify-content: flex-end;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      margin-top: 120px;
+      padding: 0 16px;
     }
 
     .moon-btn {
@@ -314,6 +309,12 @@
 
     .moon-btn:active {
       transform: scale(0.85);
+    }
+
+    .profile-header-section {
+      padding: 20px 16px;
+      text-align: center;
+      transform: translateY(-120px);
     }
 
     .profile-avatar {
@@ -386,6 +387,7 @@
       color: var(--text-primary);
     }
 
+    /* ===== BOTTOM NAV ===== */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -455,6 +457,7 @@
       transition: color 0.3s;
     }
 
+    /* ===== MODAL ===== */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -622,6 +625,7 @@
       cursor: not-allowed;
     }
 
+    /* ===== AD DETAIL MODAL ===== */
     .detail-modal {
       position: fixed;
       top: 0;
@@ -789,6 +793,7 @@
 
   <div class="main-content" id="mainContent">
 
+    <!-- HOME PAGE -->
     <div class="page active" id="pageHome">
       <div class="search-container">
         <div class="search-bar">
@@ -803,6 +808,7 @@
       </div>
     </div>
 
+    <!-- MESSAGES PAGE -->
     <div class="page" id="pageMessages">
       <div class="messages-list" id="messagesList">
         <div class="empty-state">
@@ -812,12 +818,14 @@
       </div>
     </div>
 
+    <!-- PROFILE PAGE -->
     <div class="page" id="pageProfile">
+      <!-- Луна остаётся на месте -->
+      <div class="profile-moon-wrapper">
+        <button class="moon-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
+      </div>
+      <!-- Всё остальное сдвинуто вверх -->
       <div class="profile-header-section">
-        <div class="profile-top">
-          <div></div>
-          <button class="moon-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
-        </div>
         <div id="profileAvatarContainer"></div>
         <div class="profile-name" id="profileName">Загрузка...</div>
         <div class="profile-username" id="profileUsername">@loading</div>
@@ -837,6 +845,7 @@
     </div>
   </div>
 
+  <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <div class="nav-pill">
       <button class="nav-item active" onclick="switchTab('home')" id="navHome">
@@ -854,6 +863,7 @@
     </div>
   </div>
 
+  <!-- CREATE AD MODAL -->
   <div class="modal-overlay" id="createModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -898,6 +908,7 @@
     </div>
   </div>
 
+  <!-- AD DETAIL MODAL -->
   <div class="detail-modal" id="detailModal">
     <div class="detail-header">
       <button class="detail-back" onclick="closeDetailModal()">←</button>
@@ -922,6 +933,7 @@
     </div>
   </div>
 
+  <!-- HIDDEN FILE INPUT -->
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
