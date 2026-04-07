@@ -86,7 +86,6 @@
             padding-bottom: 0;
             transition: transform 0.3s ease, background-color 0.3s ease;
             box-shadow: none; 
-            border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -105,6 +104,8 @@
             justify-content: center;
             align-items: center;
             padding: 0;
+            /* ИЗМЕНЕНИЕ: Логотип опущен вниз на 40px */
+            margin-top: 40px; 
         }
 
         .logo {
@@ -115,7 +116,8 @@
 
         /* Поиск */
         .search-bar {
-            margin-top: 65px;
+            /* ИЗМЕНЕНИЕ: Выравниваем поисковую строку по высоте с контентом других вкладок */
+            margin-top: 105px; /* 60px (высота хедера) + 40px (отступ логотипа) + 5px (небольшой зазор) */
             padding: 0 12px;
             display: flex;
             gap: 8px;
@@ -142,7 +144,7 @@
 
         /* Фильтры (Кнопки Категория и Город) */
         .filters {
-            margin-top: 12px;
+            margin-top: 15px; 
             padding: 0 12px 8px 12px;
             display: flex;
             gap: 8px;
@@ -194,10 +196,9 @@
             display: block;
         }
 
+        /* ИЗМЕНЕНИЕ: Убираем распорку, так как теперь используем margin-top для выравнивания */
         .content-spacer {
-            height: 100px;
-            width: 100%;
-            flex-shrink: 0;
+            display: none; 
         }
 
         /* --- Grid Layout --- */
@@ -260,6 +261,8 @@
         /* --- Messages Tab --- */
         .messages-list {
             padding: 8px;
+            /* Добавляем отступ сверху, чтобы контент начинался на той же высоте, что и поиск на главной */
+            margin-top: 105px; 
         }
 
         .message-item {
@@ -324,6 +327,8 @@
             flex-direction: column;
             align-items: center;
             padding: 15px;
+            /* Добавляем отступ сверху, чтобы контент начинался на той же высоте, что и поиск на главной */
+            margin-top: 105px; 
         }
 
         .profile-top-row {
@@ -717,7 +722,7 @@
 
     <!-- 1. Home Page -->
     <div id="homePage" class="page active">
-        <div class="content-spacer"></div>
+        <!-- Распорка убрана, используется margin-top у search-bar -->
         
         <!-- Поиск -->
         <div class="search-bar">
@@ -737,7 +742,7 @@
 
     <!-- 2. Messages Page -->
     <div id="messagesPage" class="page">
-        <div class="content-spacer"></div>
+        <!-- Распорка убрана, используется margin-top у messages-list -->
 
         <div class="messages-list">
             <div class="message-top">
@@ -762,7 +767,7 @@
 
     <!-- 3. Profile Page -->
     <div id="profilePage" class="page">
-        <div class="content-spacer"></div>
+        <!-- Распорка убрана, используется margin-top у profile-header -->
 
         <div class="profile-header">
             <div class="profile-top-row">
