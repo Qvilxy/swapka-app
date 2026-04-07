@@ -1,1271 +1,1495 @@
+# Telegram Mini App — SWAPKA
+
+Ниже полный код одного файла `index.html`, который включает HTML, CSS и JavaScript. Разместите его на любом хостинге с HTTPS и подключите как Mini App через BotFather.
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Swapka</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        /* --- CSS Variables & Theme --- */
-        :root {
-            --bg-color: #ffffff;
-            --card-bg: #ffffff;
-            --text-color: #000000;
-            --text-secondary: #555555;
-            --text-muted: #888888;
-            --header-bg: #ffffff;
-            --input-bg: #ffffff;
-            --input-border: #eeeeee;
-            --border-color: #dddddd;
-            --modal-bg: #ffffff;
-            --nav-bg: #ffffff;
-            --msg-item-bg: #D3E3C6;
-            --msg-top-bg: #eeeeee;
-            --desc-box-bg: #E0A66B;
-            --shadow-color: rgba(0,0,0,0.1);
-            --btn-create-gradient: linear-gradient(90deg, #f5a66b, #e06b6b);
-            --danger-color: #ff4b4b;
-            --active-blue: #5754A4;
-            --nav-active-bg: #F5F5F5;
-            --admin-toast-bg: #8B5CF6;
-            --moderator-toast-bg: #3B82F6;
-            --separator-color: #000000;
-        }
-
-        .dark-theme {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --text-secondary: #aaaaaa;
-            --text-muted: #777777;
-            --header-bg: #1e1e1e;
-            --input-bg: #2c2c2c; 
-            --input-border: #444444;
-            --border-color: #444444;
-            --modal-bg: #1e1e1e;
-            --nav-bg: #1e1e1e;
-            --msg-item-bg: #2a3a2a;
-            --msg-top-bg: #2a2a2a;
-            --desc-box-bg: #5c442a;
-            --shadow-color: rgba(0,0,0,0.4);
-            --active-blue: #8884FF;
-            --nav-active-bg: #333333;
-            --admin-toast-bg: #7C3AED;
-            --moderator-toast-bg: #2563EB;
-            --separator-color: #ffffff;
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* --- Header Styles --- */
-        .page-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: var(--header-bg);
-            z-index: 100;
-            padding-bottom: 0;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-            box-shadow: none; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 120px;
-            transform: translateZ(0); 
-        }
-
-        .page-header.hidden {
-            transform: translateY(-100%);
-        }
-
-        .logo-container {
-            position: absolute;
-            left: 50%;
-            top: 30px; 
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0;
-            margin-top: 0; 
-        }
-
-        .logo {
-            height: 35px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        /* Увеличенный логотип для вкладки Сообщения — как на скриншоте */
-        .logo-large {
-            height: 65px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        /* Поиск */
-        .search-bar {
-            margin-top: 113px; 
-            padding: 0 12px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            background: var(--header-bg);
-        }
-
-        .search-input {
-            flex-grow: 1;
-            background-color: var(--input-bg);
-            border: 1px solid var(--input-border);
-            padding: 8px 12px;
-            border-radius: 999px;
-            font-size: 15px;
-            outline: none;
-            color: var(--text-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .heart-icon {
-            color: #E06B6B;
-            font-size: 22px;
-        }
-
-        /* Фильтры (Кнопки Категория и Город) */
-        .filters {
-            margin-top: 15px; 
-            padding: 0 12px 8px 12px;
-            display: flex;
-            gap: 8px;
-            background: var(--header-bg);
-        }
-
-        .filter-btn {
-            background: #333;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        /* --- Scroll to Top Button --- */
-        #scrollTopBtn {
-            position: fixed;
-            top: 120px;
-            right: 12px;
-            background: var(--card-bg);
-            color: var(--text-color);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            box-shadow: 0 2px 5px var(--shadow-color);
-            z-index: 90;
-            cursor: pointer;
-        }
-
-        /* --- Main Content Area --- */
-        .page {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 90px;
-            background-color: var(--bg-color);
-            padding-top: 0;
-            
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            z-index: 1;
-            
-            transform: translateY(10px);
-            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-        }
-
-        .page.active {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-            transform: translateY(0);
-            z-index: 10;
-        }
-
-        /* --- Grid Layout --- */
-        .ads-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            padding: 8px;
-            margin-top: 0; 
-            position: relative;
-            min-height: calc(100vh - 200px);
-        }
-
-        .ad-card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            box-shadow: 0 1px 3px var(--shadow-color);
-            transition: background-color 0.3s ease;
-            border: 1px solid #eee;
-        }
-
-        .ad-image {
-            width: 100%;
-            height: 140px;
-            background-color: #E08E8E;
-            object-fit: cover;
-        }
-        
-        .ad-placeholder {
-            width: 100%;
-            height: 140px;
-            background-color: #E08E8E;
-            opacity: 0.6;
-        }
-
-        .ad-info {
-            padding: 6px;
-        }
-
-        .ad-title {
-            font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 3px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: var(--text-color);
-        }
-
-        .ad-price {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .ad-city {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        /* --- Messages Tab --- */
-        .messages-list {
-            padding: 8px;
-            margin-top: 130px; 
-        }
-
-        .message-item {
-            background: var(--msg-item-bg);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-        
-        .message-top {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-            background: var(--msg-top-bg);
-            padding: 8px;
-            border-radius: 12px;
-        }
-
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #ccc;
-            object-fit: cover;
-        }
-
-        .msg-info {
-            flex-grow: 1;
-        }
-
-        .msg-name {
-            font-weight: bold;
-            font-size: 13px;
-            color: var(--text-color);
-        }
-
-        .msg-preview {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        .msg-badge {
-            background: red;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 9px;
-        }
-
-        /* --- Profile Tab --- */
-        .profile-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
-            margin-top: 113px; 
-        }
-
-        .profile-top-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            justify-content: center;
-        }
-
-        .profile-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #ddd;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .profile-text {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            flex-grow: 1;
-        }
-
-        .profile-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--text-color);
-        }
-
-        .profile-username {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .rating {
-            color: #FFD700;
-            margin-top: 4px;
-        }
-
-        .theme-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            padding: 5px;
-            flex-shrink: 0;
-        }
-
-        .create-btn {
-            background: var(--btn-create-gradient);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 100%;
-            max-width: 200px;
-        }
-
-        /* --- Bottom Navigation (Pill Design) --- */
-        .bottom-nav {
-            position: fixed;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 400px;
-            background: var(--nav-bg);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 6px;
-            box-shadow: 0 4px 15px var(--shadow-color);
-            z-index: 1000;
-            border-radius: 30px;
-            transition: background-color 0.3s ease;
-            border: 1px solid #eee;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: var(--text-color);
-            cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 24px;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            min-width: 80px;
-            pointer-events: auto; 
-        }
-
-        .nav-item.active {
-            background-color: var(--nav-active-bg);
-            color: var(--active-blue);
-        }
-
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 2px;
-            line-height: 1;
-        }
-
-        /* --- Create Ad Modal --- */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 2000;
-            justify-content: center;
-            align-items: flex-end;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--modal-bg);
-            width: 100%;
-            border-radius: 20px 20px 0 0;
-            padding: 15px;
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease;
-            color: var(--text-color);
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .close-modal {
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--text-color);
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 13px;
-            background: #fafafa;
-            color: var(--text-color);
-        }
-
-        .photo-upload {
-            border: 2px dashed var(--border-color);
-            padding: 15px;
-            text-align: center;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .preview-images {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-
-        .preview-img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            background: linear-gradient(90deg, #8857ff, #e05288);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        /* --- Detail Page --- */
-        .detail-page {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--card-bg);
-            z-index: 1500;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            color: var(--text-color);
-        }
-
-        .detail-page.active {
-            display: block;
-        }
-
-        .detail-header {
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            background: var(--card-bg);
-            z-index: 10;
-            border-bottom: 1px solid #eee;
-        }
-
-        .back-btn {
-            font-size: 22px;
-            cursor: pointer;
-            margin-right: 12px;
-        }
-
-        .detail-logo {
-            margin: 0 auto;
-            height: 35px;
-            width: auto;
-        }
-
-        .delete-btn {
-            font-size: 20px;
-            cursor: pointer;
-            margin-left: auto;
-            padding: 5px;
-            display: none;
-        }
-
-        .delete-btn:hover {
-            opacity: 0.7;
-        }
-
-        .detail-image-container {
-            width: 100%;
-            height: 280px;
-            background: #E08E8E;
-            margin-bottom: 12px;
-        }
-        
-        .detail-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .detail-content {
-            padding: 0 12px 80px;
-        }
-
-        .detail-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .detail-price {
-            font-size: 16px;
-            margin-bottom: 4px;
-            color: var(--text-color);
-        }
-
-        .detail-city {
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            font-size: 13px;
-        }
-
-        .detail-desc-box {
-            background: var(--desc-box-bg);
-            padding: 12px;
-            border-radius: 8px;
-            min-height: 80px;
-            font-size: 13px;
-            color: var(--text-color);
-        }
-
-        /* --- Toast Notification --- */
-        .toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 13px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            z-index: 3000;
-        }
-        .toast.show {
-            opacity: 1;
-        }
-
-        .toast.admin { background: var(--admin-toast-bg); }
-        .toast.moderator { background: var(--moderator-toast-bg); }
-
-        /* --- Empty State (Global for Home Page) --- */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--text-muted);
-            
-            /* Центрирование по экрану для главной страницы */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            
-            margin-top: 0;
-            padding-bottom: 0;
-        }
-
-        /* --- Empty State for Profile Page (ИСПРАВЛЕНО) --- */
-        /* Этот стиль переопределяет глобальный .empty-state только для сетки моих объявлений */
-        #myAdsGrid .empty-state {
-            position: static; /* Отменяем абсолютное позиционирование */
-            transform: none;  /* Убираем центрирование */
-            top: auto;
-            left: auto;
-            width: auto;
-            margin-top: 20px; /* Отступ сверху, чтобы было под заголовком */
-            margin-bottom: 20px;
-            grid-column: 1 / -1; /* Занимает всю ширину сетки */
-        }
-
-        .empty-state-icon { font-size: 40px; margin-bottom: 8px; }
-        .empty-state div { font-size: 13px; }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Swapka</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f2f2f7;
+      --text-primary: #000000;
+      --text-secondary: #8e8e93;
+      --border-color: #e5e5ea;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --card-bg: #ffffff;
+      --search-bg: #ffffff;
+      --tab-bg: #f8f8f8;
+      --tab-active: #e8e8e8;
+      --modal-overlay: rgba(0,0,0,0.5);
+      --header-bg: linear-gradient(135deg, #ff6b35, #f7c948);
+      --chat-bg: #f0f0f0;
+      --btn-gradient: linear-gradient(135deg, #ff6b35, #e07a5f);
+      --input-bg: #f2f2f7;
+      --empty-state: transparent;
+    }
+
+    .dark-theme {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2c2c2e;
+      --text-primary: #ffffff;
+      --text-secondary: #8e8e93;
+      --border-color: #3a3a3c;
+      --shadow: 0 2px 12px rgba(0,0,0,0.3);
+      --card-bg: #2c2c2e;
+      --search-bg: #2c2c2e;
+      --tab-bg: #2c2c2e;
+      --tab-active: #3a3a3c;
+      --modal-overlay: rgba(0,0,0,0.7);
+      --chat-bg: #3a3a3c;
+      --input-bg: #3a3a3c;
+      --empty-state: transparent;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--bg-primary);
+      padding: 8px 16px;
+      padding-top: max(8px, env(safe-area-inset-top));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border-color);
+      height: calc(56px + env(safe-area-inset-top));
+      transition: background 0.3s;
+    }
+
+    .header-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .header-close {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-actions {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      gap: 8px;
+    }
+
+    .header-btn {
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .header-dots {
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--text-secondary);
+      letter-spacing: 2px;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .main-content {
+      position: fixed;
+      top: calc(56px + env(safe-area-inset-top));
+      left: 0;
+      right: 0;
+      bottom: 70px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .page {
+      display: none;
+      min-height: 100%;
+      padding-bottom: 20px;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* ===== SEARCH BAR ===== */
+    .search-container {
+      padding: 12px 16px;
+      background: var(--bg-primary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      transition: background 0.3s;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: var(--search-bg);
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.2s, background 0.3s;
+    }
+
+    .search-bar:focus-within {
+      box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+    }
+
+    .search-icon {
+      color: var(--text-secondary);
+      font-size: 18px;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
+      color: var(--text-primary);
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    /* ===== ADS GRID ===== */
+    .ads-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 10px 16px;
+    }
+
+    .ad-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, background 0.3s;
+      cursor: pointer;
+    }
+
+    .ad-card:active {
+      transform: scale(0.97);
+    }
+
+    .ad-image-container {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ad-image-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: var(--text-secondary);
+    }
+
+    .ad-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ad-info {
+      padding: 10px;
+    }
+
+    .ad-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ad-price {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ff6b35;
+      margin-bottom: 2px;
+    }
+
+    .ad-city {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* ===== MESSAGES PAGE ===== */
+    .messages-list {
+      padding: 8px 16px;
+    }
+
+    .message-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      background: var(--chat-bg);
+      border-radius: 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .message-item:active {
+      opacity: 0.7;
+    }
+
+    .message-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .message-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .message-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .message-preview {
+      font-size: 14px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .message-badge {
+      background: #ff3b30;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    /* ===== PROFILE PAGE ===== */
+    .profile-header-section {
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    .profile-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .moon-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 8px;
+      transition: transform 0.3s;
+    }
+
+    .moon-btn:active {
+      transform: scale(0.85);
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 12px;
+      display: block;
+      background: var(--bg-secondary);
+    }
+
+    .profile-avatar-placeholder {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .profile-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .profile-username {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .profile-rating {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 8px;
+      font-size: 18px;
+    }
+
+    .create-ad-btn {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 0 auto 20px;
+      padding: 14px;
+      background: var(--btn-gradient);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .create-ad-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    .my-ads-title {
+      font-size: 18px;
+      font-weight: 700;
+      padding: 0 16px 12px;
+      color: var(--text-primary);
+    }
+
+    /* ===== BOTTOM NAV ===== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--tab-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 16px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      z-index: 100;
+      border-top: 1px solid var(--border-color);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: background 0.3s;
+    }
+
+    .nav-pill {
+      display: flex;
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 4px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      background: transparent;
+      gap: 2px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-item.active {
+      background: var(--tab-active);
+    }
+
+    .nav-item.active .nav-icon {
+      color: #4a9eff;
+    }
+
+    .nav-item.active .nav-label {
+      color: #4a9eff;
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      font-size: 22px;
+      color: var(--text-secondary);
+      transition: color 0.3s;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      transition: color 0.3s;
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--modal-overlay);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-primary);
+      width: 100%;
+      max-height: 92vh;
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+      transition: background 0.3s;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .modal-close {
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 16px;
+      color: var(--text-primary);
+      background: var(--input-bg);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, background 0.3s;
+    }
+
+    .form-input:focus {
+      border-color: #4a9eff;
+    }
+
+    .photos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .photo-slot {
+      aspect-ratio: 1;
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      background: var(--input-bg);
+      transition: border-color 0.2s;
+    }
+
+    .photo-slot:hover {
+      border-color: #4a9eff;
+    }
+
+    .photo-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-slot .add-icon {
+      font-size: 28px;
+      color: var(--text-secondary);
+    }
+
+    .photo-slot .remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--btn-gradient);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 10px;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .submit-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ===== AD DETAIL MODAL ===== */
+    .detail-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      z-index: 200;
+      display: none;
+      overflow-y: auto;
+    }
+
+    .detail-modal.active {
+      display: block;
+    }
+
+    .detail-header {
+      position: sticky;
+      top: 0;
+      background: var(--bg-primary);
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-back {
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+    }
+
+    .detail-images {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--bg-secondary);
+      overflow: hidden;
+    }
+
+    .detail-images img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail-info {
+      padding: 20px 16px;
+    }
+
+    .detail-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .detail-price {
+      font-size: 24px;
+      font-weight: 800;
+      color: #ff6b35;
+      margin-bottom: 8px;
+    }
+
+    .detail-city {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    .detail-seller {
+      display: flex;
+      align-items: center;
+      padding: 14px;
+      background: var(--bg-secondary);
+      border-radius: 14px;
+    }
+
+    .detail-seller-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--border-color);
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .detail-seller-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .detail-contact-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--btn-gradient);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 20px;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    .main-content::-webkit-scrollbar {
+      width: 0;
+    }
+
+    /* ===== LOADING ===== */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+
+    /* Image carousel in detail */
+    .image-carousel {
+      width: 100%;
+      aspect-ratio: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-secondary);
+    }
+
+    .carousel-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .carousel-slide {
+      min-width: 100%;
+      height: 100%;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .carousel-dot.active {
+      background: white;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">Объявление успешно создано!</div>
-    <div id="deleteToast" class="toast" style="background: #ff4b4b;">Объявление удалено!</div>
-
-    <!-- Home Page Header -->
-    <div id="homeHeader" class="page-header" style="height: 60px;">
-        <div class="logo-container" style="top: 48px;">
-            <img src="logo.png" class="logo" alt="Swapka">
-        </div>
+  <!-- HEADER -->
+  <div class="header">
+    <button class="header-close" onclick="Telegram.WebApp.close()">✕ Закрыть</button>
+    <img src="messageblood.png" alt="Swapka" class="header-logo" id="headerLogo">
+    <div class="header-actions">
+      <button class="header-btn" id="headerDownBtn">▾</button>
+      <button class="header-dots">•••</button>
     </div>
+  </div>
 
-    <!-- Messages Page Header (логотип увеличен до 65px, высота шапки 120px) -->
-    <div id="messagesHeader" class="page-header" style="display: none;">
-        <div class="logo-container" style="top: 30px;">
-            <img src="messageblood.png" class="logo-large" alt="Swapka Messages">
-        </div>
-    </div>
+  <!-- MAIN CONTENT -->
+  <div class="main-content" id="mainContent">
 
-    <!-- Profile Page Header -->
-    <div id="profileHeader" class="page-header" style="display: none; height: 60px;">
-        <div class="logo-container" style="top: 48px;">
-            <img src="logo.png" class="logo" alt="Swapka">
-        </div>
-    </div>
-
-    <!-- Scroll to Top Button -->
-    <div id="scrollTopBtn">↑</div>
-
-    <!-- 1. Home Page -->
-    <div id="homePage" class="page active">
-        <!-- Поиск -->
+    <!-- HOME PAGE -->
+    <div class="page active" id="pageHome">
+      <div class="search-container">
         <div class="search-bar">
-            <input type="text" id="searchInput" class="search-input" placeholder="Поиск">
-            <span class="heart-icon">♥</span>
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="searchInput" placeholder="Поиск...">
         </div>
-        
-        <!-- Фильтры (Кнопки) -->
-        <div class="filters">
-            <div class="filter-btn">Категория</div>
-            <div class="filter-btn">Город</div>
-        </div>
-
-        <div class="ads-grid" id="homeGrid">
-        </div>
+      </div>
+      <div class="ads-grid" id="adsGrid">
+        <!-- Ads will be rendered here -->
+      </div>
+      <div class="empty-state" id="homeEmpty" style="display:none;">
+        <div class="empty-state-icon">️</div>
+        <div class="empty-state-text">Пока нет объявлений</div>
+      </div>
     </div>
 
-    <!-- 2. Messages Page -->
-    <div id="messagesPage" class="page">
-        <div class="messages-list">
-            <div class="message-top">
-                <img src="https://via.placeholder.com/40" class="avatar" alt="User">
-                <div class="msg-info">
-                    <div class="msg-name">Продавец 1</div>
-                    <div class="msg-preview">Есть не прочитанное сообщение</div>
-                </div>
-                <div class="msg-badge">1</div>
-            </div>
-            <div class="message-item">
-                <div class="msg-info"><div class="msg-name">Чат 1</div></div>
-            </div>
-            <div class="message-item">
-                <div class="msg-info"><div class="msg-name">Чат 2</div></div>
-            </div>
-            <div class="message-item">
-                <div class="msg-info"><div class="msg-name">Чат 3</div></div>
-            </div>
+    <!-- MESSAGES PAGE -->
+    <div class="page" id="pageMessages">
+      <div class="messages-list" id="messagesList">
+        <div class="empty-state">
+          <div class="empty-state-icon">💬</div>
+          <div class="empty-state-text">У вас пока нет чатов</div>
         </div>
+      </div>
     </div>
 
-    <!-- 3. Profile Page -->
-    <div id="profilePage" class="page">
-        <div class="profile-header">
-            <div class="profile-top-row">
-                <img id="profileAvatar" src="" class="profile-avatar" alt="Avatar">
-                <div class="profile-text">
-                    <div id="profileName" class="profile-name">User Name</div>
-                    <div id="profileUsername" class="profile-username"></div>
-                    <div class="rating">☆☆☆</div>
-                </div>
-                <button id="themeToggle" class="theme-btn">🌙</button>
-            </div>
-            <button class="create-btn" onclick="openModal()">Создать объявление</button>
+    <!-- PROFILE PAGE -->
+    <div class="page" id="pageProfile">
+      <div class="profile-header-section">
+        <div class="profile-top">
+          <div></div>
+          <button class="moon-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
         </div>
-        <h3 style="text-align: center; margin: 0 0 10px 0; font-size: 15px;">Мои объявления</h3>
-        <div class="ads-grid" id="myAdsGrid">
+        <div id="profileAvatarContainer"></div>
+        <div class="profile-name" id="profileName">Загрузка...</div>
+        <div class="profile-username" id="profileUsername">@loading</div>
+        <div class="profile-rating">
+          <span>⭐</span><span>☆</span><span>☆</span>
         </div>
+      </div>
+
+      <button class="create-ad-btn" onclick="openCreateModal()">Создать объявление</button>
+
+      <div class="my-ads-title">Мои объявления</div>
+      <div class="ads-grid" id="myAdsGrid">
+        <!-- User's ads will be rendered here -->
+      </div>
+      <div class="empty-state" id="myAdsEmpty">
+        <div class="empty-state-icon">📝</div>
+        <div class="empty-state-text">У вас пока нет объявлений</div>
+      </div>
     </div>
+  </div>
 
-    <!-- Create Ad Modal -->
-    <div id="createModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Создать объявление</h3>
-                <span class="close-modal" onclick="closeModal()">×</span>
-            </div>
-            <div class="form-group">
-                <label>Фотографии (1-4 шт)</label>
-                <div class="photo-upload" onclick="document.getElementById('fileInput').click()">
-                    Нажмите, чтобы добавить фото
-                </div>
-                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
-                <div class="preview-images" id="previewImages"></div>
-            </div>
-            <div class="form-group">
-                <label>Название товара *</label>
-                <input type="text" id="adTitle" required>
-            </div>
-            <div class="form-group">
-                <label>Цена *</label>
-                <input type="number" id="adPrice" required>
-            </div>
-            <div class="form-group">
-                <label>Город *</label>
-                <input type="text" id="adCity" required>
-            </div>
-            <div class="form-group">
-                <label>Описание (необязательно)</label>
-                <textarea id="adDesc" rows="3"></textarea>
-            </div>
-            <button class="submit-btn" onclick="submitAd()">Создать</button>
-        </div>
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-pill">
+      <button class="nav-item active" onclick="switchTab('home')" id="navHome">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Главная</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('messages')" id="navMessages">
+        <span class="nav-icon">💬</span>
+        <span class="nav-label">Сообщения</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('profile')" id="navProfile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Профиль</span>
+      </button>
     </div>
+  </div>
 
-    <!-- Detail View Page -->
-    <div id="detailPage" class="detail-page">
-        <div class="detail-header">
-            <span class="back-btn" onclick="closeDetail()">←</span>
-            <img src="logo.png" class="detail-logo" alt="Swapka">
-            <span id="detailDeleteBtn" class="delete-btn" onclick="deleteCurrentAd()">🗑️</span>
+  <!-- CREATE AD MODAL -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title">Новое объявление</span>
+        <button class="modal-close" onclick="closeCreateModal()">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Фотографии (1–4)</label>
+        <div class="photos-grid" id="photosGrid">
+          <div class="photo-slot" onclick="addPhoto(0)" id="photoSlot0">
+            <span class="add-icon">+</span>
+          </div>
+          <div class="photo-slot" onclick="addPhoto(1)" id="photoSlot1">
+            <span class="add-icon">+</span>
+          </div>
+          <div class="photo-slot" onclick="addPhoto(2)" id="photoSlot2">
+            <span class="add-icon">+</span>
+          </div>
+          <div class="photo-slot" onclick="addPhoto(3)" id="photoSlot3">
+            <span class="add-icon">+</span>
+          </div>
         </div>
-        <div class="detail-image-container">
-            <img id="detailImg" src="" alt="Item">
-        </div>
-        <div class="detail-content">
-            <div id="detailTitle" class="detail-title">Название товара</div>
-            <div id="detailPrice" class="detail-price">Цена</div>
-            <div id="detailCity" class="detail-city">Город</div>
-            <div id="detailDescLabel" style="margin-bottom:5px; font-size:12px; color:var(--text-secondary);">Описание:</div>
-            <div class="detail-desc-box">
-                <div id="detailDesc">Тут описание товара</div>
-            </div>
-        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Название товара</label>
+        <input type="text" class="form-input" id="adTitle" placeholder="Введите название">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Цена</label>
+        <input type="text" class="form-input" id="adPrice" placeholder="Введите цену">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Город</label>
+        <input type="text" class="form-input" id="adCity" placeholder="Введите город">
+      </div>
+
+      <button class="submit-btn" id="submitAdBtn" onclick="createAd()">Создать</button>
     </div>
+  </div>
 
-    <!-- Bottom Navigation (Pill Style) -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('home')">
-            <span class="nav-icon">🏠</span>
-            <span>Главная</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('messages')">
-            <span class="nav-icon">💬</span>
-            <span>Сообщения</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('profile')">
-            <span class="nav-icon">👤</span>
-            <span>Профиль</span>
-        </div>
+  <!-- AD DETAIL MODAL -->
+  <div class="detail-modal" id="detailModal">
+    <div class="detail-header">
+      <button class="detail-back" onclick="closeDetailModal()">←</button>
+      <img src="messageblood.png" alt="" style="width:30px;height:30px;border-radius:6px;">
+      <button class="detail-back" style="visibility:hidden">←</button>
     </div>
+    <div class="image-carousel" id="detailCarousel">
+      <div class="carousel-track" id="carouselTrack"></div>
+      <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+    <div class="detail-info">
+      <div class="detail-title" id="detailTitle"></div>
+      <div class="detail-price" id="detailPrice"></div>
+      <div class="detail-city" id="detailCity"></div>
+      <div class="detail-seller">
+        <div class="detail-seller-avatar" id="detailSellerAvatar">👤</div>
+        <div>
+          <div class="detail-seller-name" id="detailSellerName"></div>
+        </div>
+      </div>
+      <button class="detail-contact-btn" onclick="contactSeller()">Написать продавцу</button>
+    </div>
+  </div>
 
-    <script>
-        // Telegram Web App Initialization
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+  <!-- HIDDEN FILE INPUT -->
+  <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
-        // --- Admin/Moderator Configuration ---
-        const STAFF_ROLES = {
-            'qvilxy': 'admin',
+  <script>
+    // ===== INITIALIZATION =====
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    // Apply Telegram theme
+    const isDark = tg.colorScheme === 'dark';
+    if (isDark) {
+      document.body.classList.add('dark-theme');
+      document.getElementById('themeToggle').textContent = '☀️';
+    }
+
+    // Get user info
+    const user = tg.initDataUnsafe?.user;
+    const currentUser = {
+      id: user?.id || 'guest_' + Date.now(),
+      firstName: user?.first_name || 'Гость',
+      lastName: user?.last_name || '',
+      username: user?.username || '',
+      photoUrl: user?.photo_url || ''
+    };
+
+    // ===== DATA STORAGE =====
+    const ADS_KEY = 'swapka_ads';
+    const THEME_KEY = 'swapka_theme';
+
+    function loadAds() {
+      try {
+        const data = localStorage.getItem(ADS_KEY);
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveAds(ads) {
+      try {
+        localStorage.setItem(ADS_KEY, JSON.stringify(ads));
+      } catch (e) {
+        console.error('Failed to save ads:', e);
+      }
+    }
+
+    function loadTheme() {
+      return localStorage.getItem(THEME_KEY) || 'light';
+    }
+
+    function saveTheme(theme) {
+      localStorage.setItem(THEME_KEY, theme);
+    }
+
+    // ===== THEME =====
+    function toggleTheme() {
+      const body = document.body;
+      const btn = document.getElementById('themeToggle');
+      if (body.classList.contains('dark-theme')) {
+        body.classList.remove('dark-theme');
+        btn.textContent = '🌙';
+        saveTheme('light');
+      } else {
+        body.classList.add('dark-theme');
+        btn.textContent = '☀️';
+        saveTheme('dark');
+      }
+    }
+
+    // Apply saved theme
+    const savedTheme = loadTheme();
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+      document.getElementById('themeToggle').textContent = '☀️';
+    }
+
+    // ===== PROFILE SETUP =====
+    function setupProfile() {
+      const avatarContainer = document.getElementById('profileAvatarContainer');
+      if (currentUser.photoUrl) {
+        avatarContainer.innerHTML = `<img src="${currentUser.photoUrl}" class="profile-avatar" alt="Avatar">`;
+      } else {
+        avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
+      }
+
+      document.getElementById('profileName').textContent =
+        currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
+      document.getElementById('profileUsername').textContent =
+        currentUser.username ? '@' + currentUser.username : '';
+    }
+
+    setupProfile();
+
+    // ===== TAB SWITCHING =====
+    function switchTab(tab) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+      // Show selected page
+      switch (tab) {
+        case 'home':
+          document.getElementById('pageHome').classList.add('active');
+          document.getElementById('navHome').classList.add('active');
+          break;
+        case 'messages':
+          document.getElementById('pageMessages').classList.add('active');
+          document.getElementById('navMessages').classList.add('active');
+          break;
+        case 'profile':
+          document.getElementById('pageProfile').classList.add('active');
+          document.getElementById('navProfile').classList.add('active');
+          renderMyAds();
+          break;
+      }
+    }
+
+    // ===== ADS RENDERING =====
+    function renderAds(filter = '') {
+      const ads = loadAds();
+      const grid = document.getElementById('adsGrid');
+      const empty = document.getElementById('homeEmpty');
+      grid.innerHTML = '';
+
+      let filteredAds = ads;
+      if (filter.trim()) {
+        const q = filter.toLowerCase().trim();
+        filteredAds = ads.filter(ad => ad.title.toLowerCase().includes(q));
+      }
+
+      if (filteredAds.length === 0) {
+        empty.style.display = 'flex';
+        if (filter.trim() && ads.length > 0) {
+          empty.querySelector('.empty-state-icon').textContent = '🔍';
+          empty.querySelector('.empty-state-text').textContent = 'Ничего не найдено';
+        } else {
+          empty.querySelector('.empty-state-icon').textContent = '🏷️';
+          empty.querySelector('.empty-state-text').textContent = 'Пока нет объявлений';
+        }
+      } else {
+        empty.style.display = 'none';
+        filteredAds.forEach(ad => {
+          grid.appendChild(createAdCard(ad));
+        });
+      }
+    }
+
+    function createAdCard(ad) {
+      const card = document.createElement('div');
+      card.className = 'ad-card';
+      card.onclick = () => openDetailModal(ad);
+
+      const imgHtml = ad.photos && ad.photos.length > 0
+        ? `<img class="ad-image" src="${ad.photos[0]}" alt="${ad.title}">`
+        : `<div class="ad-image-placeholder">📷</div>`;
+
+      card.innerHTML = `
+        <div class="ad-image-container">${imgHtml}</div>
+        <div class="ad-info">
+          <div class="ad-title">${escapeHtml(ad.title)}</div>
+          <div class="ad-price">${escapeHtml(ad.price)}</div>
+          <div class="ad-city">📍 ${escapeHtml(ad.city)}</div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    function renderMyAds() {
+      const ads = loadAds();
+      const grid = document.getElementById('myAdsGrid');
+      const empty = document.getElementById('myAdsEmpty');
+      grid.innerHTML = '';
+
+      const myAds = ads.filter(ad => ad.userId === currentUser.id);
+
+      if (myAds.length === 0) {
+        empty.style.display = 'flex';
+      } else {
+        empty.style.display = 'none';
+        myAds.forEach(ad => {
+          grid.appendChild(createAdCard(ad));
+        });
+      }
+    }
+
+    // ===== SEARCH =====
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function (e) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        renderAds(e.target.value);
+      }, 200);
+    });
+
+    // ===== CREATE AD =====
+    let selectedPhotos = [];
+    let currentPhotoIndex = -1;
+
+    function openCreateModal() {
+      selectedPhotos = [];
+      resetPhotoSlots();
+      document.getElementById('adTitle').value = '';
+      document.getElementById('adPrice').value = '';
+      document.getElementById('adCity').value = '';
+      document.getElementById('createModal').classList.add('active');
+      tg.HapticFeedback?.impactOccurred('medium');
+    }
+
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.remove('active');
+    }
+
+    function resetPhotoSlots() {
+      for (let i = 0; i < 4; i++) {
+        const slot = document.getElementById('photoSlot' + i);
+        slot.innerHTML = '<span class="add-icon">+</span>';
+        slot.style.display = 'flex';
+        slot.onclick = () => addPhoto(i);
+      }
+    }
+
+    function addPhoto(index) {
+      currentPhotoIndex = index;
+      document.getElementById('photoInput').click();
+    }
+
+    function handlePhotoSelect(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      const remainingSlots = 4 - selectedPhotos.length;
+      const filesToProcess = Math.min(files.length, remainingSlots);
+
+      for (let i = 0; i < filesToProcess; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const dataUrl = e.target.result;
+          const slotIndex = selectedPhotos.length;
+          if (slotIndex >= 4) return;
+
+          selectedPhotos.push(dataUrl);
+          updatePhotoSlot(slotIndex, dataUrl);
         };
-        
-        // --- LocalStorage Loading ---
-        let ads = JSON.parse(localStorage.getItem('swapka_ads')) || [];
-        let userAds = JSON.parse(localStorage.getItem('swapka_user_ads')) || [];
-        
-        let uploadedImages = [];
-        let currentDetailAdId = null;
-        let currentUserUsername = null;
-        let userRole = null;
+        reader.readAsDataURL(file);
+      }
 
-        // --- Theme Toggle Logic ---
-        const themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('swapka_theme') || 'light';
+      event.target.value = '';
+    }
 
-        function applyTheme(theme) {
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-                themeToggle.textContent = '☀️';
-            } else {
-                document.body.classList.remove('dark-theme');
-                themeToggle.textContent = '🌙';
-            }
-            localStorage.setItem('swapka_theme', theme);
+    function updatePhotoSlot(index, dataUrl) {
+      const slot = document.getElementById('photoSlot' + index);
+      slot.innerHTML = `
+        <img src="${dataUrl}" alt="Photo">
+        <button class="remove-btn" onclick="removePhoto(event, ${index})">✕</button>
+      `;
+      slot.onclick = null;
+    }
+
+    function removePhoto(event, index) {
+      event.stopPropagation();
+      selectedPhotos.splice(index, 1);
+
+      // Rebuild slots
+      resetPhotoSlots();
+      selectedPhotos.forEach((photo, i) => {
+        updatePhotoSlot(i, photo);
+      });
+    }
+
+    function createAd() {
+      const title = document.getElementById('adTitle').value.trim();
+      const price = document.getElementById('adPrice').value.trim();
+      const city = document.getElementById('adCity').value.trim();
+
+      if (!title) {
+        tg.showAlert('Введите название товара');
+        return;
+      }
+      if (!price) {
+        tg.showAlert('Введите цену');
+        return;
+      }
+      if (!city) {
+        tg.showAlert('Введите город');
+        return;
+      }
+      if (selectedPhotos.length === 0) {
+        tg.showAlert('Добавьте хотя бы одну фотографию');
+        return;
+      }
+
+      const ads = loadAds();
+      const newAd = {
+        id: 'ad_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        userId: currentUser.id,
+        userName: currentUser.firstName,
+        userUsername: currentUser.username,
+        userPhoto: currentUser.photoUrl,
+        title: title,
+        price: price,
+        city: city,
+        photos: selectedPhotos.slice(0, 4),
+        createdAt: Date.now()
+      };
+
+      ads.unshift(newAd);
+      saveAds(ads);
+
+      closeCreateModal();
+      renderAds();
+      renderMyAds();
+      tg.HapticFeedback?.notificationOccurred('success');
+      tg.showAlert('Объявление создано! ✅');
+    }
+
+    // ===== AD DETAIL =====
+    let currentCarouselIndex = 0;
+
+    function openDetailModal(ad) {
+      const modal = document.getElementById('detailModal');
+      document.getElementById('detailTitle').textContent = ad.title;
+      document.getElementById('detailPrice').textContent = ad.price;
+      document.getElementById('detailCity').textContent = '📍 ' + ad.city;
+      document.getElementById('detailSellerName').textContent = ad.userName || 'Продавец';
+
+      if (ad.userPhoto) {
+        document.getElementById('detailSellerAvatar').innerHTML = `<img src="${ad.userPhoto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`;
+      } else {
+        document.getElementById('detailSellerAvatar').innerHTML = '👤';
+      }
+
+      // Build carousel
+      const track = document.getElementById('carouselTrack');
+      const dots = document.getElementById('carouselDots');
+      track.innerHTML = '';
+      dots.innerHTML = '';
+      currentCarouselIndex = 0;
+
+      ad.photos.forEach((photo, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        slide.innerHTML = `<img src="${photo}" alt="Photo ${i + 1}">`;
+        track.appendChild(slide);
+
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        dots.appendChild(dot);
+      });
+
+      // Store current ad for contact
+      modal.dataset.adId = ad.id;
+
+      modal.classList.add('active');
+      tg.HapticFeedback?.impactOccurred('light');
+    }
+
+    function goToSlide(index) {
+      const track = document.getElementById('carouselTrack');
+      track.style.transform = `translateX(-${index * 100}%)`;
+      currentCarouselIndex = index;
+
+      document.querySelectorAll('.carousel-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === index);
+      });
+    }
+
+    // Touch swipe for carousel
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.getElementById('detailCarousel').addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.getElementById('detailCarousel').addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      const totalSlides = document.querySelectorAll('.carousel-slide').length;
+
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && currentCarouselIndex < totalSlides - 1) {
+          goToSlide(currentCarouselIndex + 1);
+        } else if (diff < 0 && currentCarouselIndex > 0) {
+          goToSlide(currentCarouselIndex - 1);
         }
+      }
+    }, { passive: true });
 
-        applyTheme(savedTheme);
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
 
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
-            applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
-        });
+    function contactSeller() {
+      const modal = document.getElementById('detailModal');
+      const adId = modal.dataset.adId;
+      const ads = loadAds();
+      const ad = ads.find(a => a.id === adId);
+      if (ad && ad.userUsername) {
+        tg.openTelegramLink(`https://t.me/${ad.userUsername}`);
+      } else {
+        tg.showAlert('Контакты продавца недоступны');
+      }
+    }
 
-        // --- Init ---
-        window.onload = function() {
-            renderHome();
-            setupTelegramUser();
-        };
+    // ===== CLOSE MODAL ON OVERLAY CLICK =====
+    document.getElementById('createModal').addEventListener('click', function (e) {
+      if (e.target === this) closeCreateModal();
+    });
 
-        function setupTelegramUser() {
-            const user = tg.initDataUnsafe?.user;
-            if (user) {
-                document.getElementById('profileName').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-                
-                currentUserUsername = user.username || null;
-                if (currentUserUsername) {
-                    document.getElementById('profileUsername').innerText = '@' + currentUserUsername;
-                    const normalizedUsername = currentUserUsername.toLowerCase();
-                    userRole = STAFF_ROLES[normalizedUsername] || null;
-                } else {
-                    document.getElementById('profileUsername').innerText = '';
-                    userRole = null;
-                }
-                
-                if (user.photo_url) {
-                    document.getElementById('profileAvatar').src = user.photo_url;
-                } else {
-                    document.getElementById('profileAvatar').src = 'https://via.placeholder.com/80?text=User';
-                }
-
-                if (userRole) {
-                    showRoleNotification(userRole);
-                }
-            } else {
-                document.getElementById('profileName').innerText = "Тестовый Пользователь";
-                document.getElementById('profileUsername').innerText = '';
-                document.getElementById('profileAvatar').src = 'https://via.placeholder.com/80?text=User';
-                userRole = null;
-            }
-        }
-
-        // --- Role Notification ---
-        function showRoleNotification(role) {
-            const toast = document.getElementById('toast');
-            if (role === 'admin') {
-                toast.textContent = '👑 Вы вошли как Администратор';
-                toast.className = 'toast admin show';
-            } else if (role === 'moderator') {
-                toast.textContent = '🛡️ Вы вошли как Модератор';
-                toast.className = 'toast moderator show';
-            }
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    toast.className = 'toast';
-                }, 300);
-            }, 4000);
-        }
-
-        // --- Navigation Function ---
-        function switchTab(tabName) {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => {
-                page.classList.remove('active');
-            });
-
-            const headers = document.querySelectorAll('.page-header');
-            headers.forEach(header => {
-                header.style.display = 'none';
-            });
-
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                item.classList.remove('active');
-            });
-
-            const targetPage = document.getElementById(tabName + 'Page');
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-
-            const targetHeader = document.getElementById(tabName + 'Header');
-            if (targetHeader) {
-                targetHeader.style.display = 'block';
-            }
-
-            const tabs = ['home', 'messages', 'profile'];
-            const index = tabs.indexOf(tabName);
-            if (index !== -1 && navItems[index]) {
-                navItems[index].classList.add('active');
-            }
-
-            if (tabName === 'profile') {
-                renderMyAds();
-            }
-        }
-
-        // --- Rendering ---
-        function renderHome(filterText = '') {
-            const grid = document.getElementById('homeGrid');
-            grid.innerHTML = '';
-            
-            const filteredAds = ads.filter(ad => 
-                ad.title.toLowerCase().includes(filterText.toLowerCase())
-            );
-
-            if (filteredAds.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📦</div>
-                        <div>Пока нет объявлений</div>
-                    </div>
-                `;
-                return;
-            }
-
-            filteredAds.forEach(ad => {
-                grid.innerHTML += createAdCard(ad);
-            });
-        }
-
-        function renderMyAds() {
-            const grid = document.getElementById('myAdsGrid');
-            grid.innerHTML = '';
-            
-            if (userAds.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📝</div>
-                        <div>У вас пока нет объявлений</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            userAds.forEach(ad => {
-                grid.innerHTML += createAdCard(ad);
-            });
-        }
-
-        function createAdCard(ad) {
-            const imgTag = ad.img 
-                ? `<img src="${ad.img}" class="ad-image" alt="${ad.title}">` 
-                : `<div class="ad-placeholder"></div>`;
-
-            return `
-                <div class="ad-card" onclick="openDetail(${ad.id})">
-                    ${imgTag}
-                    <div class="ad-info">
-                        <div class="ad-title">${ad.title}</div>
-                        <div class="ad-price">${ad.price} ₽</div>
-                        <div class="ad-city">${ad.city}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // --- Search Logic ---
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            renderHome(e.target.value);
-        });
-
-        // --- Scroll Logic (Hide Header) ---
-        const homePage = document.getElementById('homePage');
-        const homeHeader = document.getElementById('homeHeader');
-        const scrollTopBtn = document.getElementById('scrollTopBtn');
-
-        homePage.addEventListener('scroll', () => {
-            if (homePage.scrollTop > 100) {
-                homeHeader.classList.add('hidden');
-                scrollTopBtn.style.display = 'flex';
-            } else {
-                homeHeader.classList.remove('hidden');
-                scrollTopBtn.style.display = 'none';
-            }
-        });
-
-        scrollTopBtn.addEventListener('click', () => {
-            homePage.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // --- Create Ad Modal ---
-        function openModal() {
-            document.getElementById('createModal').classList.add('active');
-            document.getElementById('adTitle').value = '';
-            document.getElementById('adPrice').value = '';
-            document.getElementById('adCity').value = '';
-            document.getElementById('adDesc').value = '';
-            document.getElementById('previewImages').innerHTML = '';
-            uploadedImages = [];
-        }
-
-        function closeModal() {
-            document.getElementById('createModal').classList.remove('active');
-        }
-
-        // File Input Handling
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            if (uploadedImages.length + files.length > 4) {
-                alert("Можно добавить не более 4 фотографий");
-                return;
-            }
-
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedImages.push(e.target.result);
-                    renderPreviews();
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-
-        function renderPreviews() {
-            const container = document.getElementById('previewImages');
-            container.innerHTML = '';
-            uploadedImages.forEach(src => {
-                container.innerHTML += `<img src="${src}" class="preview-img">`;
-            });
-        }
-
-        function submitAd() {
-            const title = document.getElementById('adTitle').value;
-            const price = document.getElementById('adPrice').value;
-            const city = document.getElementById('adCity').value;
-            const desc = document.getElementById('adDesc').value;
-
-            if (uploadedImages.length === 0) {
-                alert("Добавьте хотя бы одну фотографию");
-                return;
-            }
-            if (!title || !price || !city) {
-                alert("Заполните обязательные поля (Название, Цена, Город)");
-                return;
-            }
-
-            const newAd = {
-                id: Date.now(),
-                title: title,
-                price: price,
-                city: city,
-                desc: desc,
-                img: uploadedImages[0]
-            };
-
-            ads.unshift(newAd);
-            userAds.unshift(newAd);
-            
-            saveAdsToStorage();
-            saveUserAdsToStorage();
-
-            renderHome();
-            closeModal();
-            showToast('Объявление успешно создано!', '#4CAF50');
-        }
-
-        // --- LocalStorage Saving Functions ---
-        function saveUserAdsToStorage() {
-            try {
-                localStorage.setItem('swapka_user_ads', JSON.stringify(userAds));
-            } catch (e) {
-                console.error('Failed to save user ads:', e);
-            }
-        }
-
-        function saveAdsToStorage() {
-            try {
-                localStorage.setItem('swapka_ads', JSON.stringify(ads));
-            } catch (e) {
-                console.error('Failed to save ads:', e);
-                alert('Не удалось сохранить объявление.');
-            }
-        }
-
-        function showToast(message, color) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.background = color;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // --- Detail View ---
-        function openDetail(id) {
-            let ad = ads.find(a => a.id === id);
-            if (!ad) return;
-
-            currentDetailAdId = id;
-
-            document.getElementById('detailTitle').innerText = ad.title;
-            document.getElementById('detailPrice').innerText = ad.price + " ₽";
-            document.getElementById('detailCity').innerText = ad.city;
-            document.getElementById('detailDesc').innerText = ad.desc || "Описание отсутствует";
-            
-            const detailImg = document.getElementById('detailImg');
-            if (ad.img) {
-                detailImg.src = ad.img;
-                detailImg.style.display = 'block';
-            } else {
-                detailImg.style.display = 'none'; 
-            }
-
-            const isMyAd = userAds.some(uAd => uAd.id === id);
-            const deleteBtn = document.getElementById('detailDeleteBtn');
-            
-            if (userRole === 'admin' || userRole === 'moderator' || isMyAd) {
-                deleteBtn.style.display = 'block';
-            } else {
-                deleteBtn.style.display = 'none';
-            }
-
-            document.getElementById('detailPage').classList.add('active');
-        }
-
-        function deleteCurrentAd() {
-            if (!currentDetailAdId) return;
-            
-            if(confirm('Вы уверены, что хотите удалить это объявление?')) {
-                ads = ads.filter(ad => ad.id !== currentDetailAdId);
-                userAds = userAds.filter(ad => ad.id !== currentDetailAdId);
-                
-                saveAdsToStorage();
-                saveUserAdsToStorage();
-                
-                closeDetail();
-                renderHome();
-                showToast('Объявление удалено!', '#ff4b4b');
-            }
-        }
-
-        function closeDetail() {
-            document.getElementById('detailPage').classList.remove('active');
-            currentDetailAdId = null;
-            switchTab('home'); 
-        }
-
-    </script>
+    // ===== INITIAL RENDER =====
+    renderAds();
+    renderMyAds();
+  </script>
 </body>
 </html>
+```
+
+## Как развернуть
+
+1. **Создайте файл** `index.html` и вставьте код выше
+2. **Положите рядом** файл `messageblood.png` (логотип шапки)
+3. **Захостите** на любом HTTPS-хостинге (GitHub Pages, Vercel, Netlify и т.д.)
+4. **Откройте BotFather** → `/newapp` → укажите URL вашего хостинга
+5. **Готово** — Mini App запущен
+
+## Что реализовано
+
+| Функция | Статус |
+|---|---|
+| 3 вкладки с нижней панелью | ✅ |
+| Логотип `messageblood.png` в шапке | ✅ |
+| Поиск по ключевым словам | ✅ |
+| Объявления с фото, названием, ценой, городом | ✅ |
+| Скруглённые углы карточек | ✅ |
+| Создание объявлений (1–4 фото, название, цена, город) | ✅ |
+| Объявления видны всем пользователям | ✅ |
+| Профиль с данными из Telegram | ✅ |
+| «Мои объявления» в профиле | ✅ |
+| Лунка для переключения тёмной/светлой темы | ✅ |
+| Данные сохраняются при перезапуске (localStorage) | ✅ |
+| Карусель фото в деталях объявления | ✅ |
+| Связь с продавцом через Telegram | ✅ |
