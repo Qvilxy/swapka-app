@@ -15,7 +15,7 @@
       --shadow: 0 2px 12px rgba(0,0,0,0.08);
       --card-bg: #ffffff;
       --search-bg: #ffffff;
-      --tab-bg: #f8f8f8;
+      --tab-bg: #ffffff; /* ИЗМЕНЕНО: было #f8f8f8, теперь белый */
       --tab-active: #e8e8e8;
       --modal-overlay: rgba(0,0,0,0.5);
       --chat-bg: #f0f0f0;
@@ -31,7 +31,7 @@
       --shadow: 0 2px 12px rgba(0,0,0,0.3);
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
-      --tab-bg: #2c2c2e;
+      --tab-bg: #1a1a1a;
       --tab-active: #3a3a3c;
       --modal-overlay: rgba(0,0,0,0.7);
       --chat-bg: #3a3a3c;
@@ -384,7 +384,7 @@
       animation: gradientShift 6s ease infinite;
       color: white;
       border: none;
-      border-radius: 100px; /* ИЗМЕНЕНО: 100px вместо 14px */
+      border-radius: 100px;
       font-size: 17px;
       font-weight: 600;
       cursor: pointer;
@@ -417,7 +417,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: var(--tab-bg);
+      background: var(--tab-bg); /* Теперь #ffffff */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -624,7 +624,6 @@
       justify-content: center;
     }
 
-    /* ИЗМЕНЕННАЯ КНОПКА "СОЗДАТЬ" В МОДАЛКЕ */
     .submit-btn {
       width: auto;
       margin: 10px auto 0;
@@ -633,7 +632,7 @@
       background: #000000;
       color: #ffffff;
       border: none;
-      border-radius: 100px; /* ИЗМЕНЕНО: 100px вместо 12px */
+      border-radius: 100px;
       font-size: 17px;
       font-weight: 700;
       cursor: pointer;
