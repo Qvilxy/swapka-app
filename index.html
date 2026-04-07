@@ -100,7 +100,6 @@
         .logo-container {
             position: absolute;
             left: 50%;
-            /* ИЗМЕНЕНИЕ: Логотип смещен вниз на 48px (было 43px) */
             top: 48px; 
             transform: translateX(-50%);
             display: flex;
@@ -118,7 +117,6 @@
 
         /* Поиск */
         .search-bar {
-            /* Обновлен отступ: 60px (хедер) + 48px (лого) + 5px (зазор) = 113px */
             margin-top: 113px; 
             padding: 0 12px;
             display: flex;
@@ -192,14 +190,11 @@
             padding-bottom: 90px;
             background-color: var(--bg-color);
             padding-top: 0;
+            position: relative; /* Важно для позиционирования empty-state */
         }
 
         .page.active {
             display: block;
-        }
-
-        .content-spacer {
-            display: none; 
         }
 
         /* --- Grid Layout --- */
@@ -209,6 +204,8 @@
             gap: 8px;
             padding: 8px;
             margin-top: 0; 
+            position: relative;
+            min-height: calc(100vh - 200px); /* Чтобы сетка занимала место */
         }
 
         .ad-card {
@@ -671,7 +668,7 @@
         .toast.admin { background: var(--admin-toast-bg); }
         .toast.moderator { background: var(--moderator-toast-bg); }
 
-        /* --- Empty State --- */
+        /* --- Empty State (ИСПРАВЛЕНО) --- */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -679,9 +676,16 @@
             align-items: center;
             text-align: center;
             color: var(--text-muted);
-            grid-column: 1 / -1; 
-            margin-top: 150px; 
-            padding-bottom: 50px;
+            
+            /* Центрирование по экрану */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            
+            margin-top: 0; /* Убираем отступ сверху */
+            padding-bottom: 0;
         }
 
         .empty-state-icon { font-size: 40px; margin-bottom: 8px; }
