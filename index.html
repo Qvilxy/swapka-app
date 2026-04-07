@@ -305,6 +305,7 @@
       cursor: pointer;
       padding: 8px;
       transition: transform 0.3s;
+      pointer-events: auto; /* Гарантируем кликабельность */
     }
 
     .moon-btn:active {
@@ -374,10 +375,12 @@
 
     .create-ad-btn {
       display: block;
-      width: auto;
-      min-width: fit-content;
+      /* Центрирование и отступы */
       margin: 0 auto 20px;
-      padding: 14px 10px;
+      padding: 14px 15px; /* Увеличили отступы с 10 до 15px */
+      width: fit-content; /* Ширина по контенту */
+      min-width: 200px; /* Минимальная ширина чтобы не было слишком узкой */
+      
       background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
       background-size: 400% 400%;
       animation: gradientShift 6s ease infinite;
@@ -623,18 +626,20 @@
       justify-content: center;
     }
 
+    /* ИЗМЕНЕННАЯ КНОПКА "СОЗДАТЬ" В МОДАЛКЕ */
     .submit-btn {
-      width: 100%;
-      padding: 16px;
-      background: #000000;
-      color: #ffffff;
+      width: auto; /* Не на всю ширину */
+      margin: 10px auto 0; /* Центрирование */
+      display: block;
+      padding: 16px 15px; /* Отступы по 15px */
+      background: #000000; /* Черный фон */
+      color: #ffffff; /* Белый текст */
       border: none;
-      border-radius: 14px;
+      border-radius: 12px; /* Скругленные края */
       font-size: 17px;
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
-      margin-top: 10px;
       transition: transform 0.2s, opacity 0.2s;
     }
 
@@ -1006,10 +1011,11 @@
       localStorage.setItem(THEME_KEY, theme);
     }
 
-    // ===== FIXED THEME INITIALIZATION =====
+    // ===== ИСПРАВЛЕННАЯ ИНИЦИАЛИЗАЦИЯ ТЕМЫ =====
     function applyTheme(theme) {
       const body = document.body;
       const btn = document.getElementById('themeToggle');
+      
       if (theme === 'dark') {
         body.classList.add('dark-theme');
         if (btn) btn.textContent = '☀️';
@@ -1019,17 +1025,18 @@
       }
     }
 
-    // Сначала проверяем сохранённую тему, иначе системную
+    // Проверяем сначала сохраненную тему
     const savedTheme = loadTheme();
     if (savedTheme === 'dark' || savedTheme === 'light') {
       applyTheme(savedTheme);
     } else {
+      // Если нет сохраненной, берем системную
       applyTheme(tg.colorScheme === 'dark' ? 'dark' : 'light');
     }
 
     function toggleTheme() {
       const body = document.body;
-      const btn = document.getElementById('themeToggle');
+      // Переключаем класс
       if (body.classList.contains('dark-theme')) {
         applyTheme('light');
         saveTheme('light');
