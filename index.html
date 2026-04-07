@@ -26,6 +26,8 @@
             --danger-color: #ff4b4b;
             --active-blue: #5754A4;
             --nav-active-bg: #F5F5F5;
+            --admin-toast-bg: #8B5CF6;
+            --moderator-toast-bg: #3B82F6;
         }
 
         .dark-theme {
@@ -45,6 +47,8 @@
             --shadow-color: rgba(0,0,0,0.4);
             --active-blue: #8884FF;
             --nav-active-bg: #333333;
+            --admin-toast-bg: #7C3AED;
+            --moderator-toast-bg: #2563EB;
         }
 
         * {
@@ -326,6 +330,12 @@
             font-size: 16px;
             font-weight: bold;
             color: var(--text-color);
+        }
+
+        .profile-username {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
         }
 
         .rating {
@@ -629,6 +639,14 @@
             opacity: 1;
         }
 
+        /* Admin/Moderator Toast */
+        .toast.admin {
+            background: var(--admin-toast-bg);
+        }
+        .toast.moderator {
+            background: var(--moderator-toast-bg);
+        }
+
         /* --- Empty State --- */
         .empty-state {
             text-align: center;
@@ -722,6 +740,7 @@
                 <img id="profileAvatar" src="" class="profile-avatar" alt="Avatar">
                 <div class="profile-text">
                     <div id="profileName" class="profile-name">User Name</div>
+                    <div id="profileUsername" class="profile-username"></div>
                     <div class="rating">☆☆☆</div>
                 </div>
                 <button id="themeToggle" class="theme-btn">🌙</button>
@@ -810,12 +829,21 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // --- Admin/Moderator Configuration ---
+        const STAFF_ROLES = {
+            'qvilxy': 'admin',      // Admin: can delete any ad
+            // 'moderator1': 'moderator',  // Example moderator
+            // 'mod2': 'moderator'
+        };
+        
         // --- LocalStorage Loading ---
         let ads = JSON.parse(localStorage.getItem('swapka_ads')) || [];
         let userAds = JSON.parse(localStorage.getItem('swapka_user_ads')) || [];
         
         let uploadedImages = [];
         let currentDetailAdId = null;
+        let currentUserUsername = null;
+        let userRole = null; // 'admin', 'moderator', or null
 
         // --- Theme Toggle Logic ---
         const themeToggle = document.getElementById('themeToggle');
@@ -849,15 +877,54 @@
             const user = tg.initDataUnsafe?.user;
             if (user) {
                 document.getElementById('profileName').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+                
+                // Get username
+                currentUserUsername = user.username || null;
+                if (currentUserUsername) {
+                    document.getElementById('profileUsername').innerText = '@' + currentUserUsername;
+                    // Check if user is staff
+                    const normalizedUsername = currentUserUsername.toLowerCase();
+                    userRole = STAFF_ROLES[normalizedUsername] || null;
+                } else {
+                    document.getElementById('profileUsername').innerText = '';
+                    userRole = null;
+                }
+                
                 if (user.photo_url) {
                     document.getElementById('profileAvatar').src = user.photo_url;
                 } else {
                     document.getElementById('profileAvatar').src = 'https://via.placeholder.com/80?text=User';
                 }
+
+                // Show role notification if staff
+                if (userRole) {
+                    showRoleNotification(userRole);
+                }
             } else {
                 document.getElementById('profileName').innerText = "Тестовый Пользователь";
+                document.getElementById('profileUsername').innerText = '';
                 document.getElementById('profileAvatar').src = 'https://via.placeholder.com/80?text=User';
+                userRole = null;
             }
+        }
+
+        // --- Role Notification ---
+        function showRoleNotification(role) {
+            const toast = document.getElementById('toast');
+            if (role === 'admin') {
+                toast.textContent = '👑 Вы вошли как Администратор';
+                toast.className = 'toast admin show';
+            } else if (role === 'moderator') {
+                toast.textContent = '🛡️ Вы вошли как Модератор';
+                toast.className = 'toast moderator show';
+            }
+            setTimeout(() => {
+                toast.classList.remove('show');
+                // Reset to default class after animation
+                setTimeout(() => {
+                    toast.className = 'toast';
+                }, 300);
+            }, 4000);
         }
 
         // --- Navigation ---
@@ -1085,10 +1152,13 @@
                 detailImg.style.display = 'none'; 
             }
 
+            // Show delete button if:
+            // 1. User is admin or moderator (can delete any ad)
+            // 2. OR it's user's own ad
             const isMyAd = userAds.some(uAd => uAd.id === id);
             const deleteBtn = document.getElementById('detailDeleteBtn');
             
-            if (isMyAd) {
+            if (userRole === 'admin' || userRole === 'moderator' || isMyAd) {
                 deleteBtn.style.display = 'block';
             } else {
                 deleteBtn.style.display = 'none';
