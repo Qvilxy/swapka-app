@@ -22,6 +22,7 @@
             --desc-box-bg: #E0A66B;
             --shadow-color: rgba(0,0,0,0.1);
             --btn-create-gradient: linear-gradient(90deg, #f5a66b, #e06b6b);
+            --danger-color: #ff4b4b;
         }
 
         .dark-theme {
@@ -537,6 +538,19 @@
             width: auto;
         }
 
+        /* Кнопка удаления */
+        .delete-btn {
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: auto; /* Прижимает вправо */
+            padding: 5px;
+            display: none; /* Скрыта по умолчанию */
+        }
+
+        .delete-btn:hover {
+            opacity: 0.7;
+        }
+
         .detail-image-container {
             width: 100%;
             height: 280px;
@@ -624,6 +638,7 @@
 
     <!-- Toast Notification -->
     <div id="toast" class="toast">Объявление успешно создано!</div>
+    <div id="deleteToast" class="toast" style="background: #ff4b4b;">Объявление удалено!</div>
 
     <!-- Home Page Header -->
     <div id="homeHeader" class="page-header">
@@ -746,6 +761,8 @@
         <div class="detail-header">
             <span class="back-btn" onclick="closeDetail()">←</span>
             <img src="logo.png" class="detail-logo" alt="Swapka">
+            <!-- Корзина для удаления -->
+            <span id="detailDeleteBtn" class="delete-btn" onclick="deleteCurrentAd()">🗑️</span>
         </div>
         <div class="detail-image-container">
             <img id="detailImg" src="" alt="Item">
@@ -782,10 +799,11 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Инициализация пустого массива (без тестовых данных)
+        // Инициализация пустого массива
         let ads = JSON.parse(localStorage.getItem('swapka_ads')) || [];
         let userAds = [];
         let uploadedImages = [];
+        let currentDetailAdId = null; // ID объявления, которое сейчас открыто
 
         // --- Theme Toggle Logic ---
         const themeToggle = document.getElementById('themeToggle');
@@ -1002,7 +1020,7 @@
 
             renderHome();
             closeModal();
-            showToast();
+            showToast('Объявление успешно создано!', '#4CAF50');
         }
 
         function saveAdsToStorage() {
@@ -1010,12 +1028,14 @@
                 localStorage.setItem('swapka_ads', JSON.stringify(ads));
             } catch (e) {
                 console.error('Failed to save ads:', e);
-                alert('Не удалось сохранить объявление. Возможно, недостаточно места.');
+                alert('Не удалось сохранить объявление.');
             }
         }
 
-        function showToast() {
+        function showToast(message, color) {
             const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = color;
             toast.classList.add('show');
             setTimeout(() => {
                 toast.classList.remove('show');
@@ -1026,6 +1046,8 @@
         function openDetail(id) {
             let ad = ads.find(a => a.id === id);
             if (!ad) return;
+
+            currentDetailAdId = id; // Запоминаем ID текущего открытого объявления
 
             document.getElementById('detailTitle').innerText = ad.title;
             document.getElementById('detailPrice').innerText = ad.price + " ₽";
@@ -1040,11 +1062,39 @@
                 detailImg.style.display = 'none'; 
             }
 
+            // Проверяем, является ли объявление "своим"
+            const isMyAd = userAds.some(uAd => uAd.id === id);
+            const deleteBtn = document.getElementById('detailDeleteBtn');
+            
+            if (isMyAd) {
+                deleteBtn.style.display = 'block';
+            } else {
+                deleteBtn.style.display = 'none';
+            }
+
             document.getElementById('detailPage').classList.add('active');
+        }
+
+        function deleteCurrentAd() {
+            if (!currentDetailAdId) return;
+            
+            if(confirm('Вы уверены, что хотите удалить это объявление?')) {
+                // Удаляем из общего списка
+                ads = ads.filter(ad => ad.id !== currentDetailAdId);
+                // Удаляем из списка пользователя
+                userAds = userAds.filter(ad => ad.id !== currentDetailAdId);
+                
+                saveAdsToStorage();
+                
+                closeDetail();
+                renderHome();
+                showToast('Объявление удалено!', '#ff4b4b');
+            }
         }
 
         function closeDetail() {
             document.getElementById('detailPage').classList.remove('active');
+            currentDetailAdId = null;
             switchTab('home');
         }
 
