@@ -89,7 +89,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 60px;
+            height: 120px;
             transform: translateZ(0); 
         }
 
@@ -100,7 +100,7 @@
         .logo-container {
             position: absolute;
             left: 50%;
-            top: 48px; 
+            top: 30px; 
             transform: translateX(-50%);
             display: flex;
             justify-content: center;
@@ -110,14 +110,14 @@
         }
 
         .logo {
-            height: 40px;
+            height: 35px;
             width: auto;
             object-fit: contain;
         }
 
-        /* Увеличенный логотип для вкладки Сообщения */
+        /* Увеличенный логотип для вкладки Сообщения — как на скриншоте */
         .logo-large {
-            height: 100px;
+            height: 65px;
             width: auto;
             object-fit: contain;
         }
@@ -279,7 +279,7 @@
         /* --- Messages Tab --- */
         .messages-list {
             padding: 8px;
-            margin-top: 113px; 
+            margin-top: 130px; 
         }
 
         .message-item {
@@ -734,22 +734,22 @@
     <div id="deleteToast" class="toast" style="background: #ff4b4b;">Объявление удалено!</div>
 
     <!-- Home Page Header -->
-    <div id="homeHeader" class="page-header">
-        <div class="logo-container">
+    <div id="homeHeader" class="page-header" style="height: 60px;">
+        <div class="logo-container" style="top: 48px;">
             <img src="logo.png" class="logo" alt="Swapka">
         </div>
     </div>
 
-    <!-- Messages Page Header (логотип 100px) -->
+    <!-- Messages Page Header (логотип увеличен до 65px, высота шапки 120px) -->
     <div id="messagesHeader" class="page-header" style="display: none;">
-        <div class="logo-container">
+        <div class="logo-container" style="top: 30px;">
             <img src="messageblood.png" class="logo-large" alt="Swapka Messages">
         </div>
     </div>
 
     <!-- Profile Page Header -->
-    <div id="profileHeader" class="page-header" style="display: none;">
-        <div class="logo-container">
+    <div id="profileHeader" class="page-header" style="display: none; height: 60px;">
+        <div class="logo-container" style="top: 48px;">
             <img src="logo.png" class="logo" alt="Swapka">
         </div>
     </div>
