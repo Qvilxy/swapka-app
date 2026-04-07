@@ -19,7 +19,6 @@
       --tab-active: #e8e8e8;
       --modal-overlay: rgba(0,0,0,0.5);
       --chat-bg: #f0f0f0;
-      --btn-gradient: linear-gradient(135deg, #ff6b35, #e07a5f);
       --input-bg: #f2f2f7;
     }
 
@@ -193,8 +192,9 @@
     .ad-price {
       font-size: 15px;
       font-weight: 800;
-      color: #ff6b35;
+      color: var(--text-primary);
       margin-bottom: 2px;
+      transform: translateY(-2px);
     }
 
     .ad-city {
@@ -311,12 +311,10 @@
       transform: scale(0.85);
     }
 
-    /* Этот блок поднимает ВСЁ содержимое профиля на 120px вверх */
     .profile-shifted-content {
       transform: translateY(-120px);
     }
 
-    /* Блок с аватаркой и именем */
     .profile-user-info {
       padding: 20px 16px;
       text-align: center;
@@ -355,7 +353,7 @@
       font-size: 15px;
       color: var(--text-secondary);
       margin-top: 4px;
-      transform: translateY(-5px); /* Поднимаем юзернейм на 5px */
+      transform: translateY(-5px);
     }
 
     .profile-rating {
@@ -364,7 +362,14 @@
       gap: 4px;
       margin-top: 8px;
       font-size: 18px;
-      transform: translateY(-10px); /* Подняли рейтинг еще на 5px (итого -10px) */
+      transform: translateY(-10px);
+    }
+
+    /* ===== ANIMATED GRADIENT BUTTON ===== */
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     .create-ad-btn {
@@ -372,7 +377,9 @@
       width: calc(100% - 32px);
       margin: 0 auto 20px;
       padding: 14px;
-      background: var(--btn-gradient);
+      background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
+      background-size: 400% 400%;
+      animation: gradientShift 6s ease infinite;
       color: white;
       border: none;
       border-radius: 14px;
@@ -381,7 +388,8 @@
       cursor: pointer;
       font-family: inherit;
       transition: transform 0.2s, opacity 0.2s;
-      transform: translateY(38px); /* Опускаем кнопку на 38px (было 30px) */
+      transform: translateY(38px);
+      box-shadow: 0 4px 20px rgba(135, 206, 235, 0.4);
     }
 
     .create-ad-btn:active {
@@ -394,11 +402,11 @@
       font-weight: 700;
       padding: 0 16px 12px;
       color: var(--text-primary);
-      transform: translateY(30px); /* Опускаем заголовок на 30px */
+      transform: translateY(30px);
     }
 
     .my-ads-grid-wrapper {
-      transform: translateY(30px); /* Опускаем сетку объявлений на 30px */
+      transform: translateY(30px);
     }
 
     /* ===== BOTTOM NAV ===== */
@@ -834,15 +842,12 @@
 
     <!-- PROFILE PAGE -->
     <div class="page" id="pageProfile">
-      <!-- Луна остаётся на месте -->
       <div class="profile-moon-wrapper">
         <button class="moon-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
       </div>
       
-      <!-- Общий контейнер, сдвигающий всё вверх на 120px -->
       <div class="profile-shifted-content">
         
-        <!-- Внутренний контейнер, сдвигающий аватар/имя вниз на 60px -->
         <div class="profile-user-info">
           <div id="profileAvatarContainer"></div>
           <div class="profile-name" id="profileName">Загрузка...</div>
