@@ -88,7 +88,7 @@
       display: block;
     }
 
-    /* Фото только в сообщениях */
+    /* Фото только в сообщениях — УВЕЛИЧЕНО В 3 РАЗА */
     .messages-header {
       display: flex;
       align-items: center;
@@ -97,8 +97,9 @@
     }
 
     .messages-logo {
-      height: 40px;
-      width: 70px;
+      height: auto;
+      width: 210px; /* Было 70px → 210px (×3) */
+      max-width: 90vw; /* Адаптивность для мобильных */
       object-fit: contain;
     }
 
