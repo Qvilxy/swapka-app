@@ -182,7 +182,7 @@
 
         /* --- Main Content Area --- */
         .page {
-            position: absolute; /* Важно для наложения страниц */
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -193,13 +193,11 @@
             background-color: var(--bg-color);
             padding-top: 0;
             
-            /* Скрыто по умолчанию */
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
             z-index: 1;
             
-            /* Анимация появления */
             transform: translateY(10px);
             transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
         }
@@ -420,7 +418,7 @@
             align-items: center;
             padding: 6px;
             box-shadow: 0 4px 15px var(--shadow-color);
-            z-index: 1000; /* Высокий приоритет для кликов */
+            z-index: 1000;
             border-radius: 30px;
             transition: background-color 0.3s ease;
             border: 1px solid #eee;
@@ -438,7 +436,6 @@
             border-radius: 24px;
             transition: background-color 0.2s ease, color 0.2s ease;
             min-width: 80px;
-            /* Гарантируем кликабельность */
             pointer-events: auto; 
         }
 
@@ -685,7 +682,7 @@
         .toast.admin { background: var(--admin-toast-bg); }
         .toast.moderator { background: var(--moderator-toast-bg); }
 
-        /* --- Empty State --- */
+        /* --- Empty State (Global for Home Page) --- */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -694,7 +691,7 @@
             text-align: center;
             color: var(--text-muted);
             
-            /* Центрирование по экрану */
+            /* Центрирование по экрану для главной страницы */
             position: absolute;
             top: 50%;
             left: 50%;
@@ -703,6 +700,19 @@
             
             margin-top: 0;
             padding-bottom: 0;
+        }
+
+        /* --- Empty State for Profile Page (ИСПРАВЛЕНО) --- */
+        /* Этот стиль переопределяет глобальный .empty-state только для сетки моих объявлений */
+        #myAdsGrid .empty-state {
+            position: static; /* Отменяем абсолютное позиционирование */
+            transform: none;  /* Убираем центрирование */
+            top: auto;
+            left: auto;
+            width: auto;
+            margin-top: 20px; /* Отступ сверху, чтобы было под заголовком */
+            margin-bottom: 20px;
+            grid-column: 1 / -1; /* Занимает всю ширину сетки */
         }
 
         .empty-state-icon { font-size: 40px; margin-bottom: 8px; }
@@ -969,46 +979,39 @@
             }, 4000);
         }
 
-        // --- Navigation Function (FIXED & ROBUST) ---
+        // --- Navigation Function ---
         function switchTab(tabName) {
-            // 1. Скрываем все страницы
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => {
                 page.classList.remove('active');
             });
 
-            // 2. Скрываем все хедеры
             const headers = document.querySelectorAll('.page-header');
             headers.forEach(header => {
                 header.style.display = 'none';
             });
 
-            // 3. Деактивируем все кнопки навигации
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => {
                 item.classList.remove('active');
             });
 
-            // 4. Показываем нужную страницу
             const targetPage = document.getElementById(tabName + 'Page');
             if (targetPage) {
                 targetPage.classList.add('active');
             }
 
-            // 5. Показываем нужный хедер
             const targetHeader = document.getElementById(tabName + 'Header');
             if (targetHeader) {
                 targetHeader.style.display = 'block';
             }
 
-            // 6. Активируем нужную кнопку навигации
             const tabs = ['home', 'messages', 'profile'];
             const index = tabs.indexOf(tabName);
             if (index !== -1 && navItems[index]) {
                 navItems[index].classList.add('active');
             }
 
-            // 7. Логика для профиля
             if (tabName === 'profile') {
                 renderMyAds();
             }
