@@ -14,8 +14,8 @@
             --text-secondary: #555555;
             --text-muted: #888888;
             --header-bg: #ffffff;
-            --input-bg: #f0f0f0;
-            --input-border: transparent;
+            --input-bg: #ffffff; /* ИЗМЕНЕНИЕ: Белый фон для поиска */
+            --input-border: #eeeeee; /* Легкая рамка для белого фона */
             --border-color: #dddddd;
             --modal-bg: #ffffff;
             --nav-bg: #ffffff;
@@ -83,9 +83,9 @@
             width: 100%;
             background: var(--header-bg);
             z-index: 100;
-            /* Убрали лишний padding-bottom, чтобы контролировать отступы точнее */
-            padding-bottom: 0; 
+            padding-bottom: 8px;
             transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: none; 
         }
 
         .page-header.hidden {
@@ -96,8 +96,8 @@
             display: flex;
             justify-content: center;
             padding: 10px 0;
-            border-bottom: 1px solid var(--separator-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            border-bottom: none; 
+            box-shadow: none;
         }
 
         .logo {
@@ -107,22 +107,24 @@
         }
 
         .search-bar {
-            /* Добавили небольшой отступ сверху внутри шапки, чтобы поиск не прилипал к линии */
-            padding: 12px 12px 8px 12px; 
+            padding: 10px 12px 0; /* Убрал нижний паддинг, так как отступ теперь у фильтров */
             display: flex;
             gap: 8px;
             align-items: center;
+            background: var(--header-bg);
         }
 
         .search-input {
             flex-grow: 1;
-            background-color: var(--input-bg);
+            background-color: var(--input-bg); /* Белый цвет */
             border: 1px solid var(--input-border);
             padding: 8px 12px;
             border-radius: 999px;
             font-size: 15px;
             outline: none;
             color: var(--text-color);
+            /* ИЗМЕНЕНИЕ: Тень вокруг поисковой строки */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .heart-icon {
@@ -131,9 +133,11 @@
         }
 
         .filters {
-            padding: 0 12px 12px; /* Немного увеличили нижний отступ фильтров */
+            /* ИЗМЕНЕНИЕ: Отступ сверху 8px от поиска */
+            padding: 8px 12px 8px; 
             display: flex;
             gap: 8px;
+            background: var(--header-bg);
         }
 
         .filter-btn {
@@ -148,7 +152,7 @@
         /* --- Scroll to Top Button --- */
         #scrollTopBtn {
             position: fixed;
-            top: 140px; /* Скорректировали позицию кнопки */
+            top: 120px;
             right: 12px;
             background: var(--card-bg);
             color: var(--text-color);
@@ -173,26 +177,18 @@
             -webkit-overflow-scrolling: touch;
             padding-bottom: 90px;
             background-color: var(--bg-color);
+            padding-top: 0;
         }
 
         .page.active {
             display: block;
         }
 
-        /* 
-           ИЗМЕНЕНИЕ: 
-           Мы устанавливаем padding-top равным высоте шапки + небольшой отступ.
-           Высота шапки примерно: 65px (лого) + 50px (поиск) + 30px (фильтры) ≈ 145px.
-           Ставим 155px, чтобы контент начинался чуть ниже фильтров, создавая воздух, 
-           но сохраняя визуальную целостность с профилем.
-        */
-        #homePage.active {
-            padding-top: 155px; 
-        }
-
-        /* Для профиля оставляем как было, там своя структура */
-        #messagesPage.active, #profilePage.active {
-            padding-top: 155px; /* Выровняли отступ и здесь для единообразия */
+        /* Распорка 100px */
+        .content-spacer {
+            height: 100px;
+            width: 100%;
+            flex-shrink: 0;
         }
 
         /* --- Grid Layout --- */
@@ -201,8 +197,6 @@
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             padding: 8px;
-            /* Убрали margin-top, так как теперь отступ контролируется через padding страницы */
-            margin-top: 0; 
         }
 
         .ad-card {
@@ -584,7 +578,6 @@
             width: auto;
         }
 
-        /* Кнопка удаления */
         .delete-btn {
             font-size: 20px;
             cursor: pointer;
@@ -661,13 +654,8 @@
             opacity: 1;
         }
 
-        /* Admin/Moderator Toast */
-        .toast.admin {
-            background: var(--admin-toast-bg);
-        }
-        .toast.moderator {
-            background: var(--moderator-toast-bg);
-        }
+        .toast.admin { background: var(--admin-toast-bg); }
+        .toast.moderator { background: var(--moderator-toast-bg); }
 
         /* --- Empty State --- */
         .empty-state {
@@ -677,14 +665,8 @@
             grid-column: 1 / -1;
         }
 
-        .empty-state-icon {
-            font-size: 40px;
-            margin-bottom: 8px;
-        }
-
-        .empty-state div {
-            font-size: 13px;
-        }
+        .empty-state-icon { font-size: 40px; margin-bottom: 8px; }
+        .empty-state div { font-size: 13px; }
 
     </style>
 </head>
@@ -694,18 +676,10 @@
     <div id="toast" class="toast">Объявление успешно создано!</div>
     <div id="deleteToast" class="toast" style="background: #ff4b4b;">Объявление удалено!</div>
 
-    <!-- Home Page Header -->
+    <!-- Home Page Header (Только Лого) -->
     <div id="homeHeader" class="page-header">
         <div class="logo-container">
             <img src="logo.png" class="logo" alt="Swapka">
-        </div>
-        <div class="search-bar">
-            <input type="text" id="searchInput" class="search-input" placeholder="Поиск">
-            <span class="heart-icon">♥</span>
-        </div>
-        <div class="filters">
-            <div class="filter-btn">Категория</div>
-            <div class="filter-btn">Город</div>
         </div>
     </div>
 
@@ -728,12 +702,28 @@
 
     <!-- 1. Home Page -->
     <div id="homePage" class="page active">
+        <!-- Распорка 100px -->
+        <div class="content-spacer"></div>
+        
+        <!-- Поиск и фильтры начинаются здесь -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="Поиск">
+            <span class="heart-icon">♥</span>
+        </div>
+        <div class="filters">
+            <div class="filter-btn">Категория</div>
+            <div class="filter-btn">Город</div>
+        </div>
+
         <div class="ads-grid" id="homeGrid">
         </div>
     </div>
 
     <!-- 2. Messages Page -->
     <div id="messagesPage" class="page">
+        <!-- Распорка 100px -->
+        <div class="content-spacer"></div>
+
         <div class="messages-list">
             <div class="message-top">
                 <img src="https://via.placeholder.com/40" class="avatar" alt="User">
@@ -757,6 +747,9 @@
 
     <!-- 3. Profile Page -->
     <div id="profilePage" class="page">
+        <!-- Распорка 100px -->
+        <div class="content-spacer"></div>
+
         <div class="profile-header">
             <div class="profile-top-row">
                 <img id="profileAvatar" src="" class="profile-avatar" alt="Avatar">
@@ -1031,8 +1024,8 @@
         const scrollTopBtn = document.getElementById('scrollTopBtn');
 
         homePage.addEventListener('scroll', () => {
-            // Порог скрытия шапки немного увеличен, чтобы она не пропадала сразу при малейшем скролле
-            if (homePage.scrollTop > 60) {
+            // Скрываем шапку, когда пользователь прокручивает контент ниже начала элементов (100px)
+            if (homePage.scrollTop > 100) {
                 homeHeader.classList.add('hidden');
                 scrollTopBtn.style.display = 'flex';
             } else {
