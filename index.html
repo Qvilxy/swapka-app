@@ -90,7 +90,6 @@
             justify-content: center;
             align-items: center;
             height: 60px;
-            /* Исправление бага: принудительная перерисовка для стабильности позиционирования */
             transform: translateZ(0); 
         }
 
@@ -101,14 +100,13 @@
         .logo-container {
             position: absolute;
             left: 50%;
-            /* ИЗМЕНЕНИЕ: Используем top вместо margin-top для более надежного позиционирования при загрузке */
-            top: 43px; 
+            /* ИЗМЕНЕНИЕ: Логотип смещен вниз на 48px (было 43px) */
+            top: 48px; 
             transform: translateX(-50%);
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 0;
-            /* Убираем margin-top, так как используем top */
             margin-top: 0; 
         }
 
@@ -120,8 +118,8 @@
 
         /* Поиск */
         .search-bar {
-            /* Вычисляем отступ: 60px (хедер) + 43px (смещение лого) + 5px (зазор) = 108px */
-            margin-top: 108px; 
+            /* Обновлен отступ: 60px (хедер) + 48px (лого) + 5px (зазор) = 113px */
+            margin-top: 113px; 
             padding: 0 12px;
             display: flex;
             gap: 8px;
@@ -264,7 +262,7 @@
         /* --- Messages Tab --- */
         .messages-list {
             padding: 8px;
-            margin-top: 108px; 
+            margin-top: 113px; 
         }
 
         .message-item {
@@ -329,7 +327,7 @@
             flex-direction: column;
             align-items: center;
             padding: 15px;
-            margin-top: 108px; 
+            margin-top: 113px; 
         }
 
         .profile-top-row {
