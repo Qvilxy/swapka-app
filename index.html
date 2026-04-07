@@ -182,7 +182,9 @@
 
         /* --- Main Content Area --- */
         .page {
-            display: none;
+            position: absolute; /* Важно для наложения страниц */
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100vh;
             overflow-y: auto;
@@ -190,11 +192,24 @@
             padding-bottom: 90px;
             background-color: var(--bg-color);
             padding-top: 0;
-            position: relative; /* Важно для позиционирования empty-state */
+            
+            /* Скрыто по умолчанию */
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            z-index: 1;
+            
+            /* Анимация появления */
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
         }
 
         .page.active {
-            display: block;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+            z-index: 10;
         }
 
         /* --- Grid Layout --- */
@@ -205,7 +220,7 @@
             padding: 8px;
             margin-top: 0; 
             position: relative;
-            min-height: calc(100vh - 200px); /* Чтобы сетка занимала место */
+            min-height: calc(100vh - 200px);
         }
 
         .ad-card {
@@ -405,7 +420,7 @@
             align-items: center;
             padding: 6px;
             box-shadow: 0 4px 15px var(--shadow-color);
-            z-index: 100;
+            z-index: 1000; /* Высокий приоритет для кликов */
             border-radius: 30px;
             transition: background-color 0.3s ease;
             border: 1px solid #eee;
@@ -423,6 +438,8 @@
             border-radius: 24px;
             transition: background-color 0.2s ease, color 0.2s ease;
             min-width: 80px;
+            /* Гарантируем кликабельность */
+            pointer-events: auto; 
         }
 
         .nav-item.active {
@@ -445,7 +462,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.6);
-            z-index: 200;
+            z-index: 2000;
             justify-content: center;
             align-items: flex-end;
         }
@@ -556,7 +573,7 @@
             width: 100%;
             height: 100%;
             background: var(--card-bg);
-            z-index: 150;
+            z-index: 1500;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             color: var(--text-color);
@@ -659,7 +676,7 @@
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
-            z-index: 300;
+            z-index: 3000;
         }
         .toast.show {
             opacity: 1;
@@ -668,7 +685,7 @@
         .toast.admin { background: var(--admin-toast-bg); }
         .toast.moderator { background: var(--moderator-toast-bg); }
 
-        /* --- Empty State (ИСПРАВЛЕНО) --- */
+        /* --- Empty State --- */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -684,7 +701,7 @@
             transform: translate(-50%, -50%);
             width: 100%;
             
-            margin-top: 0; /* Убираем отступ сверху */
+            margin-top: 0;
             padding-bottom: 0;
         }
 
@@ -952,18 +969,46 @@
             }, 4000);
         }
 
-        // --- Navigation ---
+        // --- Navigation Function (FIXED & ROBUST) ---
         function switchTab(tabName) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.page-header').forEach(h => h.style.display = 'none');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            // 1. Скрываем все страницы
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
 
-            document.getElementById(tabName + 'Page').classList.add('active');
-            document.getElementById(tabName + 'Header').style.display = 'block';
-            
-            const navIndex = tabName === 'home' ? 0 : tabName === 'messages' ? 1 : 2;
-            document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+            // 2. Скрываем все хедеры
+            const headers = document.querySelectorAll('.page-header');
+            headers.forEach(header => {
+                header.style.display = 'none';
+            });
 
+            // 3. Деактивируем все кнопки навигации
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // 4. Показываем нужную страницу
+            const targetPage = document.getElementById(tabName + 'Page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // 5. Показываем нужный хедер
+            const targetHeader = document.getElementById(tabName + 'Header');
+            if (targetHeader) {
+                targetHeader.style.display = 'block';
+            }
+
+            // 6. Активируем нужную кнопку навигации
+            const tabs = ['home', 'messages', 'profile'];
+            const index = tabs.indexOf(tabName);
+            if (index !== -1 && navItems[index]) {
+                navItems[index].classList.add('active');
+            }
+
+            // 7. Логика для профиля
             if (tabName === 'profile') {
                 renderMyAds();
             }
@@ -1208,7 +1253,7 @@
         function closeDetail() {
             document.getElementById('detailPage').classList.remove('active');
             currentDetailAdId = null;
-            switchTab('home');
+            switchTab('home'); 
         }
 
     </script>
