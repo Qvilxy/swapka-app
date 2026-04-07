@@ -296,6 +296,7 @@
       justify-content: flex-end;
       align-items: center;
       padding: 0 16px;
+      z-index: 10; /* Чтобы кнопка была поверх всего */
     }
 
     .moon-btn {
@@ -306,6 +307,8 @@
       padding: 8px;
       transition: transform 0.3s;
       pointer-events: auto;
+      z-index: 1001; /* Гарантируем кликабельность */
+      position: relative;
     }
 
     .moon-btn:active {
@@ -424,8 +427,12 @@
       padding: 8px 16px;
       padding-bottom: max(8px, env(safe-area-inset-bottom));
       z-index: 1000;
-      /* Убран backdrop-filter, который мог блокировать события */
-      transition: background 0.3s;
+      transition: transform 0.3s ease, background 0.3s; /* Плавная анимация скрытия */
+    }
+
+    /* Класс для скрытия меню */
+    .bottom-nav.hidden {
+      transform: translateY(100%);
     }
 
     .nav-pill {
@@ -433,11 +440,10 @@
       background: var(--card-bg);
       border-radius: 28px;
       padding: 4px;
-      /* Тень со всех сторон по краям */
       box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
       width: 100%;
       max-width: 360px;
-      pointer-events: auto; /* Гарантируем, что клики проходят */
+      pointer-events: auto;
     }
 
     .nav-item {
@@ -454,8 +460,8 @@
       background: transparent;
       gap: 2px;
       -webkit-tap-highlight-color: transparent;
-      pointer-events: auto; /* Гарантируем кликабельность */
-      touch-action: manipulation; /* Оптимизация для тач-устройств */
+      pointer-events: auto;
+      touch-action: manipulation;
       -webkit-user-select: none;
       user-select: none;
     }
@@ -477,14 +483,14 @@
       font-size: 22px;
       color: var(--text-secondary);
       transition: color 0.3s;
-      pointer-events: none; /* Чтобы клик проходил на кнопку */
+      pointer-events: none;
     }
 
     .nav-label {
       font-size: 11px;
       color: var(--text-secondary);
       transition: color 0.3s;
-      pointer-events: none; /* Чтобы клик проходил на кнопку */
+      pointer-events: none;
     }
 
     /* ===== MODAL ===== */
@@ -852,7 +858,7 @@
     <!-- PROFILE PAGE -->
     <div class="page" id="pageProfile">
       <div class="profile-moon-wrapper">
-        <button class="moon-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
+        <button class="moon-btn" id="themeToggle">🌙</button>
       </div>
       
       <div class="profile-shifted-content">
@@ -866,7 +872,7 @@
           </div>
         </div>
 
-        <button class="create-ad-btn" onclick="openCreateModal()">Создать объявление</button>
+        <button class="create-ad-btn" id="openCreateBtn">Создать объявление</button>
 
         <div class="my-ads-title">Мои объявления</div>
         <div class="my-ads-grid-wrapper">
@@ -882,7 +888,7 @@
   </div>
 
   <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
+  <div class="bottom-nav" id="bottomNav">
     <div class="nav-pill">
       <button class="nav-item active" data-tab="home" id="navHome">
         <span class="nav-icon">🏠</span>
@@ -1034,15 +1040,24 @@
       applyTheme(tg.colorScheme === 'dark' ? 'dark' : 'light');
     }
 
-    function toggleTheme() {
-      const body = document.body;
-      if (body.classList.contains('dark-theme')) {
-        applyTheme('light');
-        saveTheme('light');
-      } else {
-        applyTheme('dark');
-        saveTheme('dark');
-      }
+    // ===== ИСПРАВЛЕННАЯ КНОПКА ТЕМЫ =====
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', function() {
+        const isDark = document.body.classList.contains('dark-theme');
+        
+        if (isDark) {
+          // Переключаем на светлую
+          applyTheme('light');
+          saveTheme('light');
+        } else {
+          // Переключаем на темную
+          applyTheme('dark');
+          saveTheme('dark');
+        }
+        
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      });
     }
 
     function setupProfile() {
@@ -1061,14 +1076,10 @@
 
     setupProfile();
 
-    // ===== ИСПРАВЛЕННАЯ НАВИГАЦИЯ =====
     function switchTab(tab) {
-      // Скрываем все страницы
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      // Убираем активный класс со всех кнопок
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-      // Показываем нужную страницу
       switch (tab) {
         case 'home':
           document.getElementById('pageHome').classList.add('active');
@@ -1084,12 +1095,9 @@
           renderMyAds();
           break;
       }
-
-      // Скроллим вверх
       document.getElementById('mainContent').scrollTop = 0;
     }
 
-    // Навешиваем обработчики событий на кнопки навигации
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -1097,10 +1105,7 @@
         const tab = this.getAttribute('data-tab');
         if (tab) {
           switchTab(tab);
-          // Вибрация при переключении
-          if (tg.HapticFeedback) {
-            tg.HapticFeedback.impactOccurred('light');
-          }
+          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
       });
     });
@@ -1189,19 +1194,32 @@
 
     let selectedPhotos = [];
 
+    // ===== УПРАВЛЕНИЕ МОДАЛКОЙ И МЕНЮ =====
+    const bottomNav = document.getElementById('bottomNav');
+
     function openCreateModal() {
       selectedPhotos = [];
       resetPhotoSlots();
       document.getElementById('adTitle').value = '';
       document.getElementById('adPrice').value = '';
       document.getElementById('adCity').value = '';
+      
       document.getElementById('createModal').classList.add('active');
+      
+      // Скрываем меню-панель
+      bottomNav.classList.add('hidden');
+      
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
 
     function closeCreateModal() {
       document.getElementById('createModal').classList.remove('active');
+      // Показываем меню-панель обратно
+      bottomNav.classList.remove('hidden');
     }
+
+    // Кнопка открытия окна
+    document.getElementById('openCreateBtn').addEventListener('click', openCreateModal);
 
     function resetPhotoSlots() {
       for (let i = 0; i < 4; i++) {
@@ -1298,7 +1316,7 @@
       ads.unshift(newAd);
       saveAds(ads);
 
-      closeCreateModal();
+      closeCreateModal(); // Меню вернется
       renderAds();
       renderMyAds();
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
