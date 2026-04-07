@@ -6,6 +6,7 @@
     <title>Swapka</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* --- CSS Variables & Theme --- */
         :root {
             --bg-color: #f5f5f5;
             --card-bg: #ffffff;
@@ -799,11 +800,12 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Инициализация пустого массива
+        // --- LocalStorage Loading ---
         let ads = JSON.parse(localStorage.getItem('swapka_ads')) || [];
-        let userAds = [];
+        let userAds = JSON.parse(localStorage.getItem('swapka_user_ads')) || [];
+        
         let uploadedImages = [];
-        let currentDetailAdId = null; // ID объявления, которое сейчас открыто
+        let currentDetailAdId = null;
 
         // --- Theme Toggle Logic ---
         const themeToggle = document.getElementById('themeToggle');
@@ -1016,11 +1018,23 @@
 
             ads.unshift(newAd);
             userAds.unshift(newAd);
+            
+            // --- Save to LocalStorage ---
             saveAdsToStorage();
+            saveUserAdsToStorage();
 
             renderHome();
             closeModal();
             showToast('Объявление успешно создано!', '#4CAF50');
+        }
+
+        // --- LocalStorage Saving Functions ---
+        function saveUserAdsToStorage() {
+            try {
+                localStorage.setItem('swapka_user_ads', JSON.stringify(userAds));
+            } catch (e) {
+                console.error('Failed to save user ads:', e);
+            }
         }
 
         function saveAdsToStorage() {
@@ -1047,7 +1061,7 @@
             let ad = ads.find(a => a.id === id);
             if (!ad) return;
 
-            currentDetailAdId = id; // Запоминаем ID текущего открытого объявления
+            currentDetailAdId = id;
 
             document.getElementById('detailTitle').innerText = ad.title;
             document.getElementById('detailPrice').innerText = ad.price + " ₽";
@@ -1062,7 +1076,7 @@
                 detailImg.style.display = 'none'; 
             }
 
-            // Проверяем, является ли объявление "своим"
+            // Show delete button only if it's user's ad
             const isMyAd = userAds.some(uAd => uAd.id === id);
             const deleteBtn = document.getElementById('detailDeleteBtn');
             
@@ -1079,12 +1093,14 @@
             if (!currentDetailAdId) return;
             
             if(confirm('Вы уверены, что хотите удалить это объявление?')) {
-                // Удаляем из общего списка
+                // Remove from global list
                 ads = ads.filter(ad => ad.id !== currentDetailAdId);
-                // Удаляем из списка пользователя
+                // Remove from user's list
                 userAds = userAds.filter(ad => ad.id !== currentDetailAdId);
                 
+                // Update LocalStorage
                 saveAdsToStorage();
+                saveUserAdsToStorage();
                 
                 closeDetail();
                 renderHome();
@@ -1101,3 +1117,4 @@
     </script>
 </body>
 </html>
+
