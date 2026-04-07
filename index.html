@@ -51,7 +51,7 @@
         }
 
         .logo {
-            height: 50px; /* Увеличенный логотип */
+            height: 50px;
             width: auto;
             object-fit: contain;
         }
@@ -503,6 +503,18 @@
             opacity: 1;
         }
 
+        /* --- Empty State --- */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -662,14 +674,8 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Mock Data
-        let ads = [
-            { id: 1, title: "Велосипед", price: "5000", city: "Москва", desc: "Отличное состояние", img: null },
-            { id: 2, title: "iPhone 11", price: "25000", city: "Спб", desc: "", img: null },
-            { id: 3, title: "Диван", price: "15000", city: "Казань", desc: "Самовывоз", img: null },
-            { id: 4, title: "Ноутбук", price: "40000", city: "Москва", desc: "Для работы", img: null }
-        ];
-
+        // Load ads from localStorage or initialize empty array
+        let ads = JSON.parse(localStorage.getItem('swapka_ads')) || [];
         let userAds = [];
         let uploadedImages = [];
 
@@ -723,6 +729,16 @@
                 ad.title.toLowerCase().includes(filterText.toLowerCase())
             );
 
+            if (filteredAds.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">📦</div>
+                        <div>Пока нет объявлений</div>
+                    </div>
+                `;
+                return;
+            }
+
             filteredAds.forEach(ad => {
                 grid.innerHTML += createAdCard(ad);
             });
@@ -731,6 +747,17 @@
         function renderMyAds() {
             const grid = document.getElementById('myAdsGrid');
             grid.innerHTML = '';
+            
+            if (userAds.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">📝</div>
+                        <div>У вас пока нет объявлений</div>
+                    </div>
+                `;
+                return;
+            }
+            
             userAds.forEach(ad => {
                 grid.innerHTML += createAdCard(ad);
             });
@@ -842,12 +869,23 @@
                 img: uploadedImages[0]
             };
 
+            // Add to ads array and save to localStorage
             ads.unshift(newAd);
             userAds.unshift(newAd);
+            saveAdsToStorage();
 
             renderHome();
             closeModal();
             showToast();
+        }
+
+        function saveAdsToStorage() {
+            try {
+                localStorage.setItem('swapka_ads', JSON.stringify(ads));
+            } catch (e) {
+                console.error('Failed to save ads:', e);
+                alert('Не удалось сохранить объявление. Возможно, недостаточно места.');
+            }
         }
 
         function showToast() {
@@ -860,7 +898,7 @@
 
         // --- Detail View ---
         function openDetail(id) {
-            let ad = ads.find(a => a.id === id) || userAds.find(a => a.id === id);
+            let ad = ads.find(a => a.id === id);
             if (!ad) return;
 
             document.getElementById('detailTitle').innerText = ad.title;
