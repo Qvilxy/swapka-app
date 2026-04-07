@@ -83,7 +83,8 @@
             width: 100%;
             background: var(--header-bg);
             z-index: 100;
-            padding-bottom: 8px;
+            /* Убрали лишний padding-bottom, чтобы контролировать отступы точнее */
+            padding-bottom: 0; 
             transition: transform 0.3s ease, background-color 0.3s ease;
         }
 
@@ -96,7 +97,6 @@
             justify-content: center;
             padding: 10px 0;
             border-bottom: 1px solid var(--separator-color);
-            /* Тень под черной полоской */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         }
 
@@ -107,7 +107,8 @@
         }
 
         .search-bar {
-            padding: 10px 12px 8px;
+            /* Добавили небольшой отступ сверху внутри шапки, чтобы поиск не прилипал к линии */
+            padding: 12px 12px 8px 12px; 
             display: flex;
             gap: 8px;
             align-items: center;
@@ -130,7 +131,7 @@
         }
 
         .filters {
-            padding: 0 12px 8px;
+            padding: 0 12px 12px; /* Немного увеличили нижний отступ фильтров */
             display: flex;
             gap: 8px;
         }
@@ -147,7 +148,7 @@
         /* --- Scroll to Top Button --- */
         #scrollTopBtn {
             position: fixed;
-            top: 95px; /* Сдвинуто вниз вместе с контентом главной страницы */
+            top: 140px; /* Скорректировали позицию кнопки */
             right: 12px;
             background: var(--card-bg);
             color: var(--text-color);
@@ -178,14 +179,20 @@
             display: block;
         }
 
-        /* ИЗМЕНЕНИЕ: Увеличен отступ сверху для Главной страницы на 20px (полсантиметра) */
+        /* 
+           ИЗМЕНЕНИЕ: 
+           Мы устанавливаем padding-top равным высоте шапки + небольшой отступ.
+           Высота шапки примерно: 65px (лого) + 50px (поиск) + 30px (фильтры) ≈ 145px.
+           Ставим 155px, чтобы контент начинался чуть ниже фильтров, создавая воздух, 
+           но сохраняя визуальную целостность с профилем.
+        */
         #homePage.active {
-            padding-top: 180px; 
+            padding-top: 155px; 
         }
 
-        /* Отступы для других страниц остаются стандартными */
+        /* Для профиля оставляем как было, там своя структура */
         #messagesPage.active, #profilePage.active {
-            padding-top: 150px;
+            padding-top: 155px; /* Выровняли отступ и здесь для единообразия */
         }
 
         /* --- Grid Layout --- */
@@ -194,6 +201,8 @@
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             padding: 8px;
+            /* Убрали margin-top, так как теперь отступ контролируется через padding страницы */
+            margin-top: 0; 
         }
 
         .ad-card {
@@ -1022,7 +1031,8 @@
         const scrollTopBtn = document.getElementById('scrollTopBtn');
 
         homePage.addEventListener('scroll', () => {
-            if (homePage.scrollTop > 50) {
+            // Порог скрытия шапки немного увеличен, чтобы она не пропадала сразу при малейшем скролле
+            if (homePage.scrollTop > 60) {
                 homeHeader.classList.add('hidden');
                 scrollTopBtn.style.display = 'flex';
             } else {
