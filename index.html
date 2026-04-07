@@ -1,4 +1,4 @@
-э<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -8,15 +8,14 @@
     <style>
         /* --- CSS Variables & Theme --- */
         :root {
-            --bg-color: #f5f5f5;
+            --bg-color: #ffffff; /* ИЗМЕНЕНИЕ: Фон теперь белый */
             --card-bg: #ffffff;
             --text-color: #000000;
             --text-secondary: #555555;
             --text-muted: #888888;
             --header-bg: #ffffff;
-            /* ИЗМЕНЕНИЕ: Цвет поиска теперь белый с легкой границей */
-            --input-bg: #ffffff; 
-            --input-border: #e0e0e0;
+            --input-bg: #f0f0f0; /* Светло-серый фон для поиска, чтобы он выделялся на белом */
+            --input-border: transparent;
             --border-color: #dddddd;
             --modal-bg: #ffffff;
             --nav-bg: #ffffff;
@@ -30,6 +29,7 @@
             --nav-active-bg: #F5F5F5;
             --admin-toast-bg: #8B5CF6;
             --moderator-toast-bg: #3B82F6;
+            --separator-color: #000000; /* Цвет разделительной линии */
         }
 
         .dark-theme {
@@ -39,7 +39,6 @@
             --text-secondary: #aaaaaa;
             --text-muted: #777777;
             --header-bg: #1e1e1e;
-            /* В темной теме поиск остается темным для контраста или можно сделать светло-серым */
             --input-bg: #2c2c2c; 
             --input-border: #444444;
             --border-color: #444444;
@@ -53,6 +52,7 @@
             --nav-active-bg: #333333;
             --admin-toast-bg: #7C3AED;
             --moderator-toast-bg: #2563EB;
+            --separator-color: #ffffff; /* В темной теме линия белая */
         }
 
         * {
@@ -95,6 +95,8 @@
             display: flex;
             justify-content: center;
             padding: 10px 0;
+            /* ИЗМЕНЕНИЕ: Тонкая черная полоса вместо цветной линии */
+            border-bottom: 1px solid var(--separator-color); 
         }
 
         .logo {
@@ -104,7 +106,7 @@
         }
 
         .search-bar {
-            padding: 0 12px 8px;
+            padding: 10px 12px 8px;
             display: flex;
             gap: 8px;
             align-items: center;
@@ -113,13 +115,13 @@
         .search-input {
             flex-grow: 1;
             background-color: var(--input-bg);
-            border: 1px solid var(--input-border); /* Добавлена граница для видимости */
+            border: 1px solid var(--input-border);
             padding: 8px 12px;
-            border-radius: 10px;
+            /* ИЗМЕНЕНИЕ: Максимальное скругление углов */
+            border-radius: 999px; 
             font-size: 15px;
             outline: none;
             color: var(--text-color);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Легкая тень */
         }
 
         .heart-icon {
@@ -169,6 +171,7 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             padding-bottom: 90px;
+            background-color: var(--bg-color); /* Явное указание белого фона */
         }
 
         .page.active {
@@ -176,7 +179,7 @@
         }
 
         #homePage.active {
-            padding-top: 125px;
+            padding-top: 140px; /* Увеличен отступ из-за линии */
         }
 
         #messagesPage.active, #profilePage.active {
@@ -198,6 +201,7 @@
             cursor: pointer;
             box-shadow: 0 1px 3px var(--shadow-color);
             transition: background-color 0.3s ease;
+            border: 1px solid #eee; /* Легкая рамка для карточек на белом фоне */
         }
 
         .ad-image {
@@ -388,6 +392,7 @@
             z-index: 100;
             border-radius: 30px;
             transition: background-color 0.3s ease;
+            border: 1px solid #eee; /* Рамка для навбара */
         }
 
         .nav-item {
@@ -485,7 +490,7 @@
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 13px;
-            background: var(--bg-color);
+            background: #fafafa;
             color: var(--text-color);
         }
 
@@ -553,6 +558,7 @@
             top: 0;
             background: var(--card-bg);
             z-index: 10;
+            border-bottom: 1px solid #eee;
         }
 
         .back-btn {
