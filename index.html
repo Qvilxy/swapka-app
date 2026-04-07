@@ -56,7 +56,6 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    /* ===== HEADER (пустая) ===== */
     .header {
       position: fixed;
       top: 0;
@@ -67,7 +66,6 @@
       pointer-events: none;
     }
 
-    /* ===== MAIN CONTENT ===== */
     .main-content {
       position: fixed;
       top: 100px;
@@ -89,7 +87,6 @@
       display: block;
     }
 
-    /* ===== SEARCH BAR ===== */
     .search-container {
       padding: 12px 16px;
       background: var(--bg-primary);
@@ -134,7 +131,6 @@
       color: var(--text-secondary);
     }
 
-    /* ===== ADS GRID ===== */
     .ads-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -206,7 +202,6 @@
       color: var(--text-secondary);
     }
 
-    /* ===== MESSAGES PAGE ===== */
     .messages-list {
       padding: 8px 16px;
     }
@@ -297,7 +292,7 @@
     .profile-header-section {
       padding: 20px 16px;
       text-align: center;
-      margin-top: -50px;
+      margin-top: -120px;
     }
 
     .profile-top {
@@ -305,7 +300,7 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 20px;
-      margin-top: 50px;
+      margin-top: 120px;
     }
 
     .moon-btn {
@@ -391,7 +386,6 @@
       color: var(--text-primary);
     }
 
-    /* ===== BOTTOM NAV ===== */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -461,7 +455,6 @@
       transition: color 0.3s;
     }
 
-    /* ===== MODAL ===== */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -629,7 +622,6 @@
       cursor: not-allowed;
     }
 
-    /* ===== AD DETAIL MODAL ===== */
     .detail-modal {
       position: fixed;
       top: 0;
@@ -793,13 +785,10 @@
 </head>
 <body>
 
-  <!-- HEADER (пустая, только для отступа) -->
   <div class="header"></div>
 
-  <!-- MAIN CONTENT -->
   <div class="main-content" id="mainContent">
 
-    <!-- HOME PAGE -->
     <div class="page active" id="pageHome">
       <div class="search-container">
         <div class="search-bar">
@@ -814,7 +803,6 @@
       </div>
     </div>
 
-    <!-- MESSAGES PAGE -->
     <div class="page" id="pageMessages">
       <div class="messages-list" id="messagesList">
         <div class="empty-state">
@@ -824,7 +812,6 @@
       </div>
     </div>
 
-    <!-- PROFILE PAGE -->
     <div class="page" id="pageProfile">
       <div class="profile-header-section">
         <div class="profile-top">
@@ -850,7 +837,6 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <div class="nav-pill">
       <button class="nav-item active" onclick="switchTab('home')" id="navHome">
@@ -868,7 +854,6 @@
     </div>
   </div>
 
-  <!-- CREATE AD MODAL -->
   <div class="modal-overlay" id="createModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -913,7 +898,6 @@
     </div>
   </div>
 
-  <!-- AD DETAIL MODAL -->
   <div class="detail-modal" id="detailModal">
     <div class="detail-header">
       <button class="detail-back" onclick="closeDetailModal()">←</button>
@@ -938,7 +922,6 @@
     </div>
   </div>
 
-  <!-- HIDDEN FILE INPUT -->
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
