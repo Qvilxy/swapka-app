@@ -24,6 +24,8 @@
             --shadow-color: rgba(0,0,0,0.1);
             --btn-create-gradient: linear-gradient(90deg, #f5a66b, #e06b6b);
             --danger-color: #ff4b4b;
+            --active-blue: #5754A4;
+            --nav-active-bg: #F5F5F5;
         }
 
         .dark-theme {
@@ -41,6 +43,8 @@
             --msg-top-bg: #2a2a2a;
             --desc-box-bg: #5c442a;
             --shadow-color: rgba(0,0,0,0.4);
+            --active-blue: #8884FF;
+            --nav-active-bg: #333333;
         }
 
         * {
@@ -155,7 +159,7 @@
             height: 100vh;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 70px;
+            padding-bottom: 90px;
         }
 
         .page.active {
@@ -352,19 +356,22 @@
             max-width: 200px;
         }
 
-        /* --- Bottom Navigation --- */
+        /* --- Bottom Navigation (Pill Design) --- */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 400px;
             background: var(--nav-bg);
             display: flex;
             justify-content: space-around;
-            padding: 8px 0;
-            box-shadow: 0 -2px 10px var(--shadow-color);
+            align-items: center;
+            padding: 6px;
+            box-shadow: 0 4px 15px var(--shadow-color);
             z-index: 100;
-            border-radius: 16px 16px 0 0;
+            border-radius: 30px;
             transition: background-color 0.3s ease;
         }
 
@@ -372,19 +379,25 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-size: 9px;
-            color: var(--text-muted);
+            justify-content: center;
+            font-size: 10px;
+            color: var(--text-color);
             cursor: pointer;
-            padding: 0 15px;
+            padding: 8px 16px;
+            border-radius: 24px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            min-width: 80px;
         }
 
         .nav-item.active {
-            color: #5754A4;
+            background-color: var(--nav-active-bg);
+            color: var(--active-blue);
         }
 
         .nav-icon {
-            font-size: 18px;
+            font-size: 20px;
             margin-bottom: 2px;
+            line-height: 1;
         }
 
         /* --- Create Ad Modal --- */
@@ -543,9 +556,9 @@
         .delete-btn {
             font-size: 20px;
             cursor: pointer;
-            margin-left: auto; /* Прижимает вправо */
+            margin-left: auto;
             padding: 5px;
-            display: none; /* Скрыта по умолчанию */
+            display: none;
         }
 
         .delete-btn:hover {
@@ -676,7 +689,6 @@
     <!-- 1. Home Page -->
     <div id="homePage" class="page active">
         <div class="ads-grid" id="homeGrid">
-            <!-- Items will be injected here -->
         </div>
     </div>
 
@@ -718,7 +730,6 @@
         </div>
         <h3 style="padding-left: 12px; margin: 0 0 10px 0; font-size: 15px;">Мои объявления</h3>
         <div class="ads-grid" id="myAdsGrid">
-            <!-- My ads will be injected here -->
         </div>
     </div>
 
@@ -762,7 +773,6 @@
         <div class="detail-header">
             <span class="back-btn" onclick="closeDetail()">←</span>
             <img src="logo.png" class="detail-logo" alt="Swapka">
-            <!-- Корзина для удаления -->
             <span id="detailDeleteBtn" class="delete-btn" onclick="deleteCurrentAd()">🗑️</span>
         </div>
         <div class="detail-image-container">
@@ -779,7 +789,7 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation (Pill Style) -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('home')">
             <span class="nav-icon">🏠</span>
@@ -1019,7 +1029,6 @@
             ads.unshift(newAd);
             userAds.unshift(newAd);
             
-            // --- Save to LocalStorage ---
             saveAdsToStorage();
             saveUserAdsToStorage();
 
@@ -1076,7 +1085,6 @@
                 detailImg.style.display = 'none'; 
             }
 
-            // Show delete button only if it's user's ad
             const isMyAd = userAds.some(uAd => uAd.id === id);
             const deleteBtn = document.getElementById('detailDeleteBtn');
             
@@ -1093,12 +1101,9 @@
             if (!currentDetailAdId) return;
             
             if(confirm('Вы уверены, что хотите удалить это объявление?')) {
-                // Remove from global list
                 ads = ads.filter(ad => ad.id !== currentDetailAdId);
-                // Remove from user's list
                 userAds = userAds.filter(ad => ad.id !== currentDetailAdId);
                 
-                // Update LocalStorage
                 saveAdsToStorage();
                 saveUserAdsToStorage();
                 
