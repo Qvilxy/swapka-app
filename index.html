@@ -55,7 +55,7 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    /* ===== HEADER ===== */
+    /* ===== HEADER (только фото) ===== */
     .header {
       position: fixed;
       top: 0;
@@ -65,56 +65,15 @@
       height: 100px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      padding-top: max(0px, env(safe-area-inset-top));
+      justify-content: center;
       background: var(--bg-primary);
       transition: background 0.3s;
     }
 
-    .header-close {
-      background: var(--bg-secondary);
-      border: none;
-      border-radius: 20px;
-      padding: 6px 16px;
-      font-size: 15px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      pointer-events: auto;
-      font-family: inherit;
-    }
-
     .header-logo {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
       height: 40px;
-      width: auto;
+      width: 70px;
       object-fit: contain;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-      pointer-events: auto;
-    }
-
-    .header-btn, .header-dots {
-      background: var(--bg-secondary);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 16px;
-      color: var(--text-secondary);
-      pointer-events: auto;
     }
 
     .main-content {
@@ -877,14 +836,9 @@
 </head>
 <body>
 
-  <!-- HEADER -->
+  <!-- HEADER (только фото по центру) -->
   <div class="header">
-    <button class="header-close" onclick="Telegram.WebApp.close()">✕ Закрыть</button>
     <img src="message.png" alt="" class="header-logo">
-    <div class="header-actions">
-      <button class="header-btn">▾</button>
-      <button class="header-dots">•••</button>
-    </div>
   </div>
 
   <div class="main-content" id="mainContent">
