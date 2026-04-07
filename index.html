@@ -88,7 +88,7 @@
       display: block;
     }
 
-    /* Фото только в сообщениях — УВЕЛИЧЕНО В 3 РАЗА */
+    /* Фото только в сообщениях */
     .messages-header {
       display: flex;
       align-items: center;
@@ -98,9 +98,10 @@
 
     .messages-logo {
       height: auto;
-      width: 210px; /* Было 70px → 210px (×3) */
-      max-width: 90vw; /* Адаптивность для мобильных */
+      width: 158px; /* Уменьшенный размер */
+      max-width: 90vw;
       object-fit: contain;
+      margin-left: 15px; /* Сдвиг вправо */
     }
 
     .search-container {
@@ -1091,10 +1092,13 @@
 
     setupProfile();
 
+    // --- ИСПРАВЛЕННАЯ ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК ---
     function switchTab(tab) {
+      // Убираем активные классы
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
+      // Включаем нужную вкладку
       switch (tab) {
         case 'home':
           document.getElementById('pageHome').classList.add('active');
@@ -1110,10 +1114,14 @@
           renderMyAds();
           break;
       }
-      document.getElementById('mainContent').scrollTop = 0;
+      // Скролл вверх
+      const mainContent = document.getElementById('mainContent');
+      if(mainContent) mainContent.scrollTop = 0;
     }
 
+    // Обработчик событий для кнопок меню
     document.querySelectorAll('.nav-item').forEach(btn => {
+      // Используем click
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -1123,7 +1131,21 @@
           if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
       });
+      
+      // Дополнительно обработчик touchstart для быстрой реакции на мобильных
+      btn.addEventListener('touchstart', function(e) {
+         // Предотвращаем двойное срабатывание если клик тоже сработает
+         // Но в данном случае просто продублируем логику для надежности
+         e.stopPropagation();
+         const tab = this.getAttribute('data-tab');
+         if (tab && !this.classList.contains('active')) {
+             // Небольшая задержка чтобы визуальный эффект нажатия прошел
+             setTimeout(() => switchTab(tab), 50);
+             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+         }
+      }, {passive: true});
     });
+    // ------------------------------------------------
 
     function escapeHtml(text) {
       const div = document.createElement('div');
