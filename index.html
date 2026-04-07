@@ -18,11 +18,9 @@
       --tab-bg: #f8f8f8;
       --tab-active: #e8e8e8;
       --modal-overlay: rgba(0,0,0,0.5);
-      --header-bg: linear-gradient(135deg, #ff6b35, #f7c948);
       --chat-bg: #f0f0f0;
       --btn-gradient: linear-gradient(135deg, #ff6b35, #e07a5f);
       --input-bg: #f2f2f7;
-      --empty-state: transparent;
     }
 
     .dark-theme {
@@ -39,7 +37,6 @@
       --modal-overlay: rgba(0,0,0,0.7);
       --chat-bg: #3a3a3c;
       --input-bg: #3a3a3c;
-      --empty-state: transparent;
     }
 
     * {
@@ -59,89 +56,21 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    /* ===== HEADER ===== */
+    /* ===== HEADER (пустая) ===== */
     .header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 100;
-      background: var(--bg-primary);
-      padding: 8px 16px;
-      padding-top: max(8px, env(safe-area-inset-top));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-bottom: 1px solid var(--border-color);
-      height: calc(56px + env(safe-area-inset-top));
-      transition: background 0.3s;
-    }
-
-    .header-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      object-fit: cover;
-    }
-
-    .header-close {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: var(--bg-secondary);
-      border: none;
-      border-radius: 20px;
-      padding: 6px 16px;
-      font-size: 15px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .header-actions {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      gap: 8px;
-    }
-
-    .header-btn {
-      background: var(--bg-secondary);
-      border: none;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .header-dots {
-      background: var(--bg-secondary);
-      border: none;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 18px;
-      color: var(--text-secondary);
-      letter-spacing: 2px;
+      height: 100px;
+      pointer-events: none;
     }
 
     /* ===== MAIN CONTENT ===== */
     .main-content {
       position: fixed;
-      top: calc(56px + env(safe-area-inset-top));
+      top: 100px;
       left: 0;
       right: 0;
       bottom: 70px;
@@ -742,17 +671,53 @@
       color: var(--text-secondary);
     }
 
-    .detail-images {
+    .image-carousel {
       width: 100%;
       aspect-ratio: 1;
-      background: var(--bg-secondary);
+      position: relative;
       overflow: hidden;
+      background: var(--bg-secondary);
     }
 
-    .detail-images img {
+    .carousel-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .carousel-slide {
+      min-width: 100%;
+      height: 100%;
+    }
+
+    .carousel-slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .carousel-dot.active {
+      background: white;
     }
 
     .detail-info {
@@ -819,82 +784,15 @@
       margin-top: 20px;
     }
 
-    /* ===== SCROLLBAR ===== */
     .main-content::-webkit-scrollbar {
       width: 0;
-    }
-
-    /* ===== LOADING ===== */
-    .loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      color: var(--text-secondary);
-    }
-
-    /* Image carousel in detail */
-    .image-carousel {
-      width: 100%;
-      aspect-ratio: 1;
-      position: relative;
-      overflow: hidden;
-      background: var(--bg-secondary);
-    }
-
-    .carousel-track {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.3s ease;
-    }
-
-    .carousel-slide {
-      min-width: 100%;
-      height: 100%;
-    }
-
-    .carousel-slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .carousel-dots {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 6px;
-    }
-
-    .carousel-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.5);
-      border: none;
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .carousel-dot.active {
-      background: white;
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <div class="header">
-    <button class="header-close" onclick="Telegram.WebApp.close()">✕ Закрыть</button>
-    <img src="messageblood.png" alt="Swapka" class="header-logo" id="headerLogo">
-    <div class="header-actions">
-      <button class="header-btn" id="headerDownBtn">▾</button>
-      <button class="header-dots">•••</button>
-    </div>
-  </div>
+  <!-- HEADER (пустая, только для отступа) -->
+  <div class="header"></div>
 
   <!-- MAIN CONTENT -->
   <div class="main-content" id="mainContent">
@@ -907,11 +805,9 @@
           <input type="text" class="search-input" id="searchInput" placeholder="Поиск...">
         </div>
       </div>
-      <div class="ads-grid" id="adsGrid">
-        <!-- Ads will be rendered here -->
-      </div>
+      <div class="ads-grid" id="adsGrid"></div>
       <div class="empty-state" id="homeEmpty" style="display:none;">
-        <div class="empty-state-icon">️</div>
+        <div class="empty-state-icon">🏷️</div>
         <div class="empty-state-text">Пока нет объявлений</div>
       </div>
     </div>
@@ -944,9 +840,7 @@
       <button class="create-ad-btn" onclick="openCreateModal()">Создать объявление</button>
 
       <div class="my-ads-title">Мои объявления</div>
-      <div class="ads-grid" id="myAdsGrid">
-        <!-- User's ads will be rendered here -->
-      </div>
+      <div class="ads-grid" id="myAdsGrid"></div>
       <div class="empty-state" id="myAdsEmpty">
         <div class="empty-state-icon">📝</div>
         <div class="empty-state-text">У вас пока нет объявлений</div>
@@ -1021,7 +915,7 @@
   <div class="detail-modal" id="detailModal">
     <div class="detail-header">
       <button class="detail-back" onclick="closeDetailModal()">←</button>
-      <img src="messageblood.png" alt="" style="width:30px;height:30px;border-radius:6px;">
+      <div style="width:30px;height:30px;"></div>
       <button class="detail-back" style="visibility:hidden">←</button>
     </div>
     <div class="image-carousel" id="detailCarousel">
@@ -1046,19 +940,16 @@
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
-    // ===== INITIALIZATION =====
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    // Apply Telegram theme
     const isDark = tg.colorScheme === 'dark';
     if (isDark) {
       document.body.classList.add('dark-theme');
       document.getElementById('themeToggle').textContent = '☀️';
     }
 
-    // Get user info
     const user = tg.initDataUnsafe?.user;
     const currentUser = {
       id: user?.id || 'guest_' + Date.now(),
@@ -1068,7 +959,6 @@
       photoUrl: user?.photo_url || ''
     };
 
-    // ===== DATA STORAGE =====
     const ADS_KEY = 'swapka_ads';
     const THEME_KEY = 'swapka_theme';
 
@@ -1097,7 +987,6 @@
       localStorage.setItem(THEME_KEY, theme);
     }
 
-    // ===== THEME =====
     function toggleTheme() {
       const body = document.body;
       const btn = document.getElementById('themeToggle');
@@ -1112,14 +1001,12 @@
       }
     }
 
-    // Apply saved theme
     const savedTheme = loadTheme();
     if (savedTheme === 'dark') {
       document.body.classList.add('dark-theme');
       document.getElementById('themeToggle').textContent = '☀️';
     }
 
-    // ===== PROFILE SETUP =====
     function setupProfile() {
       const avatarContainer = document.getElementById('profileAvatarContainer');
       if (currentUser.photoUrl) {
@@ -1136,13 +1023,10 @@
 
     setupProfile();
 
-    // ===== TAB SWITCHING =====
     function switchTab(tab) {
-      // Hide all pages
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-      // Show selected page
       switch (tab) {
         case 'home':
           document.getElementById('pageHome').classList.add('active');
@@ -1160,7 +1044,12 @@
       }
     }
 
-    // ===== ADS RENDERING =====
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
     function renderAds(filter = '') {
       const ads = loadAds();
       const grid = document.getElementById('adsGrid');
@@ -1196,7 +1085,7 @@
       card.onclick = () => openDetailModal(ad);
 
       const imgHtml = ad.photos && ad.photos.length > 0
-        ? `<img class="ad-image" src="${ad.photos[0]}" alt="${ad.title}">`
+        ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
 
       card.innerHTML = `
@@ -1229,7 +1118,6 @@
       }
     }
 
-    // ===== SEARCH =====
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', function (e) {
       clearTimeout(searchTimeout);
@@ -1238,7 +1126,6 @@
       }, 200);
     });
 
-    // ===== CREATE AD =====
     let selectedPhotos = [];
     let currentPhotoIndex = -1;
 
@@ -1306,8 +1193,6 @@
     function removePhoto(event, index) {
       event.stopPropagation();
       selectedPhotos.splice(index, 1);
-
-      // Rebuild slots
       resetPhotoSlots();
       selectedPhotos.forEach((photo, i) => {
         updatePhotoSlot(i, photo);
@@ -1360,7 +1245,6 @@
       tg.showAlert('Объявление создано! ✅');
     }
 
-    // ===== AD DETAIL =====
     let currentCarouselIndex = 0;
 
     function openDetailModal(ad) {
@@ -1376,7 +1260,6 @@
         document.getElementById('detailSellerAvatar').innerHTML = '👤';
       }
 
-      // Build carousel
       const track = document.getElementById('carouselTrack');
       const dots = document.getElementById('carouselDots');
       track.innerHTML = '';
@@ -1395,9 +1278,7 @@
         dots.appendChild(dot);
       });
 
-      // Store current ad for contact
       modal.dataset.adId = ad.id;
-
       modal.classList.add('active');
       tg.HapticFeedback?.impactOccurred('light');
     }
@@ -1412,7 +1293,26 @@
       });
     }
 
-    // Touch swipe for carousel
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    function contactSeller() {
+      const modal = document.getElementById('detailModal');
+      const adId = modal.dataset.adId;
+      const ads = loadAds();
+      const ad = ads.find(a => a.id === adId);
+      if (ad && ad.userUsername) {
+        tg.openTelegramLink(`https://t.me/${ad.userUsername}`);
+      } else {
+        tg.showAlert('Контакты продавца недоступны');
+      }
+    }
+
+    document.getElementById('createModal').addEventListener('click', function (e) {
+      if (e.target === this) closeCreateModal();
+    });
+
     let touchStartX = 0;
     let touchEndX = 0;
 
@@ -1434,28 +1334,6 @@
       }
     }, { passive: true });
 
-    function closeDetailModal() {
-      document.getElementById('detailModal').classList.remove('active');
-    }
-
-    function contactSeller() {
-      const modal = document.getElementById('detailModal');
-      const adId = modal.dataset.adId;
-      const ads = loadAds();
-      const ad = ads.find(a => a.id === adId);
-      if (ad && ad.userUsername) {
-        tg.openTelegramLink(`https://t.me/${ad.userUsername}`);
-      } else {
-        tg.showAlert('Контакты продавца недоступны');
-      }
-    }
-
-    // ===== CLOSE MODAL ON OVERLAY CLICK =====
-    document.getElementById('createModal').addEventListener('click', function (e) {
-      if (e.target === this) closeCreateModal();
-    });
-
-    // ===== INITIAL RENDER =====
     renderAds();
     renderMyAds();
   </script>
