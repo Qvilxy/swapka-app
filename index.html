@@ -96,7 +96,7 @@
             justify-content: center;
             padding: 10px 0;
             border-bottom: 1px solid var(--separator-color);
-            /* ИЗМЕНЕНИЕ: Небольшая тень под черной полоской */
+            /* Тень под черной полоской */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         }
 
@@ -147,7 +147,7 @@
         /* --- Scroll to Top Button --- */
         #scrollTopBtn {
             position: fixed;
-            top: 95px; /* Сдвинуто вниз вместе с контентом */
+            top: 95px; /* Сдвинуто вниз вместе с контентом главной страницы */
             right: 12px;
             background: var(--card-bg);
             color: var(--text-color);
@@ -178,11 +178,12 @@
             display: block;
         }
 
-        /* ИЗМЕНЕНИЕ: Увеличены отступы сверху на 20px (полсантиметра) */
+        /* ИЗМЕНЕНИЕ: Увеличен отступ сверху для Главной страницы на 20px (полсантиметра) */
         #homePage.active {
-            padding-top: 160px;
+            padding-top: 160px; 
         }
 
+        /* Отступы для других страниц остаются стандартными */
         #messagesPage.active, #profilePage.active {
             padding-top: 95px;
         }
