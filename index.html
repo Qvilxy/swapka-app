@@ -99,14 +99,14 @@
       display: flex;
       align-items: center;
       background: var(--search-bg);
-      border-radius: 12px;
+      border-radius: 100px;
       padding: 10px 14px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 3px 18px rgba(0,0,0,0.12);
       transition: box-shadow 0.2s, background 0.3s;
     }
 
     .search-bar:focus-within {
-      box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
     }
 
     .search-icon {
@@ -374,9 +374,10 @@
 
     .create-ad-btn {
       display: block;
-      width: calc(100% - 32px);
+      width: auto;
+      min-width: fit-content;
       margin: 0 auto 20px;
-      padding: 14px;
+      padding: 14px 10px;
       background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
       background-size: 400% 400%;
       animation: gradientShift 6s ease infinite;
@@ -625,8 +626,8 @@
     .submit-btn {
       width: 100%;
       padding: 16px;
-      background: var(--btn-gradient);
-      color: white;
+      background: #000000;
+      color: #ffffff;
       border: none;
       border-radius: 14px;
       font-size: 17px;
@@ -853,7 +854,7 @@
           <div class="profile-name" id="profileName">Загрузка...</div>
           <div class="profile-username" id="profileUsername">@loading</div>
           <div class="profile-rating">
-            <span>⭐</span><span>☆</span><span>☆</span>
+            <span>☆</span><span>☆</span><span>☆</span>
           </div>
         </div>
 
@@ -968,12 +969,6 @@
     tg.ready();
     tg.expand();
 
-    const isDark = tg.colorScheme === 'dark';
-    if (isDark) {
-      document.body.classList.add('dark-theme');
-      document.getElementById('themeToggle').textContent = '☀️';
-    }
-
     const user = tg.initDataUnsafe?.user;
     const currentUser = {
       id: user?.id || 'guest_' + Date.now(),
@@ -1004,31 +999,44 @@
     }
 
     function loadTheme() {
-      return localStorage.getItem(THEME_KEY) || 'light';
+      return localStorage.getItem(THEME_KEY);
     }
 
     function saveTheme(theme) {
       localStorage.setItem(THEME_KEY, theme);
     }
 
+    // ===== FIXED THEME INITIALIZATION =====
+    function applyTheme(theme) {
+      const body = document.body;
+      const btn = document.getElementById('themeToggle');
+      if (theme === 'dark') {
+        body.classList.add('dark-theme');
+        if (btn) btn.textContent = '☀️';
+      } else {
+        body.classList.remove('dark-theme');
+        if (btn) btn.textContent = '🌙';
+      }
+    }
+
+    // Сначала проверяем сохранённую тему, иначе системную
+    const savedTheme = loadTheme();
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      applyTheme(savedTheme);
+    } else {
+      applyTheme(tg.colorScheme === 'dark' ? 'dark' : 'light');
+    }
+
     function toggleTheme() {
       const body = document.body;
       const btn = document.getElementById('themeToggle');
       if (body.classList.contains('dark-theme')) {
-        body.classList.remove('dark-theme');
-        btn.textContent = '🌙';
+        applyTheme('light');
         saveTheme('light');
       } else {
-        body.classList.add('dark-theme');
-        btn.textContent = '☀️';
+        applyTheme('dark');
         saveTheme('dark');
       }
-    }
-
-    const savedTheme = loadTheme();
-    if (savedTheme === 'dark') {
-      document.body.classList.add('dark-theme');
-      document.getElementById('themeToggle').textContent = '☀️';
     }
 
     function setupProfile() {
@@ -1151,7 +1159,6 @@
     });
 
     let selectedPhotos = [];
-    let currentPhotoIndex = -1;
 
     function openCreateModal() {
       selectedPhotos = [];
@@ -1177,7 +1184,7 @@
     }
 
     function addPhoto(index) {
-      currentPhotoIndex = index;
+      document.getElementById('photoInput').dataset.index = index;
       document.getElementById('photoInput').click();
     }
 
