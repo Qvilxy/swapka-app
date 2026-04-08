@@ -21,9 +21,9 @@
       --glass-border: rgba(255, 255, 255, 0.4);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
       
-      /* Цвета индикатора */
-      --indicator-gradient: linear-gradient(135deg, #4a9eff, #8c52ff);
-      --indicator-glow: rgba(74, 158, 255, 0.4);
+      /* ✅ ЦВЕТА ИНДИКАТОРА — СВЕТЛАЯ ТЕМА */
+      --indicator-bg: #d0d0d0;
+      --indicator-glow: rgba(208, 208, 208, 0.5);
     }
 
     .dark-theme {
@@ -39,7 +39,10 @@
       --glass-bg: rgba(30, 30, 30, 0.65);
       --glass-border: rgba(255, 255, 255, 0.1);
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-      --indicator-glow: rgba(74, 158, 255, 0.25);
+      
+      /* ✅ ЦВЕТА ИНДИКАТОРА — ТЁМНАЯ ТЕМА */
+      --indicator-bg: #4a4a4a;
+      --indicator-glow: rgba(74, 74, 74, 0.5);
     }
 
     * {
@@ -244,7 +247,7 @@
     .messages-list { padding: 8px 16px; }
     .message-item {
       display: flex; align-items: center; padding: 12px;
-      background: var(--chat-bg); border-radius: 14px;
+      background: var(--card-bg); border-radius: 14px;
       margin-bottom: 8px; cursor: pointer; transition: background 0.2s;
     }
     .message-avatar {
@@ -399,39 +402,58 @@
       opacity: 1;
     }
 
-    /* ===== LIQUID INDICATOR ===== */
+    /* ===== ФИЗИКА ИНДИКАТОРА ===== */
     .nav-indicator {
       position: absolute;
       top: 8px;
       bottom: 8px;
       left: 8px;
       width: calc(33.33% - 16px);
-      background: var(--indicator-gradient);
+      
+      background: var(--indicator-bg);
       border-radius: 24px;
       z-index: 1;
       
-      /* Оптимизация для 60 FPS */
-      will-change: transform, width, border-radius;
-      transform: translateZ(0); 
+      will-change: transform, width, border-radius, scale;
+      transform: translateZ(0) scale(1);
+      transform-origin: center center;
       
-      /* Пружинистая анимация по умолчанию */
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
                   width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                  border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.3s ease;
       
-      box-shadow: 0 4px 15px var(--indicator-glow);
+      box-shadow: 0 4px 20px var(--indicator-glow);
       pointer-events: none;
-      overflow: visible; /* Для эффекта выхода за границы */
+      overflow: visible;
     }
-    
-    /* Блик на индикаторе */
+
+    /* ✅ СОСТОЯНИЕ ПЕРЕТАСКИВАНИЯ — МАСШТАБ 1.2 */
+    .nav-indicator.dragging {
+      transition: none !important;
+      transform: translate3d(var(--drag-x, 0), 0, 0) scale(1.2) !important;
+      box-shadow: 0 8px 30px var(--indicator-glow), 0 0 0 2px rgba(255,255,255,0.1) inset;
+    }
+
+    /* ✅ ПРУЖИНИСТАЯ АНИМАЦИЯ ВОЗВРАТА */
+    .nav-indicator.spring-back {
+      animation: springBack 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes springBack {
+      0% { transform: translate3d(var(--final-x, 0), 0, 0) scale(1.2); }
+      40% { transform: translate3d(var(--final-x, 0), 0, 0) scale(1.05); }
+      70% { transform: translate3d(var(--final-x, 0), 0, 0) scale(0.98); }
+      100% { transform: translate3d(var(--final-x, 0), 0, 0) scale(1); }
+    }
+
     .nav-indicator::after {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
       border-radius: 24px;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
-      opacity: 0.3;
+      background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%);
+      opacity: 0.4;
       pointer-events: none;
     }
 
@@ -462,12 +484,12 @@
     .form-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block; }
     .form-input {
       width: 100%; padding: 12px 16px; border: 2px solid var(--border-color); border-radius: 12px;
-      font-size: 16px; color: var(--text-primary); background: var(--input-bg); font-family: inherit; outline: none;
+      font-size: 16px; color: var(--text-primary); background: var(--bg-secondary); font-family: inherit; outline: none;
     }
     .photos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .photo-slot {
       aspect-ratio: 1; border: 2px dashed var(--border-color); border-radius: 12px;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; background: var(--input-bg);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; background: var(--bg-secondary);
     }
     .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
     .photo-slot .add-icon { font-size: 28px; color: var(--text-secondary); }
@@ -745,42 +767,136 @@
     }
     setupProfile();
 
-    // --- HIGH PERFORMANCE TAB SWITCHING WITH LIQUID ANIMATION ---
-    
+    // ===== ФИЗИКА ИНДИКАТОРА НАВИГАЦИИ =====
     const navPill = document.getElementById('navPill');
     const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
     
-    // КЕШИРОВАНИЕ ШИРИНЫ ДЛЯ 60 FPS
-    let cachedItemWidth = navItems[0].offsetWidth;
+    let indicatorPhysics = {
+      isDragging: false,
+      startX: 0,
+      currentIndex: 0,
+      velocity: 0,
+      lastX: 0,
+      lastTime: 0,
+      cachedItemWidth: 0
+    };
 
-    // Обновляем ширину при ресайзе окна
-    window.addEventListener('resize', () => {
-      cachedItemWidth = navItems[0].offsetWidth;
-      navItems.forEach((item, idx) => {
-        if(item.classList.contains('active')) updateIndicatorPosition(idx, false);
+    function initIndicatorPhysics() {
+      indicatorPhysics.cachedItemWidth = navItems[0].offsetWidth;
+      window.addEventListener('resize', () => {
+        indicatorPhysics.cachedItemWidth = navItems[0].offsetWidth;
+        updateIndicatorPosition(indicatorPhysics.currentIndex, false);
       });
-    });
-
-    function updateIndicatorPosition(index, isDragging = false) {
-      const xPos = index * cachedItemWidth; 
-      
-      if (isDragging) {
-        // При драге отключаем плавность для мгновенной реакции
-        navIndicator.style.transition = 'none';
-      } else {
-        // Пружинистая анимация только когда отпускаем палец
-        navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        
-        // Сброс эффектов искажения
-        navIndicator.style.width = `calc(33.33% - 16px)`;
-        navIndicator.style.borderRadius = '24px';
-      }
-      
-      // Используем translate3d для включения аппаратного ускорения GPU
-      navIndicator.style.transform = `translate3d(${xPos}px, 0, 0)`;
     }
 
+    function updateIndicatorPosition(index, isDragging = false, dragOffset = 0) {
+      const xPos = index * indicatorPhysics.cachedItemWidth + dragOffset;
+      
+      if (isDragging) {
+        navIndicator.classList.add('dragging');
+        navIndicator.style.setProperty('--drag-x', `${dragOffset}px`);
+        navIndicator.style.setProperty('--final-x', `${xPos}px`);
+      } else {
+        navIndicator.classList.remove('dragging');
+        navIndicator.style.removeProperty('--drag-x');
+        navIndicator.classList.add('spring-back');
+        navIndicator.style.setProperty('--final-x', `${xPos}px`);
+        
+        setTimeout(() => {
+          navIndicator.classList.remove('spring-back');
+          navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
+          navIndicator.style.transform = `translate3d(${xPos}px, 0, 0) scale(1)`;
+        }, 500);
+      }
+    }
+
+    function calculateVelocity(currentX, currentTime) {
+      const dt = currentTime - indicatorPhysics.lastTime;
+      if (dt < 10) return indicatorPhysics.velocity;
+      const dx = currentX - indicatorPhysics.lastX;
+      return dx / dt;
+    }
+
+    function applyMomentum(velocity) {
+      const momentum = velocity * 15;
+      return Math.max(Math.min(momentum, 20), -20);
+    }
+
+    // ✅ ОБНОВЛЁННЫЕ ОБРАБОТЧИКИ СОБЫТИЙ
+    navPill.addEventListener('touchstart', (e) => {
+      indicatorPhysics.isDragging = true;
+      indicatorPhysics.startX = e.touches[0].clientX;
+      indicatorPhysics.lastX = indicatorPhysics.startX;
+      indicatorPhysics.lastTime = Date.now();
+      indicatorPhysics.velocity = 0;
+      
+      navItems.forEach((item, idx) => {
+        if(item.classList.contains('active')) indicatorPhysics.currentIndex = idx;
+      });
+      
+      navIndicator.style.transition = 'none';
+      
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }, { passive: true });
+
+    navPill.addEventListener('touchmove', (e) => {
+      if (!indicatorPhysics.isDragging) return;
+      
+      const currentX = e.touches[0].clientX;
+      const currentTime = Date.now();
+      const diff = currentX - indicatorPhysics.startX;
+      
+      indicatorPhysics.velocity = calculateVelocity(currentX, currentTime);
+      indicatorPhysics.lastX = currentX;
+      indicatorPhysics.lastTime = currentTime;
+      
+      const maxIndex = navItems.length - 1;
+      let newPos = (indicatorPhysics.currentIndex * indicatorPhysics.cachedItemWidth) + diff;
+      
+      const stretch = Math.min(Math.abs(diff) / 100, 0.25);
+      if (Math.abs(diff) > 10) {
+        navIndicator.style.width = `calc(33.33% - 16px + ${stretch * 15}px)`;
+        navIndicator.style.borderRadius = `${24 - stretch * 8}px`;
+      }
+
+      const limit = indicatorPhysics.cachedItemWidth * 0.4;
+      if (newPos < -limit) newPos = -limit + (newPos + limit) * 0.15;
+      if (newPos > (maxIndex * indicatorPhysics.cachedItemWidth) + limit) {
+        newPos = (maxIndex * indicatorPhysics.cachedItemWidth) + limit + (newPos - ((maxIndex * indicatorPhysics.cachedItemWidth) + limit)) * 0.15;
+      }
+
+      updateIndicatorPosition(indicatorPhysics.currentIndex, true, diff);
+    }, { passive: true });
+
+    navPill.addEventListener('touchend', (e) => {
+      if (!indicatorPhysics.isDragging) return;
+      indicatorPhysics.isDragging = false;
+      
+      const momentum = applyMomentum(indicatorPhysics.velocity);
+      const rect = navIndicator.getBoundingClientRect();
+      const pillRect = navPill.getBoundingClientRect();
+      const finalLeft = rect.left - pillRect.left + momentum;
+      
+      let targetIndex = Math.round(finalLeft / indicatorPhysics.cachedItemWidth);
+      targetIndex = Math.max(0, Math.min(2, targetIndex));
+      
+      const newTab = navItems[targetIndex].getAttribute('data-tab');
+      const currentTab = navItems[indicatorPhysics.currentIndex].getAttribute('data-tab');
+      
+      if (newTab !== currentTab) {
+        switchTab(newTab, targetIndex);
+      } else {
+        updateIndicatorPosition(indicatorPhysics.currentIndex, false);
+      }
+      
+      navIndicator.style.width = `calc(33.33% - 16px)`;
+      navIndicator.style.borderRadius = '24px';
+      
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    });
+
+    // ✅ ОБНОВЛЁННАЯ ФУНКЦИЯ switchTab
     function switchTab(tab, index) {
       navItems.forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -797,99 +913,28 @@
       if(activePage) activePage.classList.add('active');
 
       updateIndicatorPosition(index, false);
+      indicatorPhysics.currentIndex = index;
 
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
     }
 
-    // Обработка кликов (быстрый тап)
+    // Обработка кликов
     navItems.forEach((btn, index) => {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         const tab = this.getAttribute('data-tab');
         if (tab) {
           switchTab(tab, index);
-          // Вибрация убрана по запросу, но можно раскомментировать:
-          // if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
       });
     });
 
-    // --- ОПТИМИЗИРОВАННАЯ ЛОГИКА СВАЙПА (LIQUID EFFECT) ---
-    let isDragging = false;
-    let startX = 0;
-    let currentIndex = 0; 
-
-    // Инициализация позиции
-    setTimeout(() => updateIndicatorPosition(0), 100);
-
-    navPill.addEventListener('touchstart', (e) => {
-      isDragging = true;
-      startX = e.touches[0].clientX;
-      
-      navItems.forEach((item, idx) => {
-        if(item.classList.contains('active')) currentIndex = idx;
-      });
-      
-      // Отключаем анимацию для мгновенного отклика
-      navIndicator.style.transition = 'none';
-    }, { passive: true });
-
-    navPill.addEventListener('touchmove', (e) => {
-      if (!isDragging) return;
-      
-      const x = e.touches[0].clientX;
-      const diff = x - startX;
-      
-      const maxIndex = navItems.length - 1;
-      
-      // Расчет новой позиции на основе кешированной ширины
-      let newPos = (currentIndex * cachedItemWidth) + diff;
-      
-      // Эффект "Жидкости": искажаем форму при движении
-      // Чем быстрее движение (больше diff), тем сильнее искажение
-      const stretch = Math.min(Math.abs(diff) / 100, 0.3); // Ограничиваем растяжение
-      
-      // Если тянем вправо, растягиваем вправо, если влево - влево
-      // Но для простоты просто немного меняем ширину и скругление
-      if (Math.abs(diff) > 10) {
-         navIndicator.style.width = `calc(33.33% - 16px + ${stretch * 20}px)`;
-         navIndicator.style.borderRadius = `${24 - stretch * 10}px`;
-      }
-
-      // Мягкие границы (сопротивление)
-      const limit = cachedItemWidth * 0.5; 
-      if (newPos < -limit) newPos = -limit + (newPos + limit) * 0.2;
-      if (newPos > (maxIndex * cachedItemWidth) + limit) newPos = (maxIndex * cachedItemWidth) + limit + (newPos - ((maxIndex * cachedItemWidth) + limit)) * 0.2;
-
-      navIndicator.style.transform = `translate3d(${newPos}px, 0, 0)`;
-    }, { passive: true });
-
-    navPill.addEventListener('touchend', (e) => {
-      if (!isDragging) return;
-      isDragging = false;
-      
-      const rect = navIndicator.getBoundingClientRect();
-      const pillRect = navPill.getBoundingClientRect();
-      const finalLeft = rect.left - pillRect.left;
-      
-      // Определяем ближайший индекс
-      let targetIndex = Math.round(finalLeft / cachedItemWidth);
-      
-      if (targetIndex < 0) targetIndex = 0;
-      if (targetIndex > 2) targetIndex = 2;
-      
-      const newTab = navItems[targetIndex].getAttribute('data-tab');
-      
-      // Если переключились на другую вкладку
-      if (newTab !== navItems[currentIndex].getAttribute('data-tab')) {
-         switchTab(newTab, targetIndex);
-         // Вибрация убрана по запросу
-      } else {
-         // Возврат на место с пружинистой анимацией
-         updateIndicatorPosition(currentIndex, false);
-      }
-    });
+    // ✅ ИНИЦИАЛИЗАЦИЯ
+    setTimeout(() => {
+      initIndicatorPhysics();
+      updateIndicatorPosition(0, false);
+    }, 100);
 
     function escapeHtml(text) {
       const div = document.createElement('div');
