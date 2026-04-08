@@ -218,9 +218,43 @@
       transition: transform 0.2s, background 0.3s;
       cursor: pointer;
       will-change: transform;
+      position: relative;
     }
 
     .ad-card:active { transform: scale(0.97); }
+
+    .ad-delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 59, 48, 0.9);
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.2s, background 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .ad-delete-btn:active {
+      transform: scale(0.9);
+      background: rgba(255, 59, 48, 1);
+    }
+
+    .ad-delete-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: white;
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     .ad-image-container {
       width: 100%;
@@ -274,18 +308,87 @@
 
     /* Messages Styles */
     .messages-list { padding: 8px 16px; }
+    
+    .message-item-wrapper {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    
     .message-item {
       display: flex; align-items: center; padding: 12px;
       background: var(--card-bg); border-radius: 14px;
-      margin-bottom: 8px; cursor: pointer; transition: background 0.2s;
+      cursor: pointer; transition: background 0.2s, transform 0.3s;
+      position: relative;
+      z-index: 2;
+      touch-action: pan-y;
     }
+    
+    .message-item.swiping {
+      transition: transform 0.1s;
+    }
+    
     .message-item:hover { background: var(--bg-secondary); }
+    
+    .message-delete-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 80px;
+      background: #ff3b30;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .message-delete-bg.visible {
+      opacity: 1;
+    }
+    
+    .message-delete-bg svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    
+    .message-delete-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 80px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
     .message-avatar {
       width: 48px; height: 48px; border-radius: 50%;
       background: var(--bg-secondary); margin-right: 12px;
       display: flex; align-items: center; justify-content: center;
       font-size: 20px; flex-shrink: 0;
+      overflow: hidden;
     }
+    
+    .message-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
     .message-content { flex: 1; min-width: 0; }
     .message-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
     .message-preview { font-size: 14px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
@@ -711,7 +814,8 @@
     .detail-price { font-size: 24px; font-weight: 800; color: #ff6b35; margin-bottom: 8px; }
     .detail-city { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
     .detail-seller { display: flex; align-items: center; padding: 14px; background: var(--bg-secondary); border-radius: 14px; margin-bottom: 16px; }
-    .detail-seller-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--border-color); margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .detail-seller-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--border-color); margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
+    .detail-seller-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .detail-seller-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
     .detail-contact-btn {
       width: 100%; padding: 16px; background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
@@ -749,7 +853,6 @@
       </div>
       <div class="ads-grid" id="adsGrid"></div>
       <div class="empty-state" id="homeEmpty" style="display:none;">
-        <div class="empty-state-icon">🏷️</div>
         <div class="empty-state-text">Пока нет объявлений</div>
       </div>
     </div>
@@ -758,7 +861,6 @@
     <div class="page" id="pageMessages">
       <div class="messages-list" id="messagesList">
         <div class="empty-state">
-          <div class="empty-state-icon">💬</div>
           <div class="empty-state-text">У вас пока нет чатов</div>
         </div>
       </div>
@@ -801,7 +903,6 @@
         <div class="my-ads-grid-wrapper">
           <div class="ads-grid" id="myAdsGrid"></div>
           <div class="empty-state" id="myAdsEmpty">
-            <div class="empty-state-icon">📝</div>
             <div class="empty-state-text">У вас пока нет объявлений</div>
           </div>
         </div>
@@ -1238,10 +1339,8 @@
       if (filteredAds.length === 0) {
         empty.style.display = 'flex';
         if (filter.trim() && ads.length > 0) {
-          empty.querySelector('.empty-state-icon').textContent = '🔍';
           empty.querySelector('.empty-state-text').textContent = 'Ничего не найдено';
         } else {
-          empty.querySelector('.empty-state-icon').textContent = '🏷️';
           empty.querySelector('.empty-state-text').textContent = 'Пока нет объявлений';
         }
       } else {
@@ -1250,14 +1349,29 @@
       }
     }
 
-    function createAdCard(ad) {
+    function createAdCard(ad, isMyAd = false) {
       const card = document.createElement('div');
       card.className = 'ad-card';
       card.onclick = () => openDetailModal(ad);
+      
       const imgHtml = ad.photos && ad.photos.length > 0
         ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
+      
+      let deleteBtn = '';
+      if (isMyAd) {
+        deleteBtn = `
+          <button class="ad-delete-btn" onclick="deleteAd(event, '${ad.id}')">
+            <svg viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        `;
+      }
+      
       card.innerHTML = `
+        ${deleteBtn}
         <div class="ad-image-container">${imgHtml}</div>
         <div class="ad-info">
           <div class="ad-title">${escapeHtml(ad.title)}</div>
@@ -1268,16 +1382,30 @@
       return card;
     }
 
+    function deleteAd(event, adId) {
+      event.stopPropagation();
+      
+      if (confirm('Удалить это объявление?')) {
+        const ads = loadAds();
+        const filteredAds = ads.filter(ad => ad.id !== adId);
+        saveAds(filteredAds);
+        renderAds();
+        renderMyAds();
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      }
+    }
+
     function renderMyAds() {
       const ads = loadAds();
       const grid = document.getElementById('myAdsGrid');
       const empty = document.getElementById('myAdsEmpty');
       grid.innerHTML = '';
       const myAds = ads.filter(ad => ad.userId === currentUser.id);
-      if (myAds.length === 0) { empty.style.display = 'flex'; }
-      else {
+      if (myAds.length === 0) { 
+        empty.style.display = 'flex'; 
+      } else {
         empty.style.display = 'none';
-        myAds.forEach(ad => grid.appendChild(createAdCard(ad)));
+        myAds.forEach(ad => grid.appendChild(createAdCard(ad, true)));
       }
     }
 
@@ -1558,6 +1686,76 @@
       }
     });
 
+    // ✅ СВАЙП ДЛЯ УДАЛЕНИЯ ЧАТА
+    function initChatSwipe(item, chatId) {
+      let startX = 0;
+      let currentX = 0;
+      let isSwiping = false;
+      const deleteWidth = 80;
+      
+      item.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        currentX = 0;
+        isSwiping = true;
+        item.classList.add('swiping');
+      }, { passive: true });
+      
+      item.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        
+        currentX = e.touches[0].clientX;
+        const diff = startX - currentX;
+        
+        if (diff > 0) {
+          // Свайп влево
+          const translateX = Math.min(diff, deleteWidth);
+          item.style.transform = `translateX(-${translateX}px)`;
+        } else {
+          // Свайп вправо (возврат)
+          const translateX = Math.max(0, diff + deleteWidth);
+          item.style.transform = `translateX(-${translateX}px)`;
+        }
+      }, { passive: true });
+      
+      item.addEventListener('touchend', (e) => {
+        if (!isSwiping) return;
+        isSwiping = false;
+        item.classList.remove('swiping');
+        
+        const diff = startX - currentX;
+        const deleteBg = item.querySelector('.message-delete-bg');
+        
+        if (diff > deleteWidth / 2) {
+          // Открыть кнопку удаления
+          item.style.transform = `translateX(-${deleteWidth}px)`;
+          if (deleteBg) deleteBg.classList.add('visible');
+        } else {
+          // Закрыть кнопку удаления
+          item.style.transform = 'translateX(0)';
+          if (deleteBg) deleteBg.classList.remove('visible');
+        }
+      });
+      
+      // Клик вне элемента закрывает свайп
+      document.addEventListener('click', (e) => {
+        if (!item.contains(e.target)) {
+          item.style.transform = 'translateX(0)';
+          const deleteBg = item.querySelector('.message-delete-bg');
+          if (deleteBg) deleteBg.classList.remove('visible');
+        }
+      });
+    }
+
+    function deleteChat(chatId) {
+      if (confirm('Удалить этот чат?')) {
+        const chats = loadChats();
+        const filteredChats = chats.filter(c => c.id !== chatId);
+        saveChats(filteredChats);
+        renderMessages();
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      }
+    }
+
     function renderMessages() {
       const chats = loadChats();
       const container = document.getElementById('messagesList');
@@ -1568,7 +1766,6 @@
       if (userChats.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-state-icon">💬</div>
             <div class="empty-state-text">У вас пока нет чатов</div>
           </div>
         `;
@@ -1584,12 +1781,15 @@
         const preview = lastMessage ? lastMessage.text : 'Нет сообщений';
         const time = new Date(chat.updatedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message-item-wrapper';
+        
         const messageItem = document.createElement('div');
         messageItem.className = 'message-item';
         messageItem.onclick = () => openChat(chat);
         
         const avatarHtml = chat.sellerPhoto 
-          ? `<img src="${chat.sellerPhoto}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">`
+          ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>`
           : '<div class="message-avatar">👤</div>';
         
         messageItem.innerHTML = `
@@ -1603,7 +1803,29 @@
           </div>
         `;
         
-        container.appendChild(messageItem);
+        const deleteBg = document.createElement('div');
+        deleteBg.className = 'message-delete-bg';
+        deleteBg.innerHTML = `
+          <svg viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        `;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'message-delete-btn';
+        deleteBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteChat(chat.id);
+        };
+        
+        wrapper.appendChild(deleteBg);
+        wrapper.appendChild(messageItem);
+        wrapper.appendChild(deleteBtn);
+        container.appendChild(wrapper);
+        
+        // Инициализация свайпа
+        initChatSwipe(messageItem, chat.id);
       });
     }
 
