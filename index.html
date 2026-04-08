@@ -54,7 +54,7 @@
       height: 100vh;
       width: 100vw;
       transition: background 0.3s, color 0.3s;
-      user-select: none; /* Важно для свайпов */
+      user-select: none;
       -webkit-user-select: none;
     }
 
@@ -71,7 +71,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      pointer-events: none; /* Пропускаем клики сквозь хедер если нужно */
+      pointer-events: none;
     }
 
     .app-logo {
@@ -102,7 +102,7 @@
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
-      will-change: scroll-position; /* Оптимизация скролла */
+      will-change: scroll-position;
     }
 
     .page {
@@ -396,7 +396,7 @@
       opacity: 1;
     }
 
-    /* ===== OPTIMIZED INDICATOR ===== */
+    /* ===== OPTIMIZED INDICATOR WITH LIQUID EFFECT ===== */
     .nav-indicator {
       position: absolute;
       top: 8px;
@@ -407,15 +407,14 @@
       border-radius: 24px;
       z-index: 1;
       
-      /* КЛЮЧЕВОЙ МОМЕНТ ДЛЯ 60 FPS */
-      will-change: transform;
-      transform: translateZ(0); /* Force GPU layer */
+      will-change: transform, width, border-radius;
+      transform: translateZ(0);
       
-      /* Плавная пружинистая анимация при отпускании */
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       
       box-shadow: 0 4px 15px rgba(74, 158, 255, 0.4);
       pointer-events: none;
+      overflow: visible; /* Важно для эффекта выхода за границы */
     }
     
     .nav-indicator::after {
@@ -425,6 +424,34 @@
       border-radius: 24px;
       background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
       opacity: 0.3;
+    }
+
+    /* Эффект "Жидкости" слева и справа */
+    .nav-indicator::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -10px; /* Сдвиг влево от основного тела */
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, #4a9eff, #8c52ff);
+      border-radius: 50%;
+      transform: translateY(-50%) scale(0); /* Скрыт по умолчанию */
+      z-index: -1;
+      opacity: 0;
+      transition: transform 0.1s linear, opacity 0.1s linear;
+      pointer-events: none;
+    }
+
+    .nav-indicator::after {
+       /* Переопределяем after для блика, а before используем для жидкости */
+       content: '';
+       position: absolute;
+       top: 0; left: 0; right: 0; bottom: 0;
+       border-radius: 24px;
+       background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+       opacity: 0.3;
+       z-index: 1;
     }
 
     /* Модальные окна */
@@ -743,31 +770,28 @@
     const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
     
-    // КЕШИРОВАНИЕ ШИРИНЫ ДЛЯ 60 FPS
-    // Мы не хотим вызывать offsetWidth внутри touchmove, это вызывает перерисовку (Reflow)
     let cachedItemWidth = navItems[0].offsetWidth;
 
-    // Обновляем ширину при ресайзе окна
     window.addEventListener('resize', () => {
       cachedItemWidth = navItems[0].offsetWidth;
-      // Если есть активная вкладка, корректируем позицию
       navItems.forEach((item, idx) => {
         if(item.classList.contains('active')) updateIndicatorPosition(idx, false);
       });
     });
 
     function updateIndicatorPosition(index, isDragging = false) {
-      // Используем кешированную ширину
       const xPos = index * cachedItemWidth; 
       
       if (isDragging) {
-        navIndicator.style.transition = 'none'; // Мгновенная реакция на палец
+        navIndicator.style.transition = 'none';
       } else {
-        // Пружинистая анимация только когда отпускаем палец
         navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        // Сброс эффектов жидкости при отпускании
+        navIndicator.style.setProperty('--liquid-left', '0');
+        navIndicator.style.setProperty('--liquid-right', '0');
+        navIndicator.style.borderRadius = '24px';
       }
       
-      // Используем translate3d для включения аппаратного ускорения GPU
       navIndicator.style.transform = `translate3d(${xPos}px, 0, 0)`;
     }
 
@@ -792,7 +816,6 @@
       if(mainContent) mainContent.scrollTop = 0;
     }
 
-    // Обработка кликов (быстрый тап)
     navItems.forEach((btn, index) => {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -804,12 +827,11 @@
       });
     });
 
-    // --- ОПТИМИЗИРОВАННАЯ ЛОГИКА СВАЙПА ---
+    // --- ОПТИМИЗИРОВАННАЯ ЛОГИКА СВАЙПА С ЭФФЕКТОМ ЖИДКОСТИ ---
     let isDragging = false;
     let startX = 0;
     let currentIndex = 0; 
 
-    // Инициализация позиции
     setTimeout(() => updateIndicatorPosition(0), 100);
 
     navPill.addEventListener('touchstart', (e) => {
@@ -820,9 +842,8 @@
         if(item.classList.contains('active')) currentIndex = idx;
       });
       
-      // Отключаем анимацию для мгновенного отклика
       navIndicator.style.transition = 'none';
-    }, { passive: true }); // passive: true важно для производительности скролла
+    }, { passive: true });
 
     navPill.addEventListener('touchmove', (e) => {
       if (!isDragging) return;
@@ -832,15 +853,36 @@
       
       const maxIndex = navItems.length - 1;
       
-      // Расчет новой позиции на основе кешированной ширины
+      // Расчет новой позиции
       let newPos = (currentIndex * cachedItemWidth) + diff;
       
-      // Мягкие границы
-      const limit = cachedItemWidth * 0.5; 
-      if (newPos < -limit) newPos = -limit;
-      if (newPos > (maxIndex * cachedItemWidth) + limit) newPos = (maxIndex * cachedItemWidth) + limit;
+      // --- ЛОГИКА ЭФФЕКТА ЖИДКОСТИ ---
+      const limit = cachedItemWidth * 0.6; // Насколько далеко можно тянуть
+      
+      // Левая граница (упор в стену)
+      if (newPos < -limit) {
+         // Рассчитываем силу натяжения (0 to 1)
+         const stretch = Math.min(1, Math.abs(newPos + limit) / 50);
+         // Увеличиваем левый радиус скругления, создавая эффект капли
+         navIndicator.style.borderRadius = `${24 + stretch * 30}px 24px 24px ${24 + stretch * 30}px`;
+         // Показываем псевдо-элемент ::before как каплю слева
+         navIndicator.style.setProperty('--liquid-scale', stretch);
+         // Можно добавить легкое смещение самого индикатора, чтобы он не уходил слишком далеко
+         newPos = -limit + (newPos + limit) * 0.2; 
+      } 
+      // Правая граница (упор в стену)
+      else if (newPos > (maxIndex * cachedItemWidth) + limit) {
+         const stretch = Math.min(1, Math.abs(newPos - ((maxIndex * cachedItemWidth) + limit)) / 50);
+         navIndicator.style.borderRadius = `24px ${24 + stretch * 30}px ${24 + stretch * 30}px 24px`;
+         navIndicator.style.setProperty('--liquid-scale', stretch);
+         newPos = (maxIndex * cachedItemWidth) + limit + (newPos - ((maxIndex * cachedItemWidth) + limit)) * 0.2;
+      } 
+      else {
+         // Сброс если в пределах нормы
+         navIndicator.style.borderRadius = '24px';
+         navIndicator.style.setProperty('--liquid-scale', 0);
+      }
 
-      // Используем translate3d для GPU ускорения
       navIndicator.style.transform = `translate3d(${newPos}px, 0, 0)`;
     }, { passive: true });
 
@@ -852,7 +894,6 @@
       const pillRect = navPill.getBoundingClientRect();
       const finalLeft = rect.left - pillRect.left;
       
-      // Определяем ближайший индекс
       let targetIndex = Math.round(finalLeft / cachedItemWidth);
       
       if (targetIndex < 0) targetIndex = 0;
@@ -860,12 +901,10 @@
       
       const newTab = navItems[targetIndex].getAttribute('data-tab');
       
-      // Если переключились на другую вкладку
       if (newTab !== navItems[currentIndex].getAttribute('data-tab')) {
          switchTab(newTab, targetIndex);
          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       } else {
-         // Возврат на место
          updateIndicatorPosition(currentIndex, false);
       }
     });
@@ -1120,7 +1159,6 @@
       }
     }, { passive: true });
 
-    // --- KEYBOARD HANDLING ---
     let initialHeight = window.innerHeight;
 
     window.addEventListener('resize', () => {
