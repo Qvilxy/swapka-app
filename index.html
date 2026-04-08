@@ -428,13 +428,6 @@
       overflow: visible;
     }
 
-    /* ✅ СОСТОЯНИЕ ПЕРЕТАСКИВАНИЯ — МАСШТАБ 1.2 */
-    .nav-indicator.dragging {
-      transition: none !important;
-      transform: translate3d(var(--drag-x, 0), 0, 0) scale(1.2) !important;
-      box-shadow: 0 8px 30px var(--indicator-glow), 0 0 0 2px rgba(255,255,255,0.1) inset;
-    }
-
     .nav-indicator::after {
       content: '';
       position: absolute;
@@ -755,143 +748,44 @@
     }
     setupProfile();
 
-    // ===== ФИЗИКА ИНДИКАТОРА НАВИГАЦИИ =====
+    // ===== ФИЗИКА ИНДИКАТОРА НАВИГАЦИИ (ИСПРАВЛЕНАЯ) =====
     const navPill = document.getElementById('navPill');
     const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
     
     let indicatorPhysics = {
       isDragging: false,
-      startX: 0,
-      currentIndex: 0,
+      currentTransformX: 0,
+      touchOffsetX: 0,
       velocity: 0,
       lastX: 0,
       lastTime: 0,
+      currentIndex: 0,
       cachedItemWidth: 0
     };
 
     function initIndicatorPhysics() {
       indicatorPhysics.cachedItemWidth = navItems[0].offsetWidth;
+      updateIndicatorPosition(0, false);
       window.addEventListener('resize', () => {
         indicatorPhysics.cachedItemWidth = navItems[0].offsetWidth;
         updateIndicatorPosition(indicatorPhysics.currentIndex, false);
       });
     }
 
-    // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ — ПРЯМОЙ ПЕРЕХОД БЕЗ СКАЧКОВ
-    function updateIndicatorPosition(index, isDragging = false, dragOffset = 0) {
-      const xPos = index * indicatorPhysics.cachedItemWidth + dragOffset;
-      
-      if (isDragging) {
-        navIndicator.classList.add('dragging');
-        navIndicator.style.setProperty('--drag-x', `${dragOffset}px`);
-        navIndicator.style.setProperty('--final-x', `${xPos}px`);
-        navIndicator.style.transform = `translate3d(${xPos}px, 0, 0) scale(1.2)`;
-      } else {
-        // ✅ Сначала убираем классы драга
-        navIndicator.classList.remove('dragging');
-        navIndicator.style.removeProperty('--drag-x');
-        
-        // ✅ СБРАСЫВАЕМ транзишн на один кадр, чтобы браузер применил изменения
-        navIndicator.style.transition = 'none';
-        navIndicator.style.transform = `translate3d(${xPos}px, 0, 0) scale(1)`;
-        
-        // ✅ Форсируем перерисовку (reflow) — это ключевой фикс бага!
-        void navIndicator.offsetWidth;
-        
-        // ✅ Включаем пружинистую анимацию
-        navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
-        navIndicator.style.width = `calc(33.33% - 16px)`;
-        navIndicator.style.borderRadius = '24px';
-      }
-    }
+    function updateIndicatorPosition(index, isDragging = false) {
+      const targetX = index * indicatorPhysics.cachedItemWidth;
+      indicatorPhysics.currentTransformX = targetX;
+      indicatorPhysics.currentIndex = index;
 
-    function calculateVelocity(currentX, currentTime) {
-      const dt = currentTime - indicatorPhysics.lastTime;
-      if (dt < 10) return indicatorPhysics.velocity;
-      const dx = currentX - indicatorPhysics.lastX;
-      return dx / dt;
-    }
+      if (isDragging) return;
 
-    function applyMomentum(velocity) {
-      const momentum = velocity * 15;
-      return Math.max(Math.min(momentum, 20), -20);
-    }
-
-    // ✅ ОБНОВЛЁННЫЕ ОБРАБОТЧИКИ СОБЫТИЙ
-    navPill.addEventListener('touchstart', (e) => {
-      indicatorPhysics.isDragging = true;
-      indicatorPhysics.startX = e.touches[0].clientX;
-      indicatorPhysics.lastX = indicatorPhysics.startX;
-      indicatorPhysics.lastTime = Date.now();
-      indicatorPhysics.velocity = 0;
-      
-      navItems.forEach((item, idx) => {
-        if(item.classList.contains('active')) indicatorPhysics.currentIndex = idx;
-      });
-      
-      navIndicator.style.transition = 'none';
-      
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }, { passive: true });
-
-    navPill.addEventListener('touchmove', (e) => {
-      if (!indicatorPhysics.isDragging) return;
-      
-      const currentX = e.touches[0].clientX;
-      const currentTime = Date.now();
-      const diff = currentX - indicatorPhysics.startX;
-      
-      indicatorPhysics.velocity = calculateVelocity(currentX, currentTime);
-      indicatorPhysics.lastX = currentX;
-      indicatorPhysics.lastTime = currentTime;
-      
-      const maxIndex = navItems.length - 1;
-      let newPos = (indicatorPhysics.currentIndex * indicatorPhysics.cachedItemWidth) + diff;
-      
-      const stretch = Math.min(Math.abs(diff) / 100, 0.25);
-      if (Math.abs(diff) > 10) {
-        navIndicator.style.width = `calc(33.33% - 16px + ${stretch * 15}px)`;
-        navIndicator.style.borderRadius = `${24 - stretch * 8}px`;
-      }
-
-      const limit = indicatorPhysics.cachedItemWidth * 0.4;
-      if (newPos < -limit) newPos = -limit + (newPos + limit) * 0.15;
-      if (newPos > (maxIndex * indicatorPhysics.cachedItemWidth) + limit) {
-        newPos = (maxIndex * indicatorPhysics.cachedItemWidth) + limit + (newPos - ((maxIndex * indicatorPhysics.cachedItemWidth) + limit)) * 0.15;
-      }
-
-      updateIndicatorPosition(indicatorPhysics.currentIndex, true, diff);
-    }, { passive: true });
-
-    navPill.addEventListener('touchend', (e) => {
-      if (!indicatorPhysics.isDragging) return;
-      indicatorPhysics.isDragging = false;
-      
-      const momentum = applyMomentum(indicatorPhysics.velocity);
-      const rect = navIndicator.getBoundingClientRect();
-      const pillRect = navPill.getBoundingClientRect();
-      const finalLeft = rect.left - pillRect.left + momentum;
-      
-      let targetIndex = Math.round(finalLeft / indicatorPhysics.cachedItemWidth);
-      targetIndex = Math.max(0, Math.min(2, targetIndex));
-      
-      const newTab = navItems[targetIndex].getAttribute('data-tab');
-      const currentTab = navItems[indicatorPhysics.currentIndex].getAttribute('data-tab');
-      
-      if (newTab !== currentTab) {
-        switchTab(newTab, targetIndex);
-      } else {
-        updateIndicatorPosition(indicatorPhysics.currentIndex, false);
-      }
-      
+      navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
+      navIndicator.style.transform = `translate3d(${targetX}px, 0, 0) scale(1)`;
       navIndicator.style.width = `calc(33.33% - 16px)`;
       navIndicator.style.borderRadius = '24px';
-      
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    });
+    }
 
-    // ✅ ОБНОВЛЁННАЯ ФУНКЦИЯ switchTab
     function switchTab(tab, index) {
       navItems.forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -899,15 +793,10 @@
       const activeBtn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
       if(activeBtn) activeBtn.classList.add('active');
 
-      const pageMap = {
-        'home': 'pageHome',
-        'messages': 'pageMessages',
-        'profile': 'pageProfile'
-      };
+      const pageMap = { 'home': 'pageHome', 'messages': 'pageMessages', 'profile': 'pageProfile' };
       const activePage = document.getElementById(pageMap[tab]);
       if(activePage) activePage.classList.add('active');
 
-      // ✅ ПРЯМОЕ обновление позиции без промежуточного сброса
       updateIndicatorPosition(index, false);
       indicatorPhysics.currentIndex = index;
 
@@ -915,13 +804,96 @@
       if(mainContent) mainContent.scrollTop = 0;
     }
 
-    // Обработка кликов — ИСПРАВЛЕНО
+    // ✅ Touch Events с правильным расчётом смещения
+    navPill.addEventListener('touchstart', (e) => {
+      indicatorPhysics.isDragging = true;
+      indicatorPhysics.lastX = e.touches[0].clientX;
+      indicatorPhysics.lastTime = Date.now();
+      indicatorPhysics.velocity = 0;
+
+      navItems.forEach((item, idx) => {
+        if(item.classList.contains('active')) indicatorPhysics.currentIndex = idx;
+      });
+
+      // 🔑 КЛЮЧЕВОЙ ФИКС: сохраняем смещение между точкой касания и текущей позицией индикатора
+      indicatorPhysics.touchOffsetX = e.touches[0].clientX - indicatorPhysics.currentTransformX;
+
+      navIndicator.style.transition = 'none';
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }, { passive: true });
+
+    navPill.addEventListener('touchmove', (e) => {
+      if (!indicatorPhysics.isDragging) return;
+
+      const touchX = e.touches[0].clientX;
+      const currentTime = Date.now();
+      const dt = currentTime - indicatorPhysics.lastTime;
+
+      if (dt > 10) {
+        indicatorPhysics.velocity = (touchX - indicatorPhysics.lastX) / dt;
+        indicatorPhysics.lastX = touchX;
+        indicatorPhysics.lastTime = currentTime;
+      }
+
+      // Рассчитываем новую позицию без скачков
+      let newX = touchX - indicatorPhysics.touchOffsetX;
+
+      // Эластичные границы
+      const maxIndex = navItems.length - 1;
+      const minX = 0;
+      const maxX = maxIndex * indicatorPhysics.cachedItemWidth;
+      const limit = indicatorPhysics.cachedItemWidth * 0.4;
+
+      if (newX < minX - limit) {
+        newX = (minX - limit) + (newX - (minX - limit)) * 0.15;
+      } else if (newX > maxX + limit) {
+        newX = (maxX + limit) + (newX - (maxX + limit)) * 0.15;
+      }
+
+      // Жидкое искажение
+      const diffFromCenter = Math.abs(newX - (indicatorPhysics.currentIndex * indicatorPhysics.cachedItemWidth));
+      const stretch = Math.min(diffFromCenter / 100, 0.25);
+
+      navIndicator.style.transform = `translate3d(${newX}px, 0, 0) scale(1.2)`;
+      navIndicator.style.width = `calc(33.33% - 16px + ${stretch * 15}px)`;
+      navIndicator.style.borderRadius = `${24 - stretch * 8}px`;
+
+      indicatorPhysics.currentTransformX = newX;
+    }, { passive: true });
+
+    navPill.addEventListener('touchend', (e) => {
+      if (!indicatorPhysics.isDragging) return;
+      indicatorPhysics.isDragging = false;
+
+      // Инерция
+      const momentum = indicatorPhysics.velocity * 15;
+      let finalX = indicatorPhysics.currentTransformX + momentum;
+      finalX = Math.max(0, Math.min(finalX, 2 * indicatorPhysics.cachedItemWidth));
+
+      let targetIndex = Math.round(finalX / indicatorPhysics.cachedItemWidth);
+      targetIndex = Math.max(0, Math.min(2, targetIndex));
+
+      const newTab = navItems[targetIndex].getAttribute('data-tab');
+      const currentTab = navItems[indicatorPhysics.currentIndex].getAttribute('data-tab');
+
+      if (newTab !== currentTab) {
+        switchTab(newTab, targetIndex);
+      } else {
+        updateIndicatorPosition(indicatorPhysics.currentIndex, false);
+      }
+
+      navIndicator.style.width = `calc(33.33% - 16px)`;
+      navIndicator.style.borderRadius = '24px';
+
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    });
+
+    // Клик по вкладкам
     navItems.forEach((btn, index) => {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         const tab = this.getAttribute('data-tab');
         if (tab) {
-          // ✅ Сразу переключаем без лишнего сброса транзишна
           switchTab(tab, index);
           if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
@@ -931,7 +903,6 @@
     // ✅ ИНИЦИАЛИЗАЦИЯ
     setTimeout(() => {
       initIndicatorPhysics();
-      updateIndicatorPosition(0, false);
     }, 100);
 
     function escapeHtml(text) {
