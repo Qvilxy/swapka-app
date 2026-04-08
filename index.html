@@ -158,6 +158,8 @@
       margin-right: 10px;
       flex-shrink: 0;
       filter: brightness(0) saturate(100%) invert(56%) sepia(6%) saturate(0%) hue-rotate(348deg) brightness(96%) contrast(86%);
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
     }
 
     .search-input {
@@ -384,13 +386,22 @@
       box-shadow: none;
     }
 
+    /* ✅ ОПТИМИЗИРОВАННЫЕ СТИЛИ ДЛЯ ИКОНОК — БЕЗ РАЗМЫТИЯ */
     .nav-icon {
       width: 24px;
       height: 24px;
       object-fit: contain;
+      /* ✅ ФИЛЬТР ДЛЯ НЕАКТИВНОГО СОСТОЯНИЯ (СЕРЫЙ) */
       filter: brightness(0) saturate(100%) invert(56%) sepia(6%) saturate(0%) hue-rotate(348deg) brightness(96%) contrast(86%);
       transition: filter 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 2;
+      /* ✅ ОПТИМИЗАЦИЯ РЕНДЕРИНГА ИЗОБРАЖЕНИЙ */
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+      will-change: transform, filter;
     }
 
     .nav-label {
@@ -402,9 +413,10 @@
       opacity: 0.8;
     }
 
+    /* ✅ АКТИВНОЕ СОСТОЯНИЕ */
     .nav-item.active .nav-icon {
       filter: none;
-      transform: scale(1.1);
+      transform: translateZ(0) scale(1.1);
     }
 
     .nav-item.active .nav-label {
