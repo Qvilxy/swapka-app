@@ -405,10 +405,12 @@
     /* ===== ФИЗИКА ИНДИКАТОРА ===== */
     .nav-indicator {
       position: absolute;
-      top: 8px;
-      bottom: 8px;
+      /* ✅ УМЕНЬШЕНЫ ОТСТУПЫ ДЛЯ БОЛЬШЕЙ ВЫСОТЫ */
+      top: 12px;
+      bottom: 12px;
       left: 8px;
-      width: calc(33.33% - 16px);
+      /* ✅ УВЕЛИЧЕНА ШИРИНА ДЛЯ ПОЛНОГО ЦЕНТРИРОВАНИЯ */
+      width: calc(33.33% - 8px);
       
       background: var(--indicator-bg);
       border-radius: 24px;
@@ -732,6 +734,7 @@
         const isDark = document.body.classList.contains('dark-theme');
         if (isDark) { applyTheme('light'); saveTheme('light'); }
         else { applyTheme('dark'); saveTheme('dark'); }
+        // Вибрация при смене темы оставлена как действие
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       });
     }
@@ -782,7 +785,8 @@
 
       navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
       navIndicator.style.transform = `translate3d(${targetX}px, 0, 0) scale(1)`;
-      navIndicator.style.width = `calc(33.33% - 16px)`;
+      // ✅ Ширина синхронизирована с CSS для идеального центрирования
+      navIndicator.style.width = `calc(33.33% - 8px)`;
       navIndicator.style.borderRadius = '24px';
     }
 
@@ -819,7 +823,7 @@
       indicatorPhysics.touchOffsetX = e.touches[0].clientX - indicatorPhysics.currentTransformX;
 
       navIndicator.style.transition = 'none';
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      // ❌ УБРАНА ВИБРАЦИЯ ПРИ НАЧАЛЕ СВАЙПА
     }, { passive: true });
 
     navPill.addEventListener('touchmove', (e) => {
@@ -855,7 +859,7 @@
       const stretch = Math.min(diffFromCenter / 100, 0.25);
 
       navIndicator.style.transform = `translate3d(${newX}px, 0, 0) scale(1.2)`;
-      navIndicator.style.width = `calc(33.33% - 16px + ${stretch * 15}px)`;
+      navIndicator.style.width = `calc(33.33% - 8px + ${stretch * 15}px)`;
       navIndicator.style.borderRadius = `${24 - stretch * 8}px`;
 
       indicatorPhysics.currentTransformX = newX;
@@ -882,10 +886,11 @@
         updateIndicatorPosition(indicatorPhysics.currentIndex, false);
       }
 
-      navIndicator.style.width = `calc(33.33% - 16px)`;
+      // Возврат размеров
+      navIndicator.style.width = `calc(33.33% - 8px)`;
       navIndicator.style.borderRadius = '24px';
 
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      // ❌ УБРАНА ВИБРАЦИЯ ПРИ ЗАВЕРШЕНИИ ПЕРЕКЛЮЧЕНИЯ
     });
 
     // Клик по вкладкам
@@ -895,7 +900,7 @@
         const tab = this.getAttribute('data-tab');
         if (tab) {
           switchTab(tab, index);
-          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+          // ❌ УБРАНА ВИБРАЦИЯ ПРИ КЛИКЕ
         }
       });
     });
@@ -992,6 +997,7 @@
       document.getElementById('adCity').value = '';
       document.getElementById('createModal').classList.add('active');
       hideBottomNav();
+      // Оставляем вибрацию при важном действии - открытии создания
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
 
@@ -1076,6 +1082,7 @@
       closeCreateModal();
       renderAds();
       renderMyAds();
+      // Вибрация при успехе оставлена
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       tg.showAlert('Объявление создано! ✅');
     }
