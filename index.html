@@ -85,7 +85,6 @@
       overflow: hidden;
     }
 
-    /* ✅ БЕГУЩАЯ СТРОКА */
     .marquee-container {
       width: 100%;
       overflow: hidden;
@@ -111,12 +110,8 @@
     }
 
     @keyframes marquee {
-      0% {
-        transform: translateX(-50%);
-      }
-      100% {
-        transform: translateX(0);
-      }
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
     }
 
     .main-content {
@@ -138,6 +133,7 @@
       padding-bottom: 20px;
       opacity: 0;
       transform: translateY(10px);
+      position: relative; /* Для позиционирования empty-state */
     }
 
     .page.active {
@@ -508,13 +504,27 @@
       fill: white;
     }
 
-    /* Empty State */
+    /* ✅ ЦЕНТРИРОВАНИЕ EMPTY STATE */
     .empty-state {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 60px 20px; text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+      justify-content: center; 
+      padding: 20px; 
+      text-align: center;
+      pointer-events: none; /* Чтобы клики проходили сквозь пустое место, если нужно */
     }
-    .empty-state-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-    .empty-state-text { font-size: 16px; color: var(--text-secondary); }
+    
+    .empty-state-text { 
+      font-size: 16px; 
+      color: var(--text-secondary); 
+      font-weight: 500;
+    }
 
     /* Profile Styles */
     .profile-moon-wrapper {
@@ -685,7 +695,6 @@
       opacity: 1;
     }
 
-    /* ===== ФИЗИКА ИНДИКАТОРА ===== */
     .nav-indicator {
       position: absolute;
       top: 8px;
