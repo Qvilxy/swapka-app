@@ -112,10 +112,10 @@
 
     @keyframes marquee {
       0% {
-        transform: translateX(0);
+        transform: translateX(-50%);
       }
       100% {
-        transform: translateX(-50%);
+        transform: translateX(0);
       }
     }
 
@@ -279,6 +279,7 @@
       background: var(--card-bg); border-radius: 14px;
       margin-bottom: 8px; cursor: pointer; transition: background 0.2s;
     }
+    .message-item:hover { background: var(--bg-secondary); }
     .message-avatar {
       width: 48px; height: 48px; border-radius: 50%;
       background: var(--bg-secondary); margin-right: 12px;
@@ -288,6 +289,121 @@
     .message-content { flex: 1; min-width: 0; }
     .message-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
     .message-preview { font-size: 14px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+    .message-time { font-size: 12px; color: var(--text-secondary); margin-left: 8px; }
+
+    /* Chat Modal */
+    .chat-modal {
+      position: fixed;
+      top: 55px;
+      left: 0;
+      right: 0;
+      bottom: 90px;
+      background: var(--bg-primary);
+      z-index: 150;
+      display: none;
+      flex-direction: column;
+    }
+    .chat-modal.active { display: flex; }
+    
+    .chat-header {
+      padding: 12px 16px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .chat-back-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chat-back-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--text-primary);
+      stroke-width: 2;
+      fill: none;
+    }
+    .chat-seller-info { flex: 1; }
+    .chat-seller-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .chat-seller-ad { font-size: 13px; color: var(--text-secondary); }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .chat-message {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 15px;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+    .chat-message.received {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .chat-message.sent {
+      background: #007AFF;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-message-time {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+    
+    .chat-input-container {
+      padding: 12px 16px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .chat-input {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 20px;
+      background: var(--bg-primary);
+      font-size: 15px;
+      outline: none;
+      color: var(--text-primary);
+    }
+    .chat-send-btn {
+      background: #007AFF;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .chat-send-btn:active { transform: scale(0.9); }
+    .chat-send-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
 
     /* Empty State */
     .empty-state {
@@ -594,7 +710,7 @@
     .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
     .detail-price { font-size: 24px; font-weight: 800; color: #ff6b35; margin-bottom: 8px; }
     .detail-city { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
-    .detail-seller { display: flex; align-items: center; padding: 14px; background: var(--bg-secondary); border-radius: 14px; }
+    .detail-seller { display: flex; align-items: center; padding: 14px; background: var(--bg-secondary); border-radius: 14px; margin-bottom: 16px; }
     .detail-seller-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--border-color); margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
     .detail-seller-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
     .detail-contact-btn {
@@ -690,6 +806,31 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- CHAT MODAL -->
+  <div class="chat-modal" id="chatModal">
+    <div class="chat-header">
+      <button class="chat-back-btn" onclick="closeChat()">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <div class="chat-seller-info">
+        <div class="chat-seller-name" id="chatSellerName">Продавец</div>
+        <div class="chat-seller-ad" id="chatSellerAd">Товар</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-container">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Напишите сообщение...">
+      <button class="chat-send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -844,6 +985,7 @@
 
     const ADS_KEY = 'swapka_ads';
     const THEME_KEY = 'swapka_theme';
+    const CHATS_KEY = 'swapka_chats';
 
     function loadAds() {
       try {
@@ -854,6 +996,17 @@
 
     function saveAds(ads) {
       try { localStorage.setItem(ADS_KEY, JSON.stringify(ads)); } catch (e) {}
+    }
+
+    function loadChats() {
+      try {
+        const data = localStorage.getItem(CHATS_KEY);
+        return data ? JSON.parse(data) : [];
+      } catch (e) { return []; }
+    }
+
+    function saveChats(chats) {
+      try { localStorage.setItem(CHATS_KEY, JSON.stringify(chats)); } catch (e) {}
     }
 
     function loadTheme() { return localStorage.getItem(THEME_KEY); }
@@ -971,6 +1124,11 @@
 
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
+      
+      // Обновляем список чатов при переходе на вкладку сообщений
+      if (tab === 'messages') {
+        renderMessages();
+      }
     }
 
     navPill.addEventListener('touchstart', (e) => {
@@ -1232,6 +1390,7 @@
     }
 
     let currentCarouselIndex = 0;
+    let currentAdForChat = null;
 
     function openDetailModal(ad) {
       const modal = document.getElementById('detailModal');
@@ -1277,16 +1436,175 @@
       showBottomNav();
     }
 
+    // ✅ НОВАЯ ФУНКЦИЯ: СОЗДАНИЕ/ОТКРЫТИЕ ЧАТА ВНУТРИ ПРИЛОЖЕНИЯ
     function contactSeller() {
       const modal = document.getElementById('detailModal');
       const adId = modal.dataset.adId;
       const ads = loadAds();
       const ad = ads.find(a => a.id === adId);
-      if (ad && ad.userUsername) {
-        tg.openTelegramLink(`https://t.me/${ad.userUsername}`);
-      } else {
-        tg.showAlert('Контакты продавца недоступны');
+      
+      if (!ad) return;
+      
+      currentAdForChat = ad;
+      
+      // Получаем или создаем чат
+      const chats = loadChats();
+      let chat = chats.find(c => c.adId === adId && c.sellerId === ad.userId);
+      
+      if (!chat) {
+        // Создаем новый чат
+        chat = {
+          id: 'chat_' + Date.now(),
+          adId: adId,
+          adTitle: ad.title,
+          sellerId: ad.userId,
+          sellerName: ad.userName,
+          sellerPhoto: ad.userPhoto,
+          buyerId: currentUser.id,
+          messages: [],
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        };
+        chats.push(chat);
+        saveChats(chats);
       }
+      
+      // Открываем чат
+      openChat(chat);
+    }
+
+    function openChat(chat) {
+      const chatModal = document.getElementById('chatModal');
+      document.getElementById('chatSellerName').textContent = chat.sellerName;
+      document.getElementById('chatSellerAd').textContent = chat.adTitle;
+      
+      chatModal.dataset.chatId = chat.id;
+      chatModal.classList.add('active');
+      
+      renderChatMessages(chat);
+      
+      // Прокрутка вниз
+      const messagesContainer = document.getElementById('chatMessages');
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function closeChat() {
+      document.getElementById('chatModal').classList.remove('active');
+      currentAdForChat = null;
+    }
+
+    function renderChatMessages(chat) {
+      const container = document.getElementById('chatMessages');
+      container.innerHTML = '';
+      
+      if (chat.messages.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:40px 20px;font-size:14px;">Напишите первое сообщение продавцу</div>';
+        return;
+      }
+      
+      chat.messages.forEach(msg => {
+        const isSent = msg.senderId === currentUser.id;
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
+        
+        const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        
+        messageDiv.innerHTML = `
+          ${escapeHtml(msg.text)}
+          <div class="chat-message-time">${time}</div>
+        `;
+        
+        container.appendChild(messageDiv);
+      });
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      
+      if (!text) return;
+      
+      const chatModal = document.getElementById('chatModal');
+      const chatId = chatModal.dataset.chatId;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      
+      if (chat) {
+        chat.messages.push({
+          id: 'msg_' + Date.now(),
+          senderId: currentUser.id,
+          text: text,
+          timestamp: Date.now()
+        });
+        chat.updatedAt = Date.now();
+        saveChats(chats);
+        
+        input.value = '';
+        renderChatMessages(chat);
+        
+        // Прокрутка вниз
+        const messagesContainer = document.getElementById('chatMessages');
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Обновляем список чатов
+        renderMessages();
+      }
+    }
+
+    // Отправка по Enter
+    document.getElementById('chatInput')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    function renderMessages() {
+      const chats = loadChats();
+      const container = document.getElementById('messagesList');
+      
+      // Фильтруем чаты где текущий пользователь - покупатель
+      const userChats = chats.filter(c => c.buyerId === currentUser.id);
+      
+      if (userChats.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <div class="empty-state-text">У вас пока нет чатов</div>
+          </div>
+        `;
+        return;
+      }
+      
+      // Сортируем по дате обновления
+      userChats.sort((a, b) => b.updatedAt - a.updatedAt);
+      
+      container.innerHTML = '';
+      userChats.forEach(chat => {
+        const lastMessage = chat.messages[chat.messages.length - 1];
+        const preview = lastMessage ? lastMessage.text : 'Нет сообщений';
+        const time = new Date(chat.updatedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        
+        const messageItem = document.createElement('div');
+        messageItem.className = 'message-item';
+        messageItem.onclick = () => openChat(chat);
+        
+        const avatarHtml = chat.sellerPhoto 
+          ? `<img src="${chat.sellerPhoto}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">`
+          : '<div class="message-avatar">👤</div>';
+        
+        messageItem.innerHTML = `
+          ${avatarHtml}
+          <div class="message-content">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="message-name">${escapeHtml(chat.sellerName)}</div>
+              <div class="message-time">${time}</div>
+            </div>
+            <div class="message-preview">${escapeHtml(preview)}</div>
+          </div>
+        `;
+        
+        container.appendChild(messageItem);
+      });
     }
 
     document.getElementById('createModal').addEventListener('click', function (e) {
