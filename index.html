@@ -17,10 +17,10 @@
       --card-bg: #ffffff;
       --search-bg: #ffffff;
       
-      /* Цвета для пузыря */
-      --bubble-gradient-start: #4a9eff;
-      --bubble-gradient-end: #8c52ff;
-      --bubble-glow: rgba(74, 158, 255, 0.4);
+      --glass-bg: rgba(255, 255, 255, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      --active-glow: rgba(74, 158, 255, 0.3);
     }
 
     .dark-theme {
@@ -32,8 +32,11 @@
       --shadow: 0 2px 12px rgba(0,0,0,0.3);
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
-      
-      --bubble-glow: rgba(74, 158, 255, 0.25);
+
+      --glass-bg: rgba(30, 30, 30, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      --active-glow: rgba(74, 158, 255, 0.2);
     }
 
     * {
@@ -51,7 +54,7 @@
       height: 100vh;
       width: 100vw;
       transition: background 0.3s, color 0.3s;
-      user-select: none;
+      user-select: none; /* Важно для свайпов */
       -webkit-user-select: none;
     }
 
@@ -68,7 +71,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      pointer-events: none;
+      pointer-events: none; /* Пропускаем клики сквозь хедер если нужно */
     }
 
     .app-logo {
@@ -99,6 +102,7 @@
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
+      will-change: scroll-position; /* Оптимизация скролла */
     }
 
     .page {
@@ -139,6 +143,10 @@
       transition: box-shadow 0.2s, background 0.3s;
     }
 
+    .search-bar:focus-within {
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    }
+
     .search-icon {
       color: var(--text-secondary);
       font-size: 18px;
@@ -170,6 +178,7 @@
       box-shadow: var(--shadow);
       transition: transform 0.2s, background 0.3s;
       cursor: pointer;
+      will-change: transform;
     }
 
     .ad-card:active {
@@ -292,7 +301,7 @@
     .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
     .my-ads-grid-wrapper { transform: translateY(30px); }
 
-    /* ===== BUBBLE NAVIGATION BAR ===== */
+    /* ===== HIGH PERFORMANCE BOTTOM NAV ===== */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -306,6 +315,7 @@
       padding-top: 8px;
       pointer-events: none;
       transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      will-change: transform;
     }
 
     .bottom-nav.hidden {
@@ -317,22 +327,22 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      width: 92%;
+      width: 90%;
       max-width: 380px;
       height: 64px;
       
-      /* Фон самой панели (стекло) */
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: var(--glass-bg);
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
       
       border-radius: 32px;
-      padding: 4px; /* Отступ внутри для пузырей */
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 0 8px;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
       
       position: relative;
-      overflow: visible; /* Чтобы тень пузыря выходила */
+      overflow: hidden;
+      transition: all 0.3s ease;
     }
 
     .nav-item {
@@ -342,7 +352,7 @@
       align-items: center;
       justify-content: center;
       height: 100%;
-      border-radius: 28px;
+      border-radius: 24px;
       cursor: pointer;
       z-index: 2;
       position: relative;
@@ -350,63 +360,71 @@
       background: transparent;
       gap: 2px;
       -webkit-tap-highlight-color: transparent;
-      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-      color: var(--text-secondary);
+      transition: transform 0.1s;
+    }
+
+    .nav-item.active {
+      background: transparent; 
+      box-shadow: none;
     }
 
     .nav-icon {
-      font-size: 22px;
-      transition: all 0.3s ease;
+      font-size: 24px;
+      color: var(--text-secondary);
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 2;
-      filter: grayscale(0.2);
     }
 
     .nav-label {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 500;
-      transition: all 0.3s ease;
+      color: var(--text-secondary);
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 2;
-      opacity: 0.7;
-    }
-
-    /* ===== АКТИВНЫЙ ПУЗЫРЬ (SOAP BUBBLE EFFECT) ===== */
-    .nav-item.active {
-      /* Градиентный фон пузыря */
-      background: linear-gradient(135deg, var(--bubble-gradient-start), var(--bubble-gradient-end));
-      
-      /* Тени для объема и свечения */
-      box-shadow: 
-        0 4px 15px var(--bubble-glow),
-        inset 0 1px 1px rgba(255,255,255,0.4),
-        inset 0 -2px 5px rgba(0,0,0,0.1);
-        
-      transform: scale(1.05); /* Чуть увеличиваем активную вкладку */
-      color: white;
+      opacity: 0.8;
     }
 
     .nav-item.active .nav-icon {
-      filter: grayscale(0) drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-      transform: translateY(-1px);
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      transform: scale(1.1);
     }
 
     .nav-item.active .nav-label {
+      color: #ffffff;
+      font-weight: 700;
       opacity: 1;
-      font-weight: 600;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
-    /* Блик сверху для эффекта стекла/жидкости */
-    .nav-item.active::before {
+    /* ===== OPTIMIZED INDICATOR ===== */
+    .nav-indicator {
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 8px;
+      width: calc(33.33% - 16px);
+      background: linear-gradient(135deg, #4a9eff, #8c52ff);
+      border-radius: 24px;
+      z-index: 1;
+      
+      /* КЛЮЧЕВОЙ МОМЕНТ ДЛЯ 60 FPS */
+      will-change: transform;
+      transform: translateZ(0); /* Force GPU layer */
+      
+      /* Плавная пружинистая анимация при отпускании */
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      
+      box-shadow: 0 4px 15px rgba(74, 158, 255, 0.4);
+      pointer-events: none;
+    }
+    
+    .nav-indicator::after {
       content: '';
       position: absolute;
-      top: 3px;
-      left: 10%;
-      width: 80%;
-      height: 40%;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0));
-      border-radius: 20px 20px 10px 10px;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 24px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
       opacity: 0.3;
-      pointer-events: none;
     }
 
     /* Модальные окна */
@@ -562,10 +580,11 @@
     </div>
   </div>
 
-  <!-- BUBBLE BOTTOM NAV -->
+  <!-- IOS 26 LIQUID GLASS BOTTOM NAV -->
   <div class="bottom-nav" id="bottomNav">
     <div class="nav-pill" id="navPill">
-      <!-- Убрали отдельный индикатор, теперь активный элемент сам является пузырем -->
+      <!-- Плавающий индикатор -->
+      <div class="nav-indicator" id="navIndicator"></div>
 
       <button class="nav-item active" data-tab="home" id="navHome">
         <span class="nav-icon">🏠</span>
@@ -702,7 +721,6 @@
         const isDark = document.body.classList.contains('dark-theme');
         if (isDark) { applyTheme('light'); saveTheme('light'); }
         else { applyTheme('dark'); saveTheme('dark'); }
-        // Вибрация только при смене темы, не при навигации
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       });
     }
@@ -719,36 +737,47 @@
     }
     setupProfile();
 
-    // --- DRAGGABLE NAVIGATION LOGIC ---
+    // --- HIGH PERFORMANCE TAB SWITCHING ---
     
-    const navItems = document.querySelectorAll('.nav-item');
     const navPill = document.getElementById('navPill');
+    const navIndicator = document.getElementById('navIndicator');
+    const navItems = document.querySelectorAll('.nav-item');
     
-    let cachedItemWidth = 0;
-    let isDragging = false;
-    let startX = 0;
-    let currentActiveIndex = 0;
+    // КЕШИРОВАНИЕ ШИРИНЫ ДЛЯ 60 FPS
+    // Мы не хотим вызывать offsetWidth внутри touchmove, это вызывает перерисовку (Reflow)
+    let cachedItemWidth = navItems[0].offsetWidth;
 
-    // Инициализация ширины элементов
-    function updateMetrics() {
-      if(navItems.length > 0) {
-        cachedItemWidth = navItems[0].offsetWidth;
+    // Обновляем ширину при ресайзе окна
+    window.addEventListener('resize', () => {
+      cachedItemWidth = navItems[0].offsetWidth;
+      // Если есть активная вкладка, корректируем позицию
+      navItems.forEach((item, idx) => {
+        if(item.classList.contains('active')) updateIndicatorPosition(idx, false);
+      });
+    });
+
+    function updateIndicatorPosition(index, isDragging = false) {
+      // Используем кешированную ширину
+      const xPos = index * cachedItemWidth; 
+      
+      if (isDragging) {
+        navIndicator.style.transition = 'none'; // Мгновенная реакция на палец
+      } else {
+        // Пружинистая анимация только когда отпускаем палец
+        navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
       }
+      
+      // Используем translate3d для включения аппаратного ускорения GPU
+      navIndicator.style.transform = `translate3d(${xPos}px, 0, 0)`;
     }
-    // Запускаем после загрузки DOM
-    setTimeout(updateMetrics, 100);
-    window.addEventListener('resize', updateMetrics);
 
     function switchTab(tab, index) {
-      // Удаляем класс active у всех
       navItems.forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
 
-      // Добавляем класс active нужной кнопке
       const activeBtn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
       if(activeBtn) activeBtn.classList.add('active');
 
-      // Показываем нужную страницу
       const pageMap = {
         'home': 'pageHome',
         'messages': 'pageMessages',
@@ -757,111 +786,89 @@
       const activePage = document.getElementById(pageMap[tab]);
       if(activePage) activePage.classList.add('active');
 
-      // Скролл вверх
+      updateIndicatorPosition(index, false);
+
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
-      
-      // Обновляем индекс для логики драга
-      currentActiveIndex = index;
     }
 
-    // Обработка кликов (если просто тапнули без движения)
+    // Обработка кликов (быстрый тап)
     navItems.forEach((btn, index) => {
       btn.addEventListener('click', function(e) {
-        // Если было движение (драг), клик не должен срабатывать сразу, 
-        // но touchend обработает переключение.
-        // Здесь оставляем как фоллбэк или для accessibility
-        if (!isDragging) {
-           const tab = this.getAttribute('data-tab');
-           if (tab) switchTab(tab, index);
+        e.preventDefault();
+        const tab = this.getAttribute('data-tab');
+        if (tab) {
+          switchTab(tab, index);
+          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
       });
     });
 
-    // Логика Touch событий для Drag-and-Drop эффекта
+    // --- ОПТИМИЗИРОВАННАЯ ЛОГИКА СВАЙПА ---
+    let isDragging = false;
+    let startX = 0;
+    let currentIndex = 0; 
+
+    // Инициализация позиции
+    setTimeout(() => updateIndicatorPosition(0), 100);
+
     navPill.addEventListener('touchstart', (e) => {
       isDragging = true;
       startX = e.touches[0].clientX;
-      updateMetrics(); // Убедимся, что ширина актуальна
       
-      // Находим текущий активный индекс перед началом движения
       navItems.forEach((item, idx) => {
-        if(item.classList.contains('active')) currentActiveIndex = idx;
+        if(item.classList.contains('active')) currentIndex = idx;
       });
-
-      // Отключаем плавную анимацию CSS для мгновенного следования за пальцем
-      navItems.forEach(item => item.style.transition = 'none');
-    }, { passive: true });
+      
+      // Отключаем анимацию для мгновенного отклика
+      navIndicator.style.transition = 'none';
+    }, { passive: true }); // passive: true важно для производительности скролла
 
     navPill.addEventListener('touchmove', (e) => {
       if (!isDragging) return;
-
+      
       const x = e.touches[0].clientX;
       const diff = x - startX;
       
-      // Вычисляем новую позицию "пузыря" относительно его исходного места
-      // Но так как пузырь - это сам элемент .nav-item.active, мы не можем двигать его отдельно от потока легко.
-      // ХАК: Мы будем двигать ВСЕ элементы или использовать трансформацию на активном элементе?
-      // Лучший способ для "пузыря": 
-      // Мы НЕ двигаем сам пузырь физически через translate всего элемента, потому что это сломает верстку.
-      // Вместо этого, мы можем визуально имитировать движение, меняя прозрачность соседних элементов?
-      // НЕТ. Пользователь просил: "плитка перемещается за пальцем".
+      const maxIndex = navItems.length - 1;
       
-      // РЕШЕНИЕ: Мы будем использовать абсолютное позиционирование для активного элемента во время драга?
-      // Это сложно реализовать без скачков.
+      // Расчет новой позиции на основе кешированной ширины
+      let newPos = (currentIndex * cachedItemWidth) + diff;
       
-      // АЛЬТЕРНАТИВНОЕ РЕШЕНИЕ (как в iOS):
-      // Мы просто позволяем CSS transition работать, но если палец уходит далеко, мы можем подсвечивать следующую вкладку?
-      // Нет, запрос конкретный: "перемещается за пальцем".
-      
-      // Давайте сделаем так:
-      // 1. При touchstart мы запоминаем текущую активную кнопку.
-      // 2. При touchmove мы вычисляем, над какой кнопкой сейчас палец.
-      // 3. Если палец над другой кнопкой, мы МГНОВЕННО переключаем класс active на неё.
-      // 4. Чтобы это выглядело как "тянется", мы можем добавить небольшой delay или оставить как есть (быстрое переключение).
-      
-      // Однако, чтобы сделать эффект "резинового" перемещения самого пузыря (как на видео из прошлого запроса, но здесь просят чтобы плитка ехала за пальцем):
-      // Самый простой и надежный способ без сложных библиотек — это определение целевой вкладки по координатам.
-      
-      const targetIndex = Math.round((currentActiveIndex * cachedItemWidth + diff) / cachedItemWidth);
-      
-      // Ограничиваем индекс границами
-      let clampedIndex = targetIndex;
-      if (clampedIndex < 0) clampedIndex = 0;
-      if (clampedIndex >= navItems.length) clampedIndex = navItems.length - 1;
-      
-      // Если индекс изменился, переключаем визуальный стиль
-      if (clampedIndex !== currentActiveIndex) {
-         // Временно включаем transition для плавности смены цвета/размера, 
-         // но для эффекта "следования" лучше делать это быстро.
-         // Здесь мы просто меняем классы.
-         
-         // Сбрасываем все
-         navItems.forEach(n => n.classList.remove('active'));
-         // Активируем новую
-         navItems[clampedIndex].classList.add('active');
-      }
+      // Мягкие границы
+      const limit = cachedItemWidth * 0.5; 
+      if (newPos < -limit) newPos = -limit;
+      if (newPos > (maxIndex * cachedItemWidth) + limit) newPos = (maxIndex * cachedItemWidth) + limit;
 
+      // Используем translate3d для GPU ускорения
+      navIndicator.style.transform = `translate3d(${newPos}px, 0, 0)`;
     }, { passive: true });
 
     navPill.addEventListener('touchend', (e) => {
       if (!isDragging) return;
       isDragging = false;
       
-      // Включаем обратно плавные анимации CSS
-      navItems.forEach(item => item.style.transition = 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)');
+      const rect = navIndicator.getBoundingClientRect();
+      const pillRect = navPill.getBoundingClientRect();
+      const finalLeft = rect.left - pillRect.left;
       
-      // Определяем финальную вкладку
-      const activeBtn = document.querySelector('.nav-item.active');
-      const finalTab = activeBtn.getAttribute('data-tab');
-      const finalIndex = Array.from(navItems).indexOf(activeBtn);
+      // Определяем ближайший индекс
+      let targetIndex = Math.round(finalLeft / cachedItemWidth);
       
-      // Переключаем контент страницы
-      switchTab(finalTab, finalIndex);
+      if (targetIndex < 0) targetIndex = 0;
+      if (targetIndex > 2) targetIndex = 2;
       
-      // Вибрация убрана по запросу
+      const newTab = navItems[targetIndex].getAttribute('data-tab');
+      
+      // Если переключились на другую вкладку
+      if (newTab !== navItems[currentIndex].getAttribute('data-tab')) {
+         switchTab(newTab, targetIndex);
+         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+      } else {
+         // Возврат на место
+         updateIndicatorPosition(currentIndex, false);
+      }
     });
-
 
     function escapeHtml(text) {
       const div = document.createElement('div');
@@ -1113,6 +1120,7 @@
       }
     }, { passive: true });
 
+    // --- KEYBOARD HANDLING ---
     let initialHeight = window.innerHeight;
 
     window.addEventListener('resize', () => {
@@ -1128,4 +1136,3 @@
   </script>
 </body>
 </html>
-
