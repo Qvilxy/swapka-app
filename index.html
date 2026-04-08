@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Swapka</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Подключаем красивый шрифт -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-primary: #ffffff;
@@ -55,7 +57,7 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    /* ===== HEADER (с логотипом) ===== */
+    /* ===== HEADER (с текстовым логотипом) ===== */
     .header {
       position: fixed;
       top: 0;
@@ -68,6 +70,22 @@
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+
+    .app-logo {
+      font-family: 'Pacifico', cursive; /* Красивый рукописный шрифт */
+      font-size: 42px;
+      /* Градиентный текст, как на кнопке */
+      background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 6s ease infinite;
+      /* Позиционирование с учетом предыдущих сдвигов фото */
+      transform: translate(5px, 19px); 
+      user-select: none;
+      pointer-events: none;
     }
 
     .main-content {
@@ -89,16 +107,6 @@
 
     .page.active {
       display: block;
-    }
-
-    /* Логотип в шапке */
-    .messages-logo {
-      height: auto;
-      width: 316px; /* Увеличено в 2 раза */
-      max-width: 90vw;
-      max-height: 160px; /* Увеличено в 2 раза */
-      object-fit: contain;
-      transform: translate(5px, 19px); /* Сдвиг: 5px вправо, 19px вниз (9px + 10px) */
     }
 
     .search-container {
@@ -840,9 +848,9 @@
 </head>
 <body>
 
-  <!-- HEADER (с логотипом) -->
+  <!-- HEADER (с текстовым логотипом) -->
   <div class="header">
-    <img src="message.png" alt="" class="messages-logo">
+    <div class="app-logo">Swapka</div>
   </div>
 
   <div class="main-content" id="mainContent">
