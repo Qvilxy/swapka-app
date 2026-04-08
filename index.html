@@ -396,13 +396,13 @@
       opacity: 1;
     }
 
-    /* ===== SOAP BUBBLE INDICATOR ===== */
+    /* ===== SOAP BUBBLE INDICATOR - BIGGER & CENTERED ===== */
     .nav-indicator {
       position: absolute;
-      top: 4px;
-      bottom: 4px;
-      left: 10px;
-      width: calc(33.33% - 20px);
+      top: 2px;
+      bottom: 2px;
+      left: 0;
+      width: calc(33.33% - 16px);
       
       background: linear-gradient(
         135deg,
@@ -887,7 +887,12 @@
     });
 
     function updateIndicatorPosition(index, isDragging = false) {
-      const xPos = index * cachedItemWidth; 
+      // Получаем позицию конкретной вкладки относительно navPill
+      const itemRect = navItems[index].getBoundingClientRect();
+      const pillRect = navPill.getBoundingClientRect();
+      
+      // Вычисляем позицию для центрирования
+      const xPos = itemRect.left - pillRect.left;
       
       if (isDragging) {
         navIndicator.style.transition = 'none';
@@ -956,11 +961,18 @@
       
       const maxIndex = navItems.length - 1;
       
-      let newPos = (currentIndex * cachedItemWidth) + diff;
+      // Получаем текущую позицию активной вкладки
+      const itemRect = navItems[currentIndex].getBoundingClientRect();
+      const pillRect = navPill.getBoundingClientRect();
+      const basePos = itemRect.left - pillRect.left;
       
-      const limit = cachedItemWidth * 0.5; 
+      let newPos = basePos + diff;
+      
+      // Ограничиваем движение
+      const itemWidth = navItems[0].offsetWidth;
+      const limit = itemWidth * 0.5; 
       if (newPos < -limit) newPos = -limit;
-      if (newPos > (maxIndex * cachedItemWidth) + limit) newPos = (maxIndex * cachedItemWidth) + limit;
+      if (newPos > (maxIndex * itemWidth) + limit) newPos = (maxIndex * itemWidth) + limit;
 
       navIndicator.style.transform = `translate3d(${newPos}px, 0, 0)`;
     }, { passive: true });
@@ -973,7 +985,8 @@
       const pillRect = navPill.getBoundingClientRect();
       const finalLeft = rect.left - pillRect.left;
       
-      let targetIndex = Math.round(finalLeft / cachedItemWidth);
+      const itemWidth = navItems[0].offsetWidth;
+      let targetIndex = Math.round(finalLeft / itemWidth);
       
       if (targetIndex < 0) targetIndex = 0;
       if (targetIndex > 2) targetIndex = 2;
