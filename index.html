@@ -626,28 +626,28 @@
     }
     setupProfile();
 
-    // ===== TAB NAVIGATION =====
+    // ===== TAB NAVIGATION LOGIC =====
     const navPill = document.getElementById('navPill');
     const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
 
     let cachedItemWidth = navItems[0].offsetWidth;
+    let currentIndex = 0;
+
+    // Переменные для Drag & Drop
     let isDragging = false;
     let startX = 0;
     let dragStartX = 0;
-    let currentIndex = 0;
-    let dragged = false;
+    let dragged = false; // Флаг: был ли свайп или просто тап
 
-    // ===== ФИЗИКА МЫЛЬНОГО ПУЗЫРЯ =====
+    // Переменные для физики пузыря
     let lastX = 0;
     let lastTime = 0;
     let velocity = 0;
-    let prevVelocity = 0;
     let accumulatedSquash = 0;
     let squashX = 1;
     let squashY = 1;
     let rotation = 0;
-    let isReleasing = false;
 
     window.addEventListener('resize', () => {
       cachedItemWidth = navItems[0].offsetWidth;
@@ -682,25 +682,35 @@
     function switchTab(tab) {
       navItems.forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      
       const activeBtn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
       if (activeBtn) activeBtn.classList.add('active');
+      
       const pageMap = { 'home': 'pageHome', 'messages': 'pageMessages', 'profile': 'pageProfile' };
       const activePage = document.getElementById(pageMap[tab]);
       if (activePage) activePage.classList.add('active');
+      
       navItems.forEach((item, idx) => { if (item.getAttribute('data-tab') === tab) currentIndex = idx; });
+      
       updateIndicatorPosition(currentIndex, true);
+      
       const mc = document.getElementById('mainContent');
       if (mc) mc.scrollTop = 0;
     }
 
+    // Обработка кликов (для быстрого переключения без задержки)
     navItems.forEach((btn) => {
       btn.addEventListener('click', function(e) {
-        if (dragged) { dragged = false; return; }
+        // Если это был результат свайпа, игнорируем клик, чтобы не было двойного срабатывания
+        if (dragged) { 
+            dragged = false; 
+            return; 
+        }
+        
         e.preventDefault();
         const tab = this.getAttribute('data-tab');
         if (tab) {
           switchTab(tab);
-          // Jiggle эффект при переключении вкладкой
           triggerBubbleJiggle();
           if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
@@ -716,24 +726,24 @@
       }, { once: true });
     }
 
-    // ===== DRAG / SWIPE С ФИЗИКОЙ =====
+    // Инициализация позиции
     setTimeout(() => { updateIndicatorPosition(0, false); }, 100);
 
+    // ===== TOUCH EVENTS FOR DRAGGING =====
     navPill.addEventListener('touchstart', (e) => {
       isDragging = true;
       startX = e.touches[0].clientX;
+      
+      // Получаем текущую позицию из матрицы трансформации
       const style = window.getComputedStyle(navIndicator);
       const matrix = new DOMMatrix(style.transform);
       dragStartX = matrix.m41;
+      
       lastX = startX;
       lastTime = performance.now();
       velocity = 0;
-      prevVelocity = 0;
       accumulatedSquash = 0;
-      dragged = false;
-
-      navIndicator.classList.add('dragging');
-      navIndicator.style.transition = 'none';
+      dragged = false; // Сбрасываем флаг свайпа
 
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }, { passive: true });
@@ -747,9 +757,8 @@
       const diff = x - startX;
       const instantVel = dt > 0 ? (x - lastX) / dt : 0;
 
-      // Сглаживание скорости (exponential moving average)
+      // Сглаживание скорости
       velocity = velocity * 0.4 + instantVel * 0.6;
-      prevVelocity = velocity;
 
       const itemWidth = cachedItemWidth;
       const maxIndex = navItems.length - 1;
@@ -760,29 +769,33 @@
       if (newPos < -limit) newPos = -limit;
       if (newPos > (maxIndex * itemWidth) + limit) newPos = (maxIndex * itemWidth) + limit;
 
-      // ===== ФИЗИКА: SQUASH & STRETCH =====
-      // Чем быстрее движение — тем сильнее деформация
-      const speed = Math.abs(velocity);
-      const maxSquash = 1.22; // максимальное растяжение 22%
-      const targetSquashX = 1 + Math.min(speed * 0.008, maxSquash - 1) * Math.sign(velocity || 1);
-      // Сохраняем "объём" пузыря — если растягивается по X, сжимается по Y
-      const targetSquashY = 1 / targetSquashX;
+      // Если палец сдвинулся больше чем на 10px, считаем это свайпом
+      if (Math.abs(diff) > 10) {
+        if (!dragged) {
+             // Момент превращения из Тапа в Свайп
+             dragged = true;
+             navIndicator.classList.add('dragging'); // Включаем визуальный стиль пузыря
+             navIndicator.style.transition = 'none'; // Отключаем плавность для прямого следования за пальцем
+        }
+      }
 
-      // Плавная интерполяция деформации (чтобы не было резких рывков)
-      accumulatedSquash = accumulatedSquash * 0.55 + targetSquashX * 0.45;
-      squashX = accumulatedSquash;
-      squashY = 1 / squashX;
+      // Применяем физику только если это свайп
+      if (dragged) {
+          const speed = Math.abs(velocity);
+          const maxSquash = 1.22; 
+          const targetSquashX = 1 + Math.min(speed * 0.008, maxSquash - 1) * Math.sign(velocity || 1);
+          const targetSquashY = 1 / targetSquashX;
 
-      // ===== ФИЗИКА: WOBBLE (покачивание) =====
-      // Направление покачивания зависит от знака скорости
-      // Пузырь немного наклоняется в сторону движения
-      const maxWobble = 6;
-      const targetRotation = Math.sign(velocity) * Math.min(speed * 0.04, maxWobble);
-      rotation = rotation * 0.6 + targetRotation * 0.4;
+          accumulatedSquash = accumulatedSquash * 0.55 + targetSquashX * 0.45;
+          squashX = accumulatedSquash;
+          squashY = 1 / squashX;
 
-      if (Math.abs(diff) > 10) dragged = true;
+          const maxWobble = 6;
+          const targetRotation = Math.sign(velocity) * Math.min(speed * 0.04, maxWobble);
+          rotation = rotation * 0.6 + targetRotation * 0.4;
 
-      setTransform(newPos, squashX, squashY, rotation);
+          setTransform(newPos, squashX, squashY, rotation);
+      }
 
       lastX = x;
       lastTime = now;
@@ -803,12 +816,13 @@
 
       const newTab = navItems[targetIndex].getAttribute('data-tab');
 
-      // Убираем эффект пузыря
+      // Убираем класс dragging (возвращаем серый цвет, если не свайпали далеко)
       navIndicator.classList.remove('dragging');
 
       if (dragged) {
-        // ===== ФИЗИКА: OVERSHOOT ПРИ ОТПУСКАНИИ =====
-        // Пузырь "перелетает" через целевую позицию и возвращается
+        // ===== ЛОГИКА ДЛЯ СВАЙПА (МЫЛЬНЫЙ ПУЗЫРЬ) =====
+        
+        // Рассчитываем overshoot (перелет) для пружинистого эффекта
         const targetPos = getCenteredPosition(targetIndex);
         const distFromTarget = finalLeft - targetPos;
         const overshootAmount = Math.sign(distFromTarget) * Math.min(Math.abs(distFromTarget) * 0.3, 15);
@@ -817,10 +831,10 @@
         // Включаем transition с пружинистым easing
         navIndicator.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease';
 
-        // Сначала перелёт к overshoot позиции
+        // Сначала летим к точке перелета
         setTransform(overshootPos, squashX, squashY, rotation);
 
-        // Затем через небольшую задержку — к конечной позиции с jiggle
+        // Затем к финальной позиции
         setTimeout(() => {
           switchTab(newTab);
           triggerBubbleJiggle();
@@ -828,9 +842,12 @@
 
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       } else {
-        // Просто тап — возвращаем на место с анимацией
+        // ===== ЛОГИКА ДЛЯ ТАПА (БЕЗ ПУЗЫРЯ) =====
+        // Просто плавно едем к нужной вкладке
         navIndicator.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease';
-        updateIndicatorPosition(currentIndex, true);
+        
+        // Переключаем вкладку сразу (мгновенно)
+        switchTab(newTab);
         triggerBubbleJiggle();
       }
 
