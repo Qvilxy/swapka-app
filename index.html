@@ -702,6 +702,7 @@
         const isDark = document.body.classList.contains('dark-theme');
         if (isDark) { applyTheme('light'); saveTheme('light'); }
         else { applyTheme('dark'); saveTheme('dark'); }
+        // Вибрация только при смене темы, не при навигации
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       });
     }
@@ -718,11 +719,27 @@
     }
     setupProfile();
 
-    // --- NAVIGATION LOGIC ---
+    // --- DRAGGABLE NAVIGATION LOGIC ---
     
     const navItems = document.querySelectorAll('.nav-item');
+    const navPill = document.getElementById('navPill');
+    
+    let cachedItemWidth = 0;
+    let isDragging = false;
+    let startX = 0;
+    let currentActiveIndex = 0;
 
-    function switchTab(tab) {
+    // Инициализация ширины элементов
+    function updateMetrics() {
+      if(navItems.length > 0) {
+        cachedItemWidth = navItems[0].offsetWidth;
+      }
+    }
+    // Запускаем после загрузки DOM
+    setTimeout(updateMetrics, 100);
+    window.addEventListener('resize', updateMetrics);
+
+    function switchTab(tab, index) {
       // Удаляем класс active у всех
       navItems.forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -743,18 +760,108 @@
       // Скролл вверх
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
+      
+      // Обновляем индекс для логики драга
+      currentActiveIndex = index;
     }
 
-    navItems.forEach((btn) => {
+    // Обработка кликов (если просто тапнули без движения)
+    navItems.forEach((btn, index) => {
       btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const tab = this.getAttribute('data-tab');
-        if (tab) {
-          switchTab(tab);
-          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        // Если было движение (драг), клик не должен срабатывать сразу, 
+        // но touchend обработает переключение.
+        // Здесь оставляем как фоллбэк или для accessibility
+        if (!isDragging) {
+           const tab = this.getAttribute('data-tab');
+           if (tab) switchTab(tab, index);
         }
       });
     });
+
+    // Логика Touch событий для Drag-and-Drop эффекта
+    navPill.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      updateMetrics(); // Убедимся, что ширина актуальна
+      
+      // Находим текущий активный индекс перед началом движения
+      navItems.forEach((item, idx) => {
+        if(item.classList.contains('active')) currentActiveIndex = idx;
+      });
+
+      // Отключаем плавную анимацию CSS для мгновенного следования за пальцем
+      navItems.forEach(item => item.style.transition = 'none');
+    }, { passive: true });
+
+    navPill.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+
+      const x = e.touches[0].clientX;
+      const diff = x - startX;
+      
+      // Вычисляем новую позицию "пузыря" относительно его исходного места
+      // Но так как пузырь - это сам элемент .nav-item.active, мы не можем двигать его отдельно от потока легко.
+      // ХАК: Мы будем двигать ВСЕ элементы или использовать трансформацию на активном элементе?
+      // Лучший способ для "пузыря": 
+      // Мы НЕ двигаем сам пузырь физически через translate всего элемента, потому что это сломает верстку.
+      // Вместо этого, мы можем визуально имитировать движение, меняя прозрачность соседних элементов?
+      // НЕТ. Пользователь просил: "плитка перемещается за пальцем".
+      
+      // РЕШЕНИЕ: Мы будем использовать абсолютное позиционирование для активного элемента во время драга?
+      // Это сложно реализовать без скачков.
+      
+      // АЛЬТЕРНАТИВНОЕ РЕШЕНИЕ (как в iOS):
+      // Мы просто позволяем CSS transition работать, но если палец уходит далеко, мы можем подсвечивать следующую вкладку?
+      // Нет, запрос конкретный: "перемещается за пальцем".
+      
+      // Давайте сделаем так:
+      // 1. При touchstart мы запоминаем текущую активную кнопку.
+      // 2. При touchmove мы вычисляем, над какой кнопкой сейчас палец.
+      // 3. Если палец над другой кнопкой, мы МГНОВЕННО переключаем класс active на неё.
+      // 4. Чтобы это выглядело как "тянется", мы можем добавить небольшой delay или оставить как есть (быстрое переключение).
+      
+      // Однако, чтобы сделать эффект "резинового" перемещения самого пузыря (как на видео из прошлого запроса, но здесь просят чтобы плитка ехала за пальцем):
+      // Самый простой и надежный способ без сложных библиотек — это определение целевой вкладки по координатам.
+      
+      const targetIndex = Math.round((currentActiveIndex * cachedItemWidth + diff) / cachedItemWidth);
+      
+      // Ограничиваем индекс границами
+      let clampedIndex = targetIndex;
+      if (clampedIndex < 0) clampedIndex = 0;
+      if (clampedIndex >= navItems.length) clampedIndex = navItems.length - 1;
+      
+      // Если индекс изменился, переключаем визуальный стиль
+      if (clampedIndex !== currentActiveIndex) {
+         // Временно включаем transition для плавности смены цвета/размера, 
+         // но для эффекта "следования" лучше делать это быстро.
+         // Здесь мы просто меняем классы.
+         
+         // Сбрасываем все
+         navItems.forEach(n => n.classList.remove('active'));
+         // Активируем новую
+         navItems[clampedIndex].classList.add('active');
+      }
+
+    }, { passive: true });
+
+    navPill.addEventListener('touchend', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      
+      // Включаем обратно плавные анимации CSS
+      navItems.forEach(item => item.style.transition = 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)');
+      
+      // Определяем финальную вкладку
+      const activeBtn = document.querySelector('.nav-item.active');
+      const finalTab = activeBtn.getAttribute('data-tab');
+      const finalIndex = Array.from(navItems).indexOf(activeBtn);
+      
+      // Переключаем контент страницы
+      switchTab(finalTab, finalIndex);
+      
+      // Вибрация убрана по запросу
+    });
+
 
     function escapeHtml(text) {
       const div = document.createElement('div');
