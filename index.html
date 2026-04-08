@@ -435,18 +435,6 @@
       box-shadow: 0 8px 30px var(--indicator-glow), 0 0 0 2px rgba(255,255,255,0.1) inset;
     }
 
-    /* ✅ ПРУЖИНИСТАЯ АНИМАЦИЯ ВОЗВРАТА */
-    .nav-indicator.spring-back {
-      animation: springBack 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-
-    @keyframes springBack {
-      0% { transform: translate3d(var(--final-x, 0), 0, 0) scale(1.2); }
-      40% { transform: translate3d(var(--final-x, 0), 0, 0) scale(1.05); }
-      70% { transform: translate3d(var(--final-x, 0), 0, 0) scale(0.98); }
-      100% { transform: translate3d(var(--final-x, 0), 0, 0) scale(1); }
-    }
-
     .nav-indicator::after {
       content: '';
       position: absolute;
@@ -790,6 +778,7 @@
       });
     }
 
+    // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ — ПРЯМОЙ ПЕРЕХОД БЕЗ СКАЧКОВ
     function updateIndicatorPosition(index, isDragging = false, dragOffset = 0) {
       const xPos = index * indicatorPhysics.cachedItemWidth + dragOffset;
       
@@ -797,17 +786,23 @@
         navIndicator.classList.add('dragging');
         navIndicator.style.setProperty('--drag-x', `${dragOffset}px`);
         navIndicator.style.setProperty('--final-x', `${xPos}px`);
+        navIndicator.style.transform = `translate3d(${xPos}px, 0, 0) scale(1.2)`;
       } else {
+        // ✅ Сначала убираем классы драга
         navIndicator.classList.remove('dragging');
         navIndicator.style.removeProperty('--drag-x');
-        navIndicator.classList.add('spring-back');
-        navIndicator.style.setProperty('--final-x', `${xPos}px`);
         
-        setTimeout(() => {
-          navIndicator.classList.remove('spring-back');
-          navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
-          navIndicator.style.transform = `translate3d(${xPos}px, 0, 0) scale(1)`;
-        }, 500);
+        // ✅ СБРАСЫВАЕМ транзишн на один кадр, чтобы браузер применил изменения
+        navIndicator.style.transition = 'none';
+        navIndicator.style.transform = `translate3d(${xPos}px, 0, 0) scale(1)`;
+        
+        // ✅ Форсируем перерисовку (reflow) — это ключевой фикс бага!
+        void navIndicator.offsetWidth;
+        
+        // ✅ Включаем пружинистую анимацию
+        navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
+        navIndicator.style.width = `calc(33.33% - 16px)`;
+        navIndicator.style.borderRadius = '24px';
       }
     }
 
@@ -912,6 +907,7 @@
       const activePage = document.getElementById(pageMap[tab]);
       if(activePage) activePage.classList.add('active');
 
+      // ✅ ПРЯМОЕ обновление позиции без промежуточного сброса
       updateIndicatorPosition(index, false);
       indicatorPhysics.currentIndex = index;
 
@@ -919,13 +915,15 @@
       if(mainContent) mainContent.scrollTop = 0;
     }
 
-    // Обработка кликов
+    // Обработка кликов — ИСПРАВЛЕНО
     navItems.forEach((btn, index) => {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         const tab = this.getAttribute('data-tab');
         if (tab) {
+          // ✅ Сразу переключаем без лишнего сброса транзишна
           switchTab(tab, index);
+          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
       });
     });
