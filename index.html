@@ -21,7 +21,6 @@
       --glass-border: rgba(255, 255, 255, 0.4);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
       
-      /* ✅ ЦВЕТА ИНДИКАТОРА — СВЕТЛАЯ ТЕМА */
       --indicator-bg: #d0d0d0;
       --indicator-glow: rgba(208, 208, 208, 0.5);
     }
@@ -40,7 +39,6 @@
       --glass-border: rgba(255, 255, 255, 0.1);
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
       
-      /* ✅ ЦВЕТА ИНДИКАТОРА — ТЁМНАЯ ТЕМА */
       --indicator-bg: #4a4a4a;
       --indicator-glow: rgba(74, 74, 74, 0.5);
     }
@@ -154,10 +152,12 @@
     }
 
     .search-icon {
-      color: var(--text-secondary);
-      font-size: 18px;
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
       margin-right: 10px;
       flex-shrink: 0;
+      filter: brightness(0) saturate(100%) invert(56%) sepia(6%) saturate(0%) hue-rotate(348deg) brightness(96%) contrast(86%);
     }
 
     .search-input {
@@ -168,6 +168,16 @@
       color: var(--text-primary);
       width: 100%;
       font-family: inherit;
+    }
+
+    /* ✅ ЦВЕТ PLACEHOLDER — СВЕТЛАЯ ТЕМА */
+    .search-input::placeholder {
+      color: #C8C8C8;
+    }
+
+    /* ✅ ЦВЕТ PLACEHOLDER — ТЁМНАЯ ТЕМА */
+    .dark-theme .search-input::placeholder {
+      color: #6b6b6b;
     }
 
     .ads-grid {
@@ -375,9 +385,11 @@
     }
 
     .nav-icon {
-      font-size: 24px;
-      color: var(--text-secondary);
-      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      filter: brightness(0) saturate(100%) invert(56%) sepia(6%) saturate(0%) hue-rotate(348deg) brightness(96%) contrast(86%);
+      transition: filter 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 2;
     }
 
@@ -391,13 +403,12 @@
     }
 
     .nav-item.active .nav-icon {
-      color: #ffffff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      filter: none;
       transform: scale(1.1);
     }
 
     .nav-item.active .nav-label {
-      color: #ffffff;
+      color: #007AFF;
       font-weight: 700;
       opacity: 1;
     }
@@ -405,7 +416,6 @@
     /* ===== ФИЗИКА ИНДИКАТОРА ===== */
     .nav-indicator {
       position: absolute;
-      /* ✅ УВЕЛИЧЕНА ВЫСОТА: уменьшены отступы сверху и снизу */
       top: 8px;
       bottom: 8px;
       left: 8px;
@@ -439,7 +449,6 @@
       pointer-events: none;
     }
 
-    /* ✅ УБИРАЕМ БЕЛЫЙ БЛИК В ТЁМНОЙ ТЕМЕ */
     .dark-theme .nav-indicator::after {
       background: transparent;
       opacity: 0;
@@ -547,8 +556,8 @@
     <div class="page active" id="pageHome">
       <div class="search-container">
         <div class="search-bar">
-          <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" id="searchInput" placeholder="Поиск...">
+          <img src="iconsearch.png" class="search-icon" alt="Поиск">
+          <input type="text" class="search-input" id="searchInput" placeholder="Загрузка...">
         </div>
       </div>
       <div class="ads-grid" id="adsGrid"></div>
@@ -601,19 +610,18 @@
   <!-- IOS 26 LIQUID GLASS BOTTOM NAV -->
   <div class="bottom-nav" id="bottomNav">
     <div class="nav-pill" id="navPill">
-      <!-- Плавающий индикатор -->
       <div class="nav-indicator" id="navIndicator"></div>
 
       <button class="nav-item active" data-tab="home" id="navHome">
-        <span class="nav-icon">🏠</span>
+        <img src="iconhomeactive.png" class="nav-icon" alt="Главная">
         <span class="nav-label">Главная</span>
       </button>
       <button class="nav-item" data-tab="messages" id="navMessages">
-        <span class="nav-icon">💬</span>
+        <img src="iconmessage.png" class="nav-icon" alt="Сообщения">
         <span class="nav-label">Сообщения</span>
       </button>
       <button class="nav-item" data-tab="profile" id="navProfile">
-        <span class="nav-icon">👤</span>
+        <img src="iconprofile.png" class="nav-icon" alt="Профиль">
         <span class="nav-label">Профиль</span>
       </button>
     </div>
@@ -755,6 +763,23 @@
     }
     setupProfile();
 
+    // ===== СЛУЧАЙНЫЙ ПЛЕЙСХОЛДЕР ДЛЯ ПОИСКА =====
+    function setRandomSearchPlaceholder() {
+      const searchInput = document.getElementById('searchInput');
+      const rand = Math.random();
+      
+      if (rand < 0.1) {
+        // 10% шанс — свиной навоз
+        searchInput.placeholder = 'Свиной навоз оптом';
+      } else if (rand < 0.55) {
+        // 45% шанс — что ищем
+        searchInput.placeholder = 'Что ищем?';
+      } else {
+        // 45% шанс — погнали
+        searchInput.placeholder = 'Погнали за покупками!';
+      }
+    }
+
     // ===== ФИЗИКА ИНДИКАТОРА НАВИГАЦИИ =====
     const navPill = document.getElementById('navPill');
     const navIndicator = document.getElementById('navIndicator');
@@ -769,6 +794,12 @@
       lastTime: 0,
       currentIndex: 0,
       cachedItemWidth: 0
+    };
+
+    const iconMap = {
+      'home': { active: 'iconhomeactive.png', inactive: 'iconhome.png' },
+      'messages': { active: 'iconmessageactive.png', inactive: 'iconmessage.png' },
+      'profile': { active: 'iconprofileactive.png', inactive: 'iconprofile.png' }
     };
 
     function initIndicatorPhysics() {
@@ -794,6 +825,16 @@
     }
 
     function switchTab(tab, index) {
+      navItems.forEach(btn => {
+        const tabName = btn.getAttribute('data-tab');
+        const img = btn.querySelector('.nav-icon');
+        if (tabName === tab) {
+          img.src = iconMap[tabName].active;
+        } else {
+          img.src = iconMap[tabName].inactive;
+        }
+      });
+
       navItems.forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
 
@@ -1159,6 +1200,8 @@
       }
     });
 
+    // ✅ ЗАПУСК ПЛЕЙСХОЛДЕРА ПРИ СТАРТЕ
+    setRandomSearchPlaceholder();
     renderAds();
     renderMyAds();
   </script>
