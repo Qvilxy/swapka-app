@@ -285,11 +285,33 @@
       position: relative; height: 50px; display: flex;
       justify-content: flex-end; align-items: center; padding: 0 16px; z-index: 10;
     }
+    
+    /* ✅ ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ КНОПКИ ТЕМЫ */
     .moon-btn {
-      background: none; border: none; font-size: 28px; cursor: pointer; padding: 8px;
-      transition: transform 0.3s; pointer-events: auto; z-index: 1001; position: relative;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      transition: transform 0.3s;
+      pointer-events: auto;
+      z-index: 1001;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
     }
+    
+    .moon-btn img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
     .moon-btn:active { transform: scale(0.85); }
+    .moon-btn:active img { transform: rotate(15deg); }
 
     .profile-shifted-content { transform: translateY(-120px); }
     .profile-user-info { padding: 20px 16px; text-align: center; transform: translateY(60px); }
@@ -592,7 +614,10 @@
     <!-- PROFILE PAGE -->
     <div class="page" id="pageProfile">
       <div class="profile-moon-wrapper">
-        <button class="moon-btn" id="themeToggle">🌙</button>
+        <!-- ИЗМЕНЕННАЯ КНОПКА ТЕМЫ -->
+        <button class="moon-btn" id="themeToggle">
+          <img src="iconmoon.png" alt="Theme" id="themeIcon">
+        </button>
       </div>
       
       <div class="profile-shifted-content">
@@ -737,12 +762,16 @@
     function applyTheme(theme) {
       const body = document.body;
       const btn = document.getElementById('themeToggle');
+      const iconImg = document.getElementById('themeIcon');
+      
       if (theme === 'dark') {
         body.classList.add('dark-theme');
-        if (btn) btn.textContent = '☀️';
+        // Темная тема -> Иконка солнца
+        if (iconImg) iconImg.src = 'iconsun.png';
       } else {
         body.classList.remove('dark-theme');
-        if (btn) btn.textContent = '🌙';
+        // Светлая тема -> Иконка луны
+        if (iconImg) iconImg.src = 'iconmoon.png';
       }
     }
 
