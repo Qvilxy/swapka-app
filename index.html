@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Swapka</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Подключаем красивый шрифт -->
@@ -17,11 +17,12 @@
       --shadow: 0 2px 12px rgba(0,0,0,0.08);
       --card-bg: #ffffff;
       --search-bg: #ffffff;
-      --tab-bg: #ffffff;
-      --tab-active: #e8e8e8;
-      --modal-overlay: rgba(0,0,0,0.5);
-      --chat-bg: #f0f0f0;
-      --input-bg: #f2f2f7;
+      
+      /* Переменные для стеклянной панели */
+      --glass-bg: rgba(255, 255, 255, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      --active-glow: rgba(74, 158, 255, 0.3);
     }
 
     .dark-theme {
@@ -33,11 +34,12 @@
       --shadow: 0 2px 12px rgba(0,0,0,0.3);
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
-      --tab-bg: #1a1a1a;
-      --tab-active: #3a3a3c;
-      --modal-overlay: rgba(0,0,0,0.7);
-      --chat-bg: #3a3a3c;
-      --input-bg: #3a3a3c;
+
+      /* Темная тема стекла */
+      --glass-bg: rgba(30, 30, 30, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      --active-glow: rgba(74, 158, 255, 0.2);
     }
 
     * {
@@ -57,7 +59,7 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    /* ===== HEADER (с текстовым логотипом) ===== */
+    /* ===== HEADER ===== */
     .header {
       position: fixed;
       top: 0;
@@ -73,19 +75,23 @@
     }
 
     .app-logo {
-      font-family: 'Pacifico', cursive; /* Красивый рукописный шрифт */
+      font-family: 'Pacifico', cursive;
       font-size: 42px;
-      /* Градиентный текст, как на кнопке */
       background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
       background-size: 400% 400%;
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
       animation: gradientShift 6s ease infinite;
-      /* Позиционирование с учетом предыдущих сдвигов фото */
       transform: translate(5px, 19px); 
       user-select: none;
       pointer-events: none;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     .main-content {
@@ -93,7 +99,7 @@
       top: 100px;
       left: 0;
       right: 0;
-      bottom: 70px;
+      bottom: 90px; /* Увеличен отступ для плавающей панели */
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
@@ -109,6 +115,7 @@
       display: block;
     }
 
+    /* Search & Ads Styles */
     .search-container {
       padding: 12px 16px;
       background: var(--bg-primary);
@@ -147,10 +154,6 @@
       color: var(--text-primary);
       width: 100%;
       font-family: inherit;
-    }
-
-    .search-input::placeholder {
-      color: var(--text-secondary);
     }
 
     .ads-grid {
@@ -225,6 +228,7 @@
       color: var(--text-secondary);
     }
 
+    /* Messages Styles */
     .messages-list {
       padding: 8px 16px;
     }
@@ -240,10 +244,6 @@
       transition: background 0.2s;
     }
 
-    .message-item:active {
-      opacity: 0.7;
-    }
-
     .message-avatar {
       width: 48px;
       height: 48px;
@@ -257,40 +257,11 @@
       flex-shrink: 0;
     }
 
-    .message-content {
-      flex: 1;
-      min-width: 0;
-    }
+    .message-content { flex: 1; min-width: 0; }
+    .message-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .message-preview { font-size: 14px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 
-    .message-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .message-preview {
-      font-size: 14px;
-      color: var(--text-secondary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 2px;
-    }
-
-    .message-badge {
-      background: #ff3b30;
-      color: white;
-      font-size: 12px;
-      font-weight: 700;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
+    /* Empty State */
     .empty-state {
       display: flex;
       flex-direction: column;
@@ -299,19 +270,10 @@
       padding: 60px 20px;
       text-align: center;
     }
+    .empty-state-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state-text { font-size: 16px; color: var(--text-secondary); }
 
-    .empty-state-icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-      opacity: 0.5;
-    }
-
-    .empty-state-text {
-      font-size: 16px;
-      color: var(--text-secondary);
-    }
-
-    /* ===== PROFILE PAGE STYLES ===== */
+    /* Profile Styles */
     .profile-moon-wrapper {
       position: relative;
       height: 50px;
@@ -321,151 +283,84 @@
       padding: 0 16px;
       z-index: 10;
     }
-
     .moon-btn {
-      background: none;
-      border: none;
-      font-size: 28px;
-      cursor: pointer;
-      padding: 8px;
-      transition: transform 0.3s;
-      pointer-events: auto;
-      z-index: 1001;
-      position: relative;
+      background: none; border: none; font-size: 28px; cursor: pointer; padding: 8px;
+      transition: transform 0.3s; pointer-events: auto; z-index: 1001; position: relative;
     }
+    .moon-btn:active { transform: scale(0.85); }
 
-    .moon-btn:active {
-      transform: scale(0.85);
-    }
-
-    .profile-shifted-content {
-      transform: translateY(-120px);
-    }
-
-    .profile-user-info {
-      padding: 20px 16px;
-      text-align: center;
-      transform: translateY(60px);
-    }
-
+    .profile-shifted-content { transform: translateY(-120px); }
+    .profile-user-info { padding: 20px 16px; text-align: center; transform: translateY(60px); }
+    
     .profile-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 0 auto 12px;
-      display: block;
-      background: var(--bg-secondary);
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px;
+      display: block; background: var(--bg-secondary);
     }
-
     .profile-avatar-placeholder {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--bg-secondary);
-      margin: 0 auto 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
+      width: 80px; height: 80px; border-radius: 50%; background: var(--bg-secondary);
+      margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 36px;
     }
-
-    .profile-name {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .profile-username {
-      font-size: 15px;
-      color: var(--text-secondary);
-      margin-top: 4px;
-      transform: translateY(-5px);
-    }
-
-    .profile-rating {
-      display: flex;
-      justify-content: center;
-      gap: 4px;
-      margin-top: 8px;
-      font-size: 18px;
-      transform: translateY(-10px);
-    }
-
-    /* ===== ANIMATED GRADIENT BUTTON ===== */
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+    .profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); }
+    .profile-username { font-size: 15px; color: var(--text-secondary); margin-top: 4px; transform: translateY(-5px); }
+    .profile-rating { display: flex; justify-content: center; gap: 4px; margin-top: 8px; font-size: 18px; transform: translateY(-10px); }
 
     .create-ad-btn {
-      display: block;
-      margin: 0 auto 20px;
-      padding: 14px 15px;
-      width: fit-content;
-      min-width: 200px;
+      display: block; margin: 0 auto 20px; padding: 14px 15px; width: fit-content; min-width: 200px;
       background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
-      background-size: 400% 400%;
-      animation: gradientShift 6s ease infinite;
-      color: white;
-      border: none;
-      border-radius: 100px;
-      font-size: 17px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      transition: transform 0.2s, opacity 0.2s;
-      transform: translateY(38px);
-      box-shadow: 0 4px 20px rgba(135, 206, 235, 0.4);
+      background-size: 400% 400%; animation: gradientShift 6s ease infinite;
+      color: white; border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
+      transform: translateY(38px); box-shadow: 0 4px 20px rgba(135, 206, 235, 0.4);
     }
+    .create-ad-btn:active { transform: translateY(38px) scale(0.97); opacity: 0.9; }
 
-    .create-ad-btn:active {
-      transform: translateY(38px) scale(0.97);
-      opacity: 0.9;
-    }
+    .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
+    .my-ads-grid-wrapper { transform: translateY(30px); }
 
-    .my-ads-title {
-      font-size: 18px;
-      font-weight: 700;
-      padding: 0 16px 12px;
-      color: var(--text-primary);
-      transform: translateY(30px);
-    }
-
-    .my-ads-grid-wrapper {
-      transform: translateY(30px);
-    }
-
-    /* ===== BOTTOM NAV ===== */
+    /* ===== IOS 26 LIQUID GLASS BOTTOM NAV ===== */
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: var(--tab-bg);
+      height: auto;
+      z-index: 1000;
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 8px 16px;
-      padding-bottom: max(8px, env(safe-area-inset-bottom));
-      z-index: 1000;
-      transition: transform 0.3s ease, background 0.3s;
+      padding-bottom: max(12px, env(safe-area-inset-bottom)); /* Отступ снизу для iPhone */
+      padding-top: 8px;
+      pointer-events: none; /* Чтобы клики проходили сквозь пустые места по бокам */
+      transition: transform 0.3s ease;
     }
 
     .bottom-nav.hidden {
-      transform: translateY(100%);
+      transform: translateY(150%);
     }
 
     .nav-pill {
-      display: flex;
-      background: var(--card-bg);
-      border-radius: 100px;
-      padding: 4px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-      width: 100%;
-      max-width: 360px;
       pointer-events: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 90%;
+      max-width: 380px;
+      height: 64px;
+      
+      /* Эффект жидкого стекла */
+      background: var(--glass-bg);
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
+      
+      border-radius: 32px;
+      padding: 0 8px;
+      
+      /* Границы и тени для объема */
+      border: 1px solid var(--glass-border);
+      box-shadow: 
+        var(--glass-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2); /* Блик сверху */
+        
+      transition: all 0.3s ease;
     }
 
     .nav-item {
@@ -474,381 +369,146 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 8px 4px;
+      height: 100%;
       border-radius: 24px;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       border: none;
       background: transparent;
       gap: 2px;
       -webkit-tap-highlight-color: transparent;
-      pointer-events: auto;
-      touch-action: manipulation;
-      -webkit-user-select: none;
-      user-select: none;
+      position: relative;
+      overflow: hidden;
     }
 
+    /* Активное состояние - эффект линзы */
     .nav-item.active {
-      background: var(--tab-active);
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 
+        0 4px 15px rgba(0,0,0,0.05),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
     }
 
+    .dark-theme .nav-item.active {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-icon {
+      font-size: 24px;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+      z-index: 2;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+      z-index: 2;
+      opacity: 0.8;
+    }
+
+    /* Цвет активной иконки */
     .nav-item.active .nav-icon {
       color: #4a9eff;
+      transform: translateY(-2px) scale(1.1);
+      filter: drop-shadow(0 0 8px var(--active-glow));
     }
 
     .nav-item.active .nav-label {
       color: #4a9eff;
-      font-weight: 600;
+      font-weight: 700;
+      opacity: 1;
     }
 
-    .nav-icon {
-      font-size: 22px;
-      color: var(--text-secondary);
-      transition: color 0.3s;
-      pointer-events: none;
-    }
-
-    .nav-label {
-      font-size: 11px;
-      color: var(--text-secondary);
-      transition: color 0.3s;
-      pointer-events: none;
-    }
-
-    /* ===== MODAL ===== */
+    /* Модальные окна и прочее */
     .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--modal-overlay);
-      z-index: 200;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5); z-index: 200; display: none;
+      align-items: flex-end; justify-content: center;
+      backdrop-filter: blur(5px);
     }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
+    .modal-overlay.active { display: flex; }
     .modal-content {
-      background: var(--bg-primary);
-      width: 100%;
-      max-height: 92vh;
-      border-radius: 20px 20px 0 0;
-      padding: 20px;
+      background: var(--bg-primary); width: 100%; max-height: 92vh;
+      border-radius: 20px 20px 0 0; padding: 20px;
       padding-bottom: max(20px, env(safe-area-inset-bottom));
-      overflow-y: auto;
-      animation: slideUp 0.3s ease;
-      transition: background 0.3s;
+      overflow-y: auto; animation: slideUp 0.3s ease;
     }
-
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
     .modal-close {
-      background: var(--bg-secondary);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
+      background: var(--bg-secondary); border: none; border-radius: 50%; width: 36px; height: 36px;
+      font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
     }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-label {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-      display: block;
-    }
-
+    
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block; }
     .form-input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid var(--border-color);
-      border-radius: 12px;
-      font-size: 16px;
-      color: var(--text-primary);
-      background: var(--input-bg);
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.2s, background 0.3s;
+      width: 100%; padding: 12px 16px; border: 2px solid var(--border-color); border-radius: 12px;
+      font-size: 16px; color: var(--text-primary); background: var(--input-bg); font-family: inherit; outline: none;
     }
-
-    .form-input:focus {
-      border-color: #4a9eff;
-    }
-
-    .photos-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
+    .photos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .photo-slot {
-      aspect-ratio: 1;
-      border: 2px dashed var(--border-color);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      overflow: hidden;
-      position: relative;
-      background: var(--input-bg);
-      transition: border-color 0.2s;
+      aspect-ratio: 1; border: 2px dashed var(--border-color); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; background: var(--input-bg);
     }
-
-    .photo-slot:hover {
-      border-color: #4a9eff;
-    }
-
-    .photo-slot img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .photo-slot .add-icon {
-      font-size: 28px;
-      color: var(--text-secondary);
-    }
-
+    .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-slot .add-icon { font-size: 28px; color: var(--text-secondary); }
     .photo-slot .remove-btn {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(0,0,0,0.6);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white; border: none;
+      border-radius: 50%; width: 22px; height: 22px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
-
     .submit-btn {
-      width: auto;
-      margin: 10px auto 0;
-      display: block;
-      padding: 16px 15px;
-      background: #000000;
-      color: #ffffff;
-      border: none;
-      border-radius: 100px;
-      font-size: 17px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      transition: transform 0.2s, opacity 0.2s;
+      width: auto; margin: 10px auto 0; display: block; padding: 16px 15px; background: #000000; color: #ffffff;
+      border: none; border-radius: 100px; font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit;
     }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .submit-btn:active {
-      transform: scale(0.97);
-      opacity: 0.9;
-    }
-
-    .submit-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* ===== AD DETAIL MODAL ===== */
+    /* Detail Modal */
     .detail-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--bg-primary);
-      z-index: 200;
-      display: none;
-      overflow-y: auto;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary);
+      z-index: 200; display: none; overflow-y: auto;
     }
-
-    .detail-modal.active {
-      display: block;
-    }
-
+    .detail-modal.active { display: block; }
     .detail-header {
-      position: sticky;
-      top: 0;
-      background: var(--bg-primary);
-      padding: 12px 16px;
-      padding-top: max(12px, env(safe-area-inset-top));
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 10;
+      position: sticky; top: 0; background: var(--bg-primary); padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top)); display: flex; justify-content: space-between; align-items: center; z-index: 10;
       border-bottom: 1px solid var(--border-color);
     }
-
     .detail-back {
-      background: var(--bg-secondary);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
+      background: var(--bg-secondary); border: none; border-radius: 50%; width: 36px; height: 36px;
+      font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
     }
-
-    .image-carousel {
-      width: 100%;
-      aspect-ratio: 1;
-      position: relative;
-      overflow: hidden;
-      background: var(--bg-secondary);
-    }
-
-    .carousel-track {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.3s ease;
-    }
-
-    .carousel-slide {
-      min-width: 100%;
-      height: 100%;
-    }
-
-    .carousel-slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .carousel-dots {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 6px;
-    }
-
-    .carousel-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.5);
-      border: none;
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .carousel-dot.active {
-      background: white;
-    }
-
-    .detail-info {
-      padding: 20px 16px;
-    }
-
-    .detail-title {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-
-    .detail-price {
-      font-size: 24px;
-      font-weight: 800;
-      color: #ff6b35;
-      margin-bottom: 8px;
-    }
-
-    .detail-city {
-      font-size: 15px;
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-    }
-
-    .detail-seller {
-      display: flex;
-      align-items: center;
-      padding: 14px;
-      background: var(--bg-secondary);
-      border-radius: 14px;
-    }
-
-    .detail-seller-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--border-color);
-      margin-right: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    .detail-seller-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
+    .image-carousel { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: var(--bg-secondary); }
+    .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
+    .carousel-slide { min-width: 100%; height: 100%; }
+    .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+    .carousel-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+    .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); border: none; cursor: pointer; padding: 0; }
+    .carousel-dot.active { background: white; }
+    .detail-info { padding: 20px 16px; }
+    .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .detail-price { font-size: 24px; font-weight: 800; color: #ff6b35; margin-bottom: 8px; }
+    .detail-city { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
+    .detail-seller { display: flex; align-items: center; padding: 14px; background: var(--bg-secondary); border-radius: 14px; }
+    .detail-seller-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--border-color); margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .detail-seller-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
     .detail-contact-btn {
-      width: 100%;
-      padding: 16px;
-      background: var(--btn-gradient);
-      color: white;
-      border: none;
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      margin-top: 20px;
+      width: 100%; padding: 16px; background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
+      background-size: 400% 400%; animation: gradientShift 6s ease infinite; color: white; border: none; border-radius: 14px;
+      font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 20px;
     }
-
-    .main-content::-webkit-scrollbar {
-      width: 0;
-    }
+    .main-content::-webkit-scrollbar { width: 0; }
   </style>
 </head>
 <body>
 
-  <!-- HEADER (с текстовым логотипом) -->
+  <!-- HEADER -->
   <div class="header">
     <div class="app-logo">Swapka</div>
   </div>
@@ -887,7 +547,6 @@
       </div>
       
       <div class="profile-shifted-content">
-        
         <div class="profile-user-info">
           <div id="profileAvatarContainer"></div>
           <div class="profile-name" id="profileName">Загрузка...</div>
@@ -907,12 +566,11 @@
             <div class="empty-state-text">У вас пока нет объявлений</div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
+  <!-- IOS 26 LIQUID GLASS BOTTOM NAV -->
   <div class="bottom-nav" id="bottomNav">
     <div class="nav-pill">
       <button class="nav-item active" data-tab="home" id="navHome">
@@ -941,18 +599,10 @@
       <div class="form-group">
         <label class="form-label">Фотографии (1–4)</label>
         <div class="photos-grid" id="photosGrid">
-          <div class="photo-slot" onclick="addPhoto(0)" id="photoSlot0">
-            <span class="add-icon">+</span>
-          </div>
-          <div class="photo-slot" onclick="addPhoto(1)" id="photoSlot1">
-            <span class="add-icon">+</span>
-          </div>
-          <div class="photo-slot" onclick="addPhoto(2)" id="photoSlot2">
-            <span class="add-icon">+</span>
-          </div>
-          <div class="photo-slot" onclick="addPhoto(3)" id="photoSlot3">
-            <span class="add-icon">+</span>
-          </div>
+          <div class="photo-slot" onclick="addPhoto(0)" id="photoSlot0"><span class="add-icon">+</span></div>
+          <div class="photo-slot" onclick="addPhoto(1)" id="photoSlot1"><span class="add-icon">+</span></div>
+          <div class="photo-slot" onclick="addPhoto(2)" id="photoSlot2"><span class="add-icon">+</span></div>
+          <div class="photo-slot" onclick="addPhoto(3)" id="photoSlot3"><span class="add-icon">+</span></div>
         </div>
       </div>
 
@@ -1000,7 +650,6 @@
     </div>
   </div>
 
-  <!-- HIDDEN FILE INPUT -->
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
@@ -1024,31 +673,19 @@
       try {
         const data = localStorage.getItem(ADS_KEY);
         return data ? JSON.parse(data) : [];
-      } catch (e) {
-        return [];
-      }
+      } catch (e) { return []; }
     }
 
     function saveAds(ads) {
-      try {
-        localStorage.setItem(ADS_KEY, JSON.stringify(ads));
-      } catch (e) {
-        console.error('Failed to save ads:', e);
-      }
+      try { localStorage.setItem(ADS_KEY, JSON.stringify(ads)); } catch (e) {}
     }
 
-    function loadTheme() {
-      return localStorage.getItem(THEME_KEY);
-    }
-
-    function saveTheme(theme) {
-      localStorage.setItem(THEME_KEY, theme);
-    }
+    function loadTheme() { return localStorage.getItem(THEME_KEY); }
+    function saveTheme(theme) { localStorage.setItem(THEME_KEY, theme); }
 
     function applyTheme(theme) {
       const body = document.body;
       const btn = document.getElementById('themeToggle');
-      
       if (theme === 'dark') {
         body.classList.add('dark-theme');
         if (btn) btn.textContent = '☀️';
@@ -1069,13 +706,8 @@
     if (themeBtn) {
       themeBtn.addEventListener('click', function() {
         const isDark = document.body.classList.contains('dark-theme');
-        if (isDark) {
-          applyTheme('light');
-          saveTheme('light');
-        } else {
-          applyTheme('dark');
-          saveTheme('dark');
-        }
+        if (isDark) { applyTheme('light'); saveTheme('light'); }
+        else { applyTheme('dark'); saveTheme('dark'); }
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       });
     }
@@ -1087,16 +719,12 @@
       } else {
         avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
       }
-
-      document.getElementById('profileName').textContent =
-        currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
-      document.getElementById('profileUsername').textContent =
-        currentUser.username ? '@' + currentUser.username : '';
+      document.getElementById('profileName').textContent = currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
+      document.getElementById('profileUsername').textContent = currentUser.username ? '@' + currentUser.username : '';
     }
-
     setupProfile();
 
-    // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК ---
+    // --- TAB SWITCHING ---
     function switchTab(tab) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1131,7 +759,6 @@
         }
       });
     });
-    // ----------------------------------
 
     function escapeHtml(text) {
       const div = document.createElement('div');
@@ -1144,13 +771,11 @@
       const grid = document.getElementById('adsGrid');
       const empty = document.getElementById('homeEmpty');
       grid.innerHTML = '';
-
       let filteredAds = ads;
       if (filter.trim()) {
         const q = filter.toLowerCase().trim();
         filteredAds = ads.filter(ad => ad.title.toLowerCase().includes(q));
       }
-
       if (filteredAds.length === 0) {
         empty.style.display = 'flex';
         if (filter.trim() && ads.length > 0) {
@@ -1162,9 +787,7 @@
         }
       } else {
         empty.style.display = 'none';
-        filteredAds.forEach(ad => {
-          grid.appendChild(createAdCard(ad));
-        });
+        filteredAds.forEach(ad => grid.appendChild(createAdCard(ad)));
       }
     }
 
@@ -1172,11 +795,9 @@
       const card = document.createElement('div');
       card.className = 'ad-card';
       card.onclick = () => openDetailModal(ad);
-
       const imgHtml = ad.photos && ad.photos.length > 0
         ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
-
       card.innerHTML = `
         <div class="ad-image-container">${imgHtml}</div>
         <div class="ad-info">
@@ -1185,7 +806,6 @@
           <div class="ad-city">📍 ${escapeHtml(ad.city)}</div>
         </div>
       `;
-
       return card;
     }
 
@@ -1194,25 +814,18 @@
       const grid = document.getElementById('myAdsGrid');
       const empty = document.getElementById('myAdsEmpty');
       grid.innerHTML = '';
-
       const myAds = ads.filter(ad => ad.userId === currentUser.id);
-
-      if (myAds.length === 0) {
-        empty.style.display = 'flex';
-      } else {
+      if (myAds.length === 0) { empty.style.display = 'flex'; }
+      else {
         empty.style.display = 'none';
-        myAds.forEach(ad => {
-          grid.appendChild(createAdCard(ad));
-        });
+        myAds.forEach(ad => grid.appendChild(createAdCard(ad)));
       }
     }
 
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', function (e) {
       clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        renderAds(e.target.value);
-      }, 200);
+      searchTimeout = setTimeout(() => renderAds(e.target.value), 200);
     });
 
     let selectedPhotos = [];
@@ -1224,10 +837,8 @@
       document.getElementById('adTitle').value = '';
       document.getElementById('adPrice').value = '';
       document.getElementById('adCity').value = '';
-      
       document.getElementById('createModal').classList.add('active');
       bottomNav.classList.add('hidden');
-      
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
 
@@ -1255,10 +866,8 @@
     function handlePhotoSelect(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
-
       const remainingSlots = 4 - selectedPhotos.length;
       const filesToProcess = Math.min(files.length, remainingSlots);
-
       for (let i = 0; i < filesToProcess; i++) {
         const file = files[i];
         const reader = new FileReader();
@@ -1266,22 +875,17 @@
           const dataUrl = e.target.result;
           const slotIndex = selectedPhotos.length;
           if (slotIndex >= 4) return;
-
           selectedPhotos.push(dataUrl);
           updatePhotoSlot(slotIndex, dataUrl);
         };
         reader.readAsDataURL(file);
       }
-
       event.target.value = '';
     }
 
     function updatePhotoSlot(index, dataUrl) {
       const slot = document.getElementById('photoSlot' + index);
-      slot.innerHTML = `
-        <img src="${dataUrl}" alt="Photo">
-        <button class="remove-btn" onclick="removePhoto(event, ${index})">✕</button>
-      `;
+      slot.innerHTML = `<img src="${dataUrl}" alt="Photo"><button class="remove-btn" onclick="removePhoto(event, ${index})">✕</button>`;
       slot.onclick = null;
     }
 
@@ -1289,32 +893,17 @@
       event.stopPropagation();
       selectedPhotos.splice(index, 1);
       resetPhotoSlots();
-      selectedPhotos.forEach((photo, i) => {
-        updatePhotoSlot(i, photo);
-      });
+      selectedPhotos.forEach((photo, i) => updatePhotoSlot(i, photo));
     }
 
     function createAd() {
       const title = document.getElementById('adTitle').value.trim();
       const price = document.getElementById('adPrice').value.trim();
       const city = document.getElementById('adCity').value.trim();
-
-      if (!title) {
-        tg.showAlert('Введите название товара');
-        return;
-      }
-      if (!price) {
-        tg.showAlert('Введите цену');
-        return;
-      }
-      if (!city) {
-        tg.showAlert('Введите город');
-        return;
-      }
-      if (selectedPhotos.length === 0) {
-        tg.showAlert('Добавьте хотя бы одну фотографию');
-        return;
-      }
+      if (!title) { tg.showAlert('Введите название товара'); return; }
+      if (!price) { tg.showAlert('Введите цену'); return; }
+      if (!city) { tg.showAlert('Введите город'); return; }
+      if (selectedPhotos.length === 0) { tg.showAlert('Добавьте хотя бы одну фотографию'); return; }
 
       const ads = loadAds();
       const newAd = {
@@ -1329,10 +918,8 @@
         photos: selectedPhotos.slice(0, 4),
         createdAt: Date.now()
       };
-
       ads.unshift(newAd);
       saveAds(ads);
-
       closeCreateModal();
       renderAds();
       renderMyAds();
@@ -1348,31 +935,26 @@
       document.getElementById('detailPrice').textContent = ad.price;
       document.getElementById('detailCity').textContent = '📍 ' + ad.city;
       document.getElementById('detailSellerName').textContent = ad.userName || 'Продавец';
-
       if (ad.userPhoto) {
         document.getElementById('detailSellerAvatar').innerHTML = `<img src="${ad.userPhoto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`;
       } else {
         document.getElementById('detailSellerAvatar').innerHTML = '👤';
       }
-
       const track = document.getElementById('carouselTrack');
       const dots = document.getElementById('carouselDots');
       track.innerHTML = '';
       dots.innerHTML = '';
       currentCarouselIndex = 0;
-
       ad.photos.forEach((photo, i) => {
         const slide = document.createElement('div');
         slide.className = 'carousel-slide';
         slide.innerHTML = `<img src="${photo}" alt="Photo ${i + 1}">`;
         track.appendChild(slide);
-
         const dot = document.createElement('button');
         dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
         dot.onclick = () => goToSlide(i);
         dots.appendChild(dot);
       });
-
       modal.dataset.adId = ad.id;
       modal.classList.add('active');
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
@@ -1382,10 +964,7 @@
       const track = document.getElementById('carouselTrack');
       track.style.transform = `translateX(-${index * 100}%)`;
       currentCarouselIndex = index;
-
-      document.querySelectorAll('.carousel-dot').forEach((d, i) => {
-        d.classList.toggle('active', i === index);
-      });
+      document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === index));
     }
 
     function closeDetailModal() {
@@ -1410,22 +989,14 @@
 
     let touchStartX = 0;
     let touchEndX = 0;
-
-    document.getElementById('detailCarousel').addEventListener('touchstart', e => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
+    document.getElementById('detailCarousel').addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
     document.getElementById('detailCarousel').addEventListener('touchend', e => {
       touchEndX = e.changedTouches[0].screenX;
       const diff = touchStartX - touchEndX;
       const totalSlides = document.querySelectorAll('.carousel-slide').length;
-
       if (Math.abs(diff) > 50) {
-        if (diff > 0 && currentCarouselIndex < totalSlides - 1) {
-          goToSlide(currentCarouselIndex + 1);
-        } else if (diff < 0 && currentCarouselIndex > 0) {
-          goToSlide(currentCarouselIndex - 1);
-        }
+        if (diff > 0 && currentCarouselIndex < totalSlides - 1) goToSlide(currentCarouselIndex + 1);
+        else if (diff < 0 && currentCarouselIndex > 0) goToSlide(currentCarouselIndex - 1);
       }
     }, { passive: true });
 
@@ -1434,3 +1005,4 @@
   </script>
 </body>
 </html>
+
