@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Swapka</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Подключаем красивый шрифт -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -18,7 +17,6 @@
       --card-bg: #ffffff;
       --search-bg: #ffffff;
       
-      /* Переменные для стеклянной панели */
       --glass-bg: rgba(255, 255, 255, 0.65);
       --glass-border: rgba(255, 255, 255, 0.4);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
@@ -35,7 +33,6 @@
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
 
-      /* Темная тема стекла */
       --glass-bg: rgba(30, 30, 30, 0.65);
       --glass-border: rgba(255, 255, 255, 0.1);
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
@@ -57,7 +54,8 @@
       height: 100vh;
       width: 100vw;
       transition: background 0.3s, color 0.3s;
-      user-select: none; /* Запрет выделения текста для лучшего UX свайпов */
+      user-select: none; /* Важно для свайпов */
+      -webkit-user-select: none;
     }
 
     /* ===== HEADER ===== */
@@ -73,6 +71,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      pointer-events: none; /* Пропускаем клики сквозь хедер если нужно */
     }
 
     .app-logo {
@@ -85,7 +84,6 @@
       color: transparent;
       animation: gradientShift 6s ease infinite;
       transform: translate(5px, 19px); 
-      pointer-events: none;
     }
 
     @keyframes gradientShift {
@@ -104,6 +102,7 @@
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
+      will-change: scroll-position; /* Оптимизация скролла */
     }
 
     .page {
@@ -179,6 +178,7 @@
       box-shadow: var(--shadow);
       transition: transform 0.2s, background 0.3s;
       cursor: pointer;
+      will-change: transform;
     }
 
     .ad-card:active {
@@ -238,59 +238,34 @@
     }
 
     /* Messages Styles */
-    .messages-list {
-      padding: 8px 16px;
-    }
-
+    .messages-list { padding: 8px 16px; }
     .message-item {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      background: var(--chat-bg);
-      border-radius: 14px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: background 0.2s;
+      display: flex; align-items: center; padding: 12px;
+      background: var(--chat-bg); border-radius: 14px;
+      margin-bottom: 8px; cursor: pointer; transition: background 0.2s;
     }
-
     .message-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--bg-secondary);
-      margin-right: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--bg-secondary); margin-right: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
     }
-
     .message-content { flex: 1; min-width: 0; }
     .message-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
     .message-preview { font-size: 14px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 
     /* Empty State */
     .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 20px;
-      text-align: center;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 60px 20px; text-align: center;
     }
     .empty-state-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
     .empty-state-text { font-size: 16px; color: var(--text-secondary); }
 
     /* Profile Styles */
     .profile-moon-wrapper {
-      position: relative;
-      height: 50px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 0 16px;
-      z-index: 10;
+      position: relative; height: 50px; display: flex;
+      justify-content: flex-end; align-items: center; padding: 0 16px; z-index: 10;
     }
     .moon-btn {
       background: none; border: none; font-size: 28px; cursor: pointer; padding: 8px;
@@ -326,7 +301,7 @@
     .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
     .my-ads-grid-wrapper { transform: translateY(30px); }
 
-    /* ===== IOS 26 LIQUID GLASS BOTTOM NAV ===== */
+    /* ===== HIGH PERFORMANCE BOTTOM NAV ===== */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -340,6 +315,7 @@
       padding-top: 8px;
       pointer-events: none;
       transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      will-change: transform;
     }
 
     .bottom-nav.hidden {
@@ -364,8 +340,8 @@
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
       
-      position: relative; /* Важно для позиционирования индикатора */
-      overflow: hidden;   /* Чтобы индикатор не вылезал за края */
+      position: relative;
+      overflow: hidden;
       transition: all 0.3s ease;
     }
 
@@ -378,7 +354,7 @@
       height: 100%;
       border-radius: 24px;
       cursor: pointer;
-      z-index: 2; /* Поверх индикатора */
+      z-index: 2;
       position: relative;
       border: none;
       background: transparent;
@@ -387,7 +363,6 @@
       transition: transform 0.1s;
     }
 
-    /* Убираем старый фон активного состояния */
     .nav-item.active {
       background: transparent; 
       box-shadow: none;
@@ -409,7 +384,6 @@
       opacity: 0.8;
     }
 
-    /* Активные цвета текста */
     .nav-item.active .nav-icon {
       color: #ffffff;
       text-shadow: 0 1px 2px rgba(0,0,0,0.1);
@@ -422,7 +396,7 @@
       opacity: 1;
     }
 
-    /* ===== ПЛАВАЮЩИЙ ИНДИКАТОР ===== */
+    /* ===== OPTIMIZED INDICATOR ===== */
     .nav-indicator {
       position: absolute;
       top: 8px;
@@ -433,8 +407,12 @@
       border-radius: 24px;
       z-index: 1;
       
+      /* КЛЮЧЕВОЙ МОМЕНТ ДЛЯ 60 FPS */
+      will-change: transform;
+      transform: translateZ(0); /* Force GPU layer */
+      
       /* Плавная пружинистая анимация при отпускании */
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       
       box-shadow: 0 4px 15px rgba(74, 158, 255, 0.4);
       pointer-events: none;
@@ -759,25 +737,38 @@
     }
     setupProfile();
 
-    // --- TAB SWITCHING WITH DRAG ANIMATION ---
+    // --- HIGH PERFORMANCE TAB SWITCHING ---
     
     const navPill = document.getElementById('navPill');
     const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
     
-    // Функция обновления позиции индикатора
+    // КЕШИРОВАНИЕ ШИРИНЫ ДЛЯ 60 FPS
+    // Мы не хотим вызывать offsetWidth внутри touchmove, это вызывает перерисовку (Reflow)
+    let cachedItemWidth = navItems[0].offsetWidth;
+
+    // Обновляем ширину при ресайзе окна
+    window.addEventListener('resize', () => {
+      cachedItemWidth = navItems[0].offsetWidth;
+      // Если есть активная вкладка, корректируем позицию
+      navItems.forEach((item, idx) => {
+        if(item.classList.contains('active')) updateIndicatorPosition(idx, false);
+      });
+    });
+
     function updateIndicatorPosition(index, isDragging = false) {
-      const itemWidth = navItems[0].offsetWidth;
-      
-      const xPos = index * itemWidth; 
+      // Используем кешированную ширину
+      const xPos = index * cachedItemWidth; 
       
       if (isDragging) {
-        navIndicator.style.transition = 'none';
+        navIndicator.style.transition = 'none'; // Мгновенная реакция на палец
       } else {
+        // Пружинистая анимация только когда отпускаем палец
         navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
       }
       
-      navIndicator.style.transform = `translateX(${xPos}px)`;
+      // Используем translate3d для включения аппаратного ускорения GPU
+      navIndicator.style.transform = `translate3d(${xPos}px, 0, 0)`;
     }
 
     function switchTab(tab, index) {
@@ -813,12 +804,12 @@
       });
     });
 
-    // --- ЛОГИКА ПЕРЕТАСКИВАНИЯ (DRAG & SWIPE) ---
+    // --- ОПТИМИЗИРОВАННАЯ ЛОГИКА СВАЙПА ---
     let isDragging = false;
     let startX = 0;
-    let currentTranslateX = 0;
     let currentIndex = 0; 
 
+    // Инициализация позиции
     setTimeout(() => updateIndicatorPosition(0), 100);
 
     navPill.addEventListener('touchstart', (e) => {
@@ -829,12 +820,9 @@
         if(item.classList.contains('active')) currentIndex = idx;
       });
       
-      const rect = navIndicator.getBoundingClientRect();
-      const pillRect = navPill.getBoundingClientRect();
-      currentTranslateX = rect.left - pillRect.left; 
-      
+      // Отключаем анимацию для мгновенного отклика
       navIndicator.style.transition = 'none';
-    }, { passive: true });
+    }, { passive: true }); // passive: true важно для производительности скролла
 
     navPill.addEventListener('touchmove', (e) => {
       if (!isDragging) return;
@@ -842,37 +830,42 @@
       const x = e.touches[0].clientX;
       const diff = x - startX;
       
-      const itemWidth = navItems[0].offsetWidth;
       const maxIndex = navItems.length - 1;
       
-      let newPos = (currentIndex * itemWidth) + diff;
+      // Расчет новой позиции на основе кешированной ширины
+      let newPos = (currentIndex * cachedItemWidth) + diff;
       
-      const limit = itemWidth * 0.5; 
+      // Мягкие границы
+      const limit = cachedItemWidth * 0.5; 
       if (newPos < -limit) newPos = -limit;
-      if (newPos > (maxIndex * itemWidth) + limit) newPos = (maxIndex * itemWidth) + limit;
+      if (newPos > (maxIndex * cachedItemWidth) + limit) newPos = (maxIndex * cachedItemWidth) + limit;
 
-      navIndicator.style.transform = `translateX(${newPos}px)`;
+      // Используем translate3d для GPU ускорения
+      navIndicator.style.transform = `translate3d(${newPos}px, 0, 0)`;
     }, { passive: true });
 
     navPill.addEventListener('touchend', (e) => {
       if (!isDragging) return;
       isDragging = false;
       
-      const itemWidth = navItems[0].offsetWidth;
       const rect = navIndicator.getBoundingClientRect();
       const pillRect = navPill.getBoundingClientRect();
       const finalLeft = rect.left - pillRect.left;
       
-      let targetIndex = Math.round(finalLeft / itemWidth);
+      // Определяем ближайший индекс
+      let targetIndex = Math.round(finalLeft / cachedItemWidth);
       
       if (targetIndex < 0) targetIndex = 0;
       if (targetIndex > 2) targetIndex = 2;
       
       const newTab = navItems[targetIndex].getAttribute('data-tab');
+      
+      // Если переключились на другую вкладку
       if (newTab !== navItems[currentIndex].getAttribute('data-tab')) {
          switchTab(newTab, targetIndex);
          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       } else {
+         // Возврат на место
          updateIndicatorPosition(currentIndex, false);
       }
     });
