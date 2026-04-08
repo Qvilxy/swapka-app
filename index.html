@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Swapka</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-primary: #ffffff;
@@ -76,33 +75,48 @@
       right: 0;
       z-index: 100;
       height: 55px;
-      /* ✅ ШАПКА ТЕПЕРЬ СЕРОГО ЦВЕТА */
-      background: var(--bg-secondary);
-      /* ✅ ТОНКАЯ РАЗДЕЛИТЕЛЬНАЯ ЛИНИЯ */
+      background: var(--bg-primary);
       border-bottom: 1px solid var(--border-color);
       transition: background 0.3s, border-color 0.3s;
       display: flex;
       justify-content: center;
       align-items: center;
       pointer-events: none;
+      overflow: hidden;
     }
 
-    .app-logo {
-      font-family: 'Pacifico', cursive;
-      font-size: 42px;
-      background: linear-gradient(270deg, #FF416C, #FF4B2B, #ff80b5, #FF416C);
-      background-size: 400% 400%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: gradientShift 6s ease infinite;
-      transform: translate(5px, 2px); 
+    /* ✅ БЕГУЩАЯ СТРОКА */
+    .marquee-container {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
     }
 
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .marquee-content {
+      display: inline-flex;
+      animation: marquee 20s linear infinite;
+      will-change: transform;
+    }
+
+    .marquee-item {
+      font-family: 'Arial Black', 'Impact', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: #000000;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      flex-shrink: 0;
+      padding-right: 7px;
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
     }
 
     .main-content {
@@ -595,7 +609,11 @@
 
   <!-- HEADER -->
   <div class="header">
-    <div class="app-logo">Swapka</div>
+    <div class="marquee-container">
+      <div class="marquee-content" id="marqueeContent">
+        <!-- Надписи SWAPKA будут добавлены через JavaScript -->
+      </div>
+    </div>
   </div>
 
   <div class="main-content" id="mainContent">
@@ -787,6 +805,30 @@
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
+    // ✅ СОЗДАНИЕ БЕГУЩЕЙ СТРОКИ С SWAPKA
+    function initMarquee() {
+      const marqueeContent = document.getElementById('marqueeContent');
+      const itemCount = 8; // Количество надписей
+      
+      // Создаем надписи SWAPKA
+      for (let i = 0; i < itemCount; i++) {
+        const item = document.createElement('div');
+        item.className = 'marquee-item';
+        item.textContent = 'SWAPKA';
+        marqueeContent.appendChild(item);
+      }
+      
+      // Дублируем контент для бесшовной анимации
+      for (let i = 0; i < itemCount; i++) {
+        const item = document.createElement('div');
+        item.className = 'marquee-item';
+        item.textContent = 'SWAPKA';
+        marqueeContent.appendChild(item);
+      }
+    }
+    
+    initMarquee();
+    
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
