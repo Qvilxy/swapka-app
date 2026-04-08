@@ -336,7 +336,7 @@
       -webkit-backdrop-filter: blur(25px) saturate(180%);
       
       border-radius: 36px;
-      padding: 0 10px;
+      padding: 6px 8px;
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
       
@@ -345,6 +345,7 @@
       transition: all 0.3s ease;
     }
 
+    /* ===== NAV ITEM — НЕАКТИВНОЕ (СЕРЫЙ) СОСТОЯНИЕ ===== */
     .nav-item {
       flex: 1;
       display: flex;
@@ -358,188 +359,191 @@
       position: relative;
       border: none;
       background: transparent;
-      gap: 4px;
+      gap: 3px;
       -webkit-tap-highlight-color: transparent;
-      transition: transform 0.1s;
-    }
-
-    .nav-item.active {
-      background: transparent; 
-      box-shadow: none;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.3s ease,
+                  box-shadow 0.3s ease;
+      padding: 4px 0;
     }
 
     .nav-icon {
-      font-size: 28px;
+      font-size: 24px;
       color: var(--text-secondary);
       transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 2;
     }
 
     .nav-label {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
       color: var(--text-secondary);
       transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 2;
-      opacity: 0.8;
+      opacity: 0.7;
     }
 
-    .nav-item.active .nav-icon {
-      color: #ffffff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-      transform: scale(1.1);
-    }
-
-    .nav-item.active .nav-label {
-      color: #ffffff;
-      font-weight: 700;
-      opacity: 1;
-    }
-
-    /* ===== SOAP BUBBLE INDICATOR - BIGGER & CENTERED ===== */
-    .nav-indicator {
-      position: absolute;
-      top: 2px;
-      bottom: 2px;
-      left: 0;
-      width: calc(33.33% - 16px);
+    /* ===== NAV ITEM — АКТИВНОЕ (МЫЛЬНЫЙ ПУЗЫРЬ) ===== */
+    .nav-item.active {
+      transform: scale(1.12);
+      z-index: 3;
       
+      /* Мыльный пузырь фон */
       background: linear-gradient(
         135deg,
-        rgba(255, 255, 255, 0.4) 0%,
-        rgba(255, 200, 220, 0.3) 25%,
-        rgba(200, 220, 255, 0.3) 50%,
-        rgba(220, 255, 230, 0.3) 75%,
-        rgba(255, 255, 255, 0.4) 100%
+        rgba(255, 255, 255, 0.45) 0%,
+        rgba(255, 200, 220, 0.35) 25%,
+        rgba(200, 220, 255, 0.35) 50%,
+        rgba(220, 255, 230, 0.35) 75%,
+        rgba(255, 255, 255, 0.45) 100%
       );
       background-size: 400% 400%;
       animation: bubbleShimmer 4s ease infinite;
       
+      /* Glass morphism */
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
       
-      border-radius: 28px;
-      z-index: 1;
+      /* Радужные края */
+      border: 1.5px solid rgba(255, 255, 255, 0.7);
       
-      border: 1px solid rgba(255, 255, 255, 0.6);
+      /* Объёмные блики */
       box-shadow: 
-        0 4px 20px rgba(0, 0, 0, 0.1),
+        0 4px 20px rgba(0, 0, 0, 0.12),
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
         inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-        inset 2px 0 10px rgba(255, 255, 255, 0.4),
-        inset -2px 0 10px rgba(255, 255, 255, 0.2),
-        0 0 30px rgba(255, 200, 220, 0.3);
-      
-      transform: translateZ(0);
-      will-change: transform;
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      
-      pointer-events: none;
-      overflow: hidden;
+        inset 2px 0 12px rgba(255, 255, 255, 0.5),
+        inset -2px 0 12px rgba(255, 255, 255, 0.3),
+        0 0 35px rgba(255, 200, 220, 0.35),
+        0 0 15px rgba(200, 220, 255, 0.2);
     }
 
     @keyframes bubbleShimmer {
       0% {
         background-position: 0% 50%;
         box-shadow: 
-          0 4px 20px rgba(0, 0, 0, 0.1),
+          0 4px 20px rgba(0, 0, 0, 0.12),
           inset 0 1px 0 rgba(255, 255, 255, 0.9),
           inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 2px 0 10px rgba(255, 255, 255, 0.4),
-          inset -2px 0 10px rgba(255, 255, 255, 0.2),
-          0 0 30px rgba(255, 200, 220, 0.3);
+          inset 2px 0 12px rgba(255, 255, 255, 0.5),
+          inset -2px 0 12px rgba(255, 255, 255, 0.3),
+          0 0 35px rgba(255, 200, 220, 0.35),
+          0 0 15px rgba(200, 220, 255, 0.2);
       }
       25% {
         box-shadow: 
-          0 4px 20px rgba(0, 0, 0, 0.1),
+          0 4px 20px rgba(0, 0, 0, 0.12),
           inset 0 1px 0 rgba(255, 255, 255, 0.95),
           inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 2px 0 10px rgba(200, 220, 255, 0.5),
-          inset -2px 0 10px rgba(255, 200, 220, 0.3),
-          0 0 35px rgba(200, 220, 255, 0.4);
+          inset 2px 0 12px rgba(200, 220, 255, 0.55),
+          inset -2px 0 12px rgba(255, 200, 220, 0.35),
+          0 0 40px rgba(200, 220, 255, 0.45),
+          0 0 15px rgba(220, 255, 230, 0.25);
       }
       50% {
         background-position: 100% 50%;
         box-shadow: 
-          0 4px 20px rgba(0, 0, 0, 0.1),
+          0 4px 20px rgba(0, 0, 0, 0.12),
           inset 0 1px 0 rgba(255, 255, 255, 0.9),
           inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 2px 0 10px rgba(220, 255, 230, 0.4),
-          inset -2px 0 10px rgba(255, 255, 255, 0.2),
-          0 0 30px rgba(220, 255, 230, 0.3);
+          inset 2px 0 12px rgba(220, 255, 230, 0.5),
+          inset -2px 0 12px rgba(255, 255, 255, 0.3),
+          0 0 35px rgba(220, 255, 230, 0.35),
+          0 0 15px rgba(255, 200, 220, 0.2);
       }
       75% {
         box-shadow: 
-          0 4px 20px rgba(0, 0, 0, 0.1),
+          0 4px 20px rgba(0, 0, 0, 0.12),
           inset 0 1px 0 rgba(255, 255, 255, 0.95),
           inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 2px 0 10px rgba(255, 200, 220, 0.5),
-          inset -2px 0 10px rgba(200, 220, 255, 0.3),
-          0 0 35px rgba(255, 200, 220, 0.4);
+          inset 2px 0 12px rgba(255, 200, 220, 0.55),
+          inset -2px 0 12px rgba(200, 220, 255, 0.35),
+          0 0 40px rgba(255, 200, 220, 0.45),
+          0 0 15px rgba(200, 220, 255, 0.25);
       }
       100% {
         background-position: 0% 50%;
         box-shadow: 
-          0 4px 20px rgba(0, 0, 0, 0.1),
+          0 4px 20px rgba(0, 0, 0, 0.12),
           inset 0 1px 0 rgba(255, 255, 255, 0.9),
           inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 2px 0 10px rgba(255, 255, 255, 0.4),
-          inset -2px 0 10px rgba(255, 255, 255, 0.2),
-          0 0 30px rgba(255, 200, 220, 0.3);
+          inset 2px 0 12px rgba(255, 255, 255, 0.5),
+          inset -2px 0 12px rgba(255, 255, 255, 0.3),
+          0 0 35px rgba(255, 200, 220, 0.35),
+          0 0 15px rgba(200, 220, 255, 0.2);
       }
     }
 
-    .nav-indicator::before {
+    /* Верхний блик пузыря */
+    .nav-item.active::before {
       content: '';
       position: absolute;
-      top: 6px;
-      left: 10px;
-      width: 40%;
-      height: 30%;
+      top: 5px;
+      left: 12px;
+      width: 35%;
+      height: 28%;
       border-radius: 50%;
       background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.9) 0%,
-        rgba(255, 255, 255, 0.4) 50%,
+        160deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.5) 50%,
         rgba(255, 255, 255, 0) 100%
       );
-      filter: blur(2px);
+      filter: blur(1.5px);
       pointer-events: none;
+      z-index: 3;
     }
 
-    .nav-indicator::after {
+    /* Нижний блик пузыря */
+    .nav-item.active::after {
       content: '';
       position: absolute;
       bottom: 8px;
-      right: 12px;
-      width: 30%;
-      height: 25%;
+      right: 14px;
+      width: 28%;
+      height: 22%;
       border-radius: 50%;
       background: linear-gradient(
         315deg,
-        rgba(255, 255, 255, 0.6) 0%,
+        rgba(255, 255, 255, 0.7) 0%,
         rgba(255, 200, 220, 0.3) 50%,
         rgba(255, 255, 255, 0) 100%
       );
-      filter: blur(2px);
+      filter: blur(1.5px);
       pointer-events: none;
+      z-index: 3;
     }
 
-    .nav-indicator .rainbow-edge {
+    /* Иконка и текст при активном состоянии */
+    .nav-item.active .nav-icon {
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transform: scale(1.15);
+    }
+
+    .nav-item.active .nav-label {
+      color: #ffffff;
+      font-weight: 700;
+      opacity: 1;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Rainbow edge overlay */
+    .nav-item .rainbow-edge {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 28px;
-      padding: 1px;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      border-radius: 29px;
+      padding: 1.5px;
       background: linear-gradient(
         135deg,
-        rgba(255, 0, 100, 0.4),
-        rgba(100, 150, 255, 0.4),
-        rgba(150, 255, 200, 0.4),
-        rgba(255, 200, 150, 0.4),
-        rgba(255, 0, 100, 0.4)
+        rgba(255, 0, 100, 0.5),
+        rgba(100, 150, 255, 0.5),
+        rgba(150, 255, 200, 0.5),
+        rgba(255, 200, 150, 0.5),
+        rgba(255, 0, 100, 0.5)
       );
       background-size: 300% 300%;
       animation: rainbowEdge 5s ease infinite;
@@ -552,12 +556,28 @@
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 4;
+    }
+
+    .nav-item.active .rainbow-edge {
+      opacity: 1;
     }
 
     @keyframes rainbowEdge {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
+    }
+
+    /* ===== АНИМАЦИЯ НАЖАТИЯ ===== */
+    .nav-item:active {
+      transform: scale(0.92);
+    }
+
+    .nav-item.active:active {
+      transform: scale(1.05);
     }
 
     /* Модальные окна */
@@ -716,19 +736,19 @@
   <!-- SOAP BUBBLE BOTTOM NAV -->
   <div class="bottom-nav" id="bottomNav">
     <div class="nav-pill" id="navPill">
-      <div class="nav-indicator" id="navIndicator">
-        <div class="rainbow-edge"></div>
-      </div>
 
       <button class="nav-item active" data-tab="home" id="navHome">
+        <div class="rainbow-edge"></div>
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Главная</span>
       </button>
       <button class="nav-item" data-tab="messages" id="navMessages">
+        <div class="rainbow-edge"></div>
         <span class="nav-icon">💬</span>
         <span class="nav-label">Сообщения</span>
       </button>
       <button class="nav-item" data-tab="profile" id="navProfile">
+        <div class="rainbow-edge"></div>
         <span class="nav-icon">👤</span>
         <span class="nav-label">Профиль</span>
       </button>
@@ -871,39 +891,12 @@
     }
     setupProfile();
 
-    // --- HIGH PERFORMANCE TAB SWITCHING ---
+    // --- TAB SWITCHING WITH SOAP BUBBLE EFFECT ---
     
     const navPill = document.getElementById('navPill');
-    const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
     
-    let cachedItemWidth = navItems[0].offsetWidth;
-
-    window.addEventListener('resize', () => {
-      cachedItemWidth = navItems[0].offsetWidth;
-      navItems.forEach((item, idx) => {
-        if(item.classList.contains('active')) updateIndicatorPosition(idx, false);
-      });
-    });
-
-    function updateIndicatorPosition(index, isDragging = false) {
-      // Получаем позицию конкретной вкладки относительно navPill
-      const itemRect = navItems[index].getBoundingClientRect();
-      const pillRect = navPill.getBoundingClientRect();
-      
-      // Вычисляем позицию для центрирования
-      const xPos = itemRect.left - pillRect.left;
-      
-      if (isDragging) {
-        navIndicator.style.transition = 'none';
-      } else {
-        navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
-      }
-      
-      navIndicator.style.transform = `translate3d(${xPos}px, 0, 0)`;
-    }
-
-    function switchTab(tab, index) {
+    function switchTab(tab) {
       navItems.forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
 
@@ -918,87 +911,19 @@
       const activePage = document.getElementById(pageMap[tab]);
       if(activePage) activePage.classList.add('active');
 
-      updateIndicatorPosition(index, false);
-
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
     }
 
-    navItems.forEach((btn, index) => {
+    navItems.forEach((btn) => {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         const tab = this.getAttribute('data-tab');
         if (tab) {
-          switchTab(tab, index);
+          switchTab(tab);
           if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
       });
-    });
-
-    // --- СВАЙП ЛОГИКА ---
-    let isDragging = false;
-    let startX = 0;
-    let currentIndex = 0; 
-
-    setTimeout(() => updateIndicatorPosition(0), 100);
-
-    navPill.addEventListener('touchstart', (e) => {
-      isDragging = true;
-      startX = e.touches[0].clientX;
-      
-      navItems.forEach((item, idx) => {
-        if(item.classList.contains('active')) currentIndex = idx;
-      });
-      
-      navIndicator.style.transition = 'none';
-    }, { passive: true });
-
-    navPill.addEventListener('touchmove', (e) => {
-      if (!isDragging) return;
-      
-      const x = e.touches[0].clientX;
-      const diff = x - startX;
-      
-      const maxIndex = navItems.length - 1;
-      
-      // Получаем текущую позицию активной вкладки
-      const itemRect = navItems[currentIndex].getBoundingClientRect();
-      const pillRect = navPill.getBoundingClientRect();
-      const basePos = itemRect.left - pillRect.left;
-      
-      let newPos = basePos + diff;
-      
-      // Ограничиваем движение
-      const itemWidth = navItems[0].offsetWidth;
-      const limit = itemWidth * 0.5; 
-      if (newPos < -limit) newPos = -limit;
-      if (newPos > (maxIndex * itemWidth) + limit) newPos = (maxIndex * itemWidth) + limit;
-
-      navIndicator.style.transform = `translate3d(${newPos}px, 0, 0)`;
-    }, { passive: true });
-
-    navPill.addEventListener('touchend', (e) => {
-      if (!isDragging) return;
-      isDragging = false;
-      
-      const rect = navIndicator.getBoundingClientRect();
-      const pillRect = navPill.getBoundingClientRect();
-      const finalLeft = rect.left - pillRect.left;
-      
-      const itemWidth = navItems[0].offsetWidth;
-      let targetIndex = Math.round(finalLeft / itemWidth);
-      
-      if (targetIndex < 0) targetIndex = 0;
-      if (targetIndex > 2) targetIndex = 2;
-      
-      const newTab = navItems[targetIndex].getAttribute('data-tab');
-      
-      if (newTab !== navItems[currentIndex].getAttribute('data-tab')) {
-         switchTab(newTab, targetIndex);
-         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      } else {
-         updateIndicatorPosition(currentIndex, false);
-      }
     });
 
     function escapeHtml(text) {
