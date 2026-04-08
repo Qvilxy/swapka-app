@@ -405,11 +405,10 @@
     /* ===== ФИЗИКА ИНДИКАТОРА ===== */
     .nav-indicator {
       position: absolute;
-      /* ✅ УМЕНЬШЕНЫ ОТСТУПЫ ДЛЯ БОЛЬШЕЙ ВЫСОТЫ */
-      top: 12px;
-      bottom: 12px;
+      /* ✅ УВЕЛИЧЕНА ВЫСОТА: уменьшены отступы сверху и снизу */
+      top: 8px;
+      bottom: 8px;
       left: 8px;
-      /* ✅ УВЕЛИЧЕНА ШИРИНА ДЛЯ ПОЛНОГО ЦЕНТРИРОВАНИЯ */
       width: calc(33.33% - 8px);
       
       background: var(--indicator-bg);
@@ -438,6 +437,12 @@
       background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%);
       opacity: 0.4;
       pointer-events: none;
+    }
+
+    /* ✅ УБИРАЕМ БЕЛЫЙ БЛИК В ТЁМНОЙ ТЕМЕ */
+    .dark-theme .nav-indicator::after {
+      background: transparent;
+      opacity: 0;
     }
 
     /* Модальные окна */
@@ -734,7 +739,6 @@
         const isDark = document.body.classList.contains('dark-theme');
         if (isDark) { applyTheme('light'); saveTheme('light'); }
         else { applyTheme('dark'); saveTheme('dark'); }
-        // Вибрация при смене темы оставлена как действие
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       });
     }
@@ -751,7 +755,7 @@
     }
     setupProfile();
 
-    // ===== ФИЗИКА ИНДИКАТОРА НАВИГАЦИИ (ИСПРАВЛЕНАЯ) =====
+    // ===== ФИЗИКА ИНДИКАТОРА НАВИГАЦИИ =====
     const navPill = document.getElementById('navPill');
     const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
@@ -785,7 +789,6 @@
 
       navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
       navIndicator.style.transform = `translate3d(${targetX}px, 0, 0) scale(1)`;
-      // ✅ Ширина синхронизирована с CSS для идеального центрирования
       navIndicator.style.width = `calc(33.33% - 8px)`;
       navIndicator.style.borderRadius = '24px';
     }
@@ -808,7 +811,6 @@
       if(mainContent) mainContent.scrollTop = 0;
     }
 
-    // ✅ Touch Events с правильным расчётом смещения
     navPill.addEventListener('touchstart', (e) => {
       indicatorPhysics.isDragging = true;
       indicatorPhysics.lastX = e.touches[0].clientX;
@@ -819,11 +821,8 @@
         if(item.classList.contains('active')) indicatorPhysics.currentIndex = idx;
       });
 
-      // 🔑 КЛЮЧЕВОЙ ФИКС: сохраняем смещение между точкой касания и текущей позицией индикатора
       indicatorPhysics.touchOffsetX = e.touches[0].clientX - indicatorPhysics.currentTransformX;
-
       navIndicator.style.transition = 'none';
-      // ❌ УБРАНА ВИБРАЦИЯ ПРИ НАЧАЛЕ СВАЙПА
     }, { passive: true });
 
     navPill.addEventListener('touchmove', (e) => {
@@ -839,10 +838,8 @@
         indicatorPhysics.lastTime = currentTime;
       }
 
-      // Рассчитываем новую позицию без скачков
       let newX = touchX - indicatorPhysics.touchOffsetX;
 
-      // Эластичные границы
       const maxIndex = navItems.length - 1;
       const minX = 0;
       const maxX = maxIndex * indicatorPhysics.cachedItemWidth;
@@ -854,7 +851,6 @@
         newX = (maxX + limit) + (newX - (maxX + limit)) * 0.15;
       }
 
-      // Жидкое искажение
       const diffFromCenter = Math.abs(newX - (indicatorPhysics.currentIndex * indicatorPhysics.cachedItemWidth));
       const stretch = Math.min(diffFromCenter / 100, 0.25);
 
@@ -869,7 +865,6 @@
       if (!indicatorPhysics.isDragging) return;
       indicatorPhysics.isDragging = false;
 
-      // Инерция
       const momentum = indicatorPhysics.velocity * 15;
       let finalX = indicatorPhysics.currentTransformX + momentum;
       finalX = Math.max(0, Math.min(finalX, 2 * indicatorPhysics.cachedItemWidth));
@@ -886,26 +881,20 @@
         updateIndicatorPosition(indicatorPhysics.currentIndex, false);
       }
 
-      // Возврат размеров
       navIndicator.style.width = `calc(33.33% - 8px)`;
       navIndicator.style.borderRadius = '24px';
-
-      // ❌ УБРАНА ВИБРАЦИЯ ПРИ ЗАВЕРШЕНИИ ПЕРЕКЛЮЧЕНИЯ
     });
 
-    // Клик по вкладкам
     navItems.forEach((btn, index) => {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         const tab = this.getAttribute('data-tab');
         if (tab) {
           switchTab(tab, index);
-          // ❌ УБРАНА ВИБРАЦИЯ ПРИ КЛИКЕ
         }
       });
     });
 
-    // ✅ ИНИЦИАЛИЗАЦИЯ
     setTimeout(() => {
       initIndicatorPhysics();
     }, 100);
@@ -997,7 +986,6 @@
       document.getElementById('adCity').value = '';
       document.getElementById('createModal').classList.add('active');
       hideBottomNav();
-      // Оставляем вибрацию при важном действии - открытии создания
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
 
@@ -1082,7 +1070,6 @@
       closeCreateModal();
       renderAds();
       renderMyAds();
-      // Вибрация при успехе оставлена
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       tg.showAlert('Объявление создано! ✅');
     }
@@ -1162,7 +1149,6 @@
       }
     }, { passive: true });
 
-    // --- KEYBOARD HANDLING ---
     let initialHeight = window.innerHeight;
 
     window.addEventListener('resize', () => {
