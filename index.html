@@ -16,7 +16,6 @@
       --shadow: 0 2px 12px rgba(0,0,0,0.08);
       --card-bg: #ffffff;
       --search-bg: #ffffff;
-      
       --glass-bg: rgba(255, 255, 255, 0.65);
       --glass-border: rgba(255, 255, 255, 0.4);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
@@ -31,18 +30,12 @@
       --shadow: 0 2px 12px rgba(0,0,0,0.3);
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
-
       --glass-bg: rgba(30, 30, 30, 0.65);
       --glass-border: rgba(255, 255, 255, 0.1);
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
@@ -57,226 +50,120 @@
     }
 
     .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      height: 100px;
-      background: var(--bg-primary);
-      transition: background 0.3s;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      pointer-events: none;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 100px;
+      background: var(--bg-primary); transition: background 0.3s;
+      display: flex; justify-content: center; align-items: center; pointer-events: none;
     }
 
     .app-logo {
-      font-family: 'Pacifico', cursive;
-      font-size: 42px;
+      font-family: 'Pacifico', cursive; font-size: 42px;
       background: linear-gradient(270deg, #FF416C, #FF4B2B, #ff80b5, #FF416C);
-      background-size: 400% 400%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: gradientShift 6s ease infinite;
-      transform: translate(5px, 19px); 
+      background-size: 400% 400%; -webkit-background-clip: text; background-clip: text;
+      color: transparent; animation: gradientShift 6s ease infinite; transform: translate(5px, 19px);
     }
 
     @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
     }
 
     .main-content {
-      position: fixed;
-      top: 100px;
-      left: 0;
-      right: 0;
-      bottom: 90px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
-      will-change: scroll-position;
+      position: fixed; top: 100px; left: 0; right: 0; bottom: 90px;
+      overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth; will-change: scroll-position;
     }
 
     .page {
-      display: none;
-      min-height: 100%;
-      padding-bottom: 20px;
-      opacity: 0;
-      transform: translateY(10px);
+      display: none; min-height: 100%; padding-bottom: 20px; opacity: 0; transform: translateY(10px);
     }
 
     .page.active {
-      display: block;
-      animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      display: block; animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
 
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); }
     }
 
-    .search-container {
-      padding: 12px 16px;
-      background: var(--bg-primary);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      transition: background 0.3s;
-    }
+    .search-container { padding: 12px 16px; background: var(--bg-primary); position: sticky; top: 0; z-index: 10; transition: background 0.3s; }
 
     .search-bar {
-      display: flex;
-      align-items: center;
-      background: var(--search-bg);
-      border-radius: 100px;
-      padding: 10px 14px;
-      box-shadow: 0 3px 18px rgba(0,0,0,0.12);
-      transition: box-shadow 0.2s, background 0.3s;
+      display: flex; align-items: center; background: var(--search-bg); border-radius: 100px;
+      padding: 10px 14px; box-shadow: 0 3px 18px rgba(0,0,0,0.12); transition: box-shadow 0.2s, background 0.3s;
     }
 
-    .search-bar:focus-within {
-      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-    }
+    .search-bar:focus-within { box-shadow: 0 4px 24px rgba(0,0,0,0.18); }
 
-    .search-icon {
-      color: var(--text-secondary);
-      font-size: 18px;
-      margin-right: 10px;
-      flex-shrink: 0;
-    }
+    .search-icon { color: var(--text-secondary); font-size: 18px; margin-right: 10px; flex-shrink: 0; }
 
     .search-input {
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 16px;
-      color: var(--text-primary);
-      width: 100%;
-      font-family: inherit;
+      border: none; outline: none; background: transparent; font-size: 16px;
+      color: var(--text-primary); width: 100%; font-family: inherit;
     }
 
-    .ads-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      padding: 10px 16px;
-    }
+    .ads-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 16px; }
 
     .ad-card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: transform 0.2s, background 0.3s;
-      cursor: pointer;
-      will-change: transform;
+      background: var(--card-bg); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow);
+      transition: transform 0.2s, background 0.3s; cursor: pointer; will-change: transform;
     }
 
-    .ad-card:active {
-      transform: scale(0.97);
-    }
+    .ad-card:active { transform: scale(0.97); }
 
-    .ad-image-container {
-      width: 100%;
-      aspect-ratio: 1;
-      overflow: hidden;
-      position: relative;
-    }
+    .ad-image-container { width: 100%; aspect-ratio: 1; overflow: hidden; position: relative; }
 
     .ad-image-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      color: var(--text-secondary);
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      font-size: 40px; color: var(--text-secondary);
     }
 
-    .ad-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .ad-image { width: 100%; height: 100%; object-fit: cover; }
 
-    .ad-info {
-      padding: 10px;
-    }
+    .ad-info { padding: 10px; }
 
     .ad-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 4px;
-      line-height: 1.2;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;
+      line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
 
-    .ad-price {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 2px;
-      transform: translateY(-2px);
-    }
+    .ad-price { font-size: 15px; font-weight: 800; color: var(--text-primary); margin-bottom: 2px; transform: translateY(-2px); }
 
-    .ad-city {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
+    .ad-city { font-size: 12px; color: var(--text-secondary); }
 
     .messages-list { padding: 8px 16px; }
-    .message-item {
-      display: flex; align-items: center; padding: 12px;
-      background: var(--chat-bg); border-radius: 14px;
-      margin-bottom: 8px; cursor: pointer; transition: background 0.2s;
-    }
-    .message-avatar {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: var(--bg-secondary); margin-right: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; flex-shrink: 0;
-    }
-    .message-content { flex: 1; min-width: 0; }
-    .message-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
-    .message-preview { font-size: 14px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 
     .empty-state {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 60px 20px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 60px 20px; text-align: center;
     }
+
     .empty-state-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
     .empty-state-text { font-size: 16px; color: var(--text-secondary); }
 
     .profile-moon-wrapper {
-      position: relative; height: 50px; display: flex;
-      justify-content: flex-end; align-items: center; padding: 0 16px; z-index: 10;
+      position: relative; height: 50px; display: flex; justify-content: flex-end;
+      align-items: center; padding: 0 16px; z-index: 10;
     }
+
     .moon-btn {
       background: none; border: none; font-size: 28px; cursor: pointer; padding: 8px;
       transition: transform 0.3s; pointer-events: auto; z-index: 1001; position: relative;
     }
+
     .moon-btn:active { transform: scale(0.85); }
 
     .profile-shifted-content { transform: translateY(-120px); }
     .profile-user-info { padding: 20px 16px; text-align: center; transform: translateY(60px); }
-    
+
     .profile-avatar {
       width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px;
       display: block; background: var(--bg-secondary);
     }
+
     .profile-avatar-placeholder {
       width: 80px; height: 80px; border-radius: 50%; background: var(--bg-secondary);
       margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 36px;
     }
+
     .profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); }
     .profile-username { font-size: 15px; color: var(--text-secondary); margin-top: 4px; transform: translateY(-5px); }
     .profile-rating { display: flex; justify-content: center; gap: 4px; margin-top: 8px; font-size: 18px; transform: translateY(-10px); }
@@ -289,6 +176,7 @@
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
       transform: translateY(38px); box-shadow: 0 4px 20px rgba(135, 206, 235, 0.4);
     }
+
     .create-ad-btn:active { transform: translateY(38px) scale(0.97); opacity: 0.9; }
 
     .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
@@ -296,80 +184,39 @@
 
     /* ===== BOTTOM NAV ===== */
     .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: auto;
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-      padding-top: 8px;
-      pointer-events: none;
-      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      position: fixed; bottom: 0; left: 0; right: 0; height: auto; z-index: 1000;
+      display: flex; justify-content: center; padding-bottom: max(12px, env(safe-area-inset-bottom));
+      padding-top: 8px; pointer-events: none; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
       will-change: transform;
     }
 
-    .bottom-nav.hidden {
-      transform: translateY(150%);
-    }
+    .bottom-nav.hidden { transform: translateY(150%); }
 
     .nav-pill {
-      pointer-events: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 90%;
-      max-width: 380px;
-      height: 72px;
-      
-      background: var(--glass-bg);
-      backdrop-filter: blur(25px) saturate(180%);
+      pointer-events: auto; display: flex; justify-content: space-between; align-items: center;
+      width: 90%; max-width: 380px; height: 72px;
+      background: var(--glass-bg); backdrop-filter: blur(25px) saturate(180%);
       -webkit-backdrop-filter: blur(25px) saturate(180%);
-      
-      border-radius: 36px;
-      padding: 0 10px;
-      border: 1px solid var(--glass-border);
+      border-radius: 36px; padding: 0 10px; border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      
-      position: relative;
-      overflow: visible;
-      transition: all 0.3s ease;
+      position: relative; overflow: visible; transition: all 0.3s ease;
     }
 
     .nav-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      border-radius: 28px;
-      cursor: pointer;
-      z-index: 2;
-      position: relative;
-      border: none;
-      background: transparent;
-      gap: 4px;
-      -webkit-tap-highlight-color: transparent;
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; border-radius: 28px; cursor: pointer; z-index: 2; position: relative;
+      border: none; background: transparent; gap: 4px; -webkit-tap-highlight-color: transparent;
       transition: transform 0.1s;
     }
 
     .nav-icon {
-      font-size: 28px;
-      color: var(--text-secondary);
-      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 2;
+      font-size: 28px; color: var(--text-secondary);
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2;
     }
 
     .nav-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 2;
-      opacity: 0.8;
+      font-size: 12px; font-weight: 500; color: var(--text-secondary);
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2; opacity: 0.8;
     }
 
     /* ===== FLOATING INDICATOR — INACTIVE (GREY) ===== */
@@ -379,46 +226,43 @@
       bottom: 8px;
       left: 10px;
       width: calc(33.33% - 20px);
-      
       background: rgba(140, 145, 160, 0.32);
-      
       border-radius: 28px;
       z-index: 1;
-      
       border: 1px solid rgba(150, 155, 170, 0.25);
       box-shadow: none;
-      
       transform: translateZ(0);
       will-change: transform;
-      
-      /* Плавная пружинистая анимация только для transform при смене вкладки */
-      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-      
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.4s ease,
+                  box-shadow 0.4s ease,
+                  border-color 0.4s ease;
       pointer-events: none;
       overflow: visible;
     }
 
-    /* Скрываем все эффекты пузыря в неактивном состоянии */
     .nav-indicator .bubble-highlight-top,
     .nav-indicator .bubble-highlight-bottom,
     .nav-indicator .rainbow-edge,
     .nav-indicator .bubble-shimmer-overlay {
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.35s ease;
       pointer-events: none;
     }
 
     /* ===== SOAP BUBBLE STATE (DRAGGING) ===== */
     .nav-indicator.dragging {
-      /* Важно: отключаем transition чтобы не было телепортации */
       transition: none !important;
-      
-      /* Увеличенный размер — пузырь расширяется */
       top: 1px !important;
       bottom: 1px !important;
       left: 2px !important;
       width: calc(33.33% - 4px) !important;
-      
+      border-radius: 32px !important;
       background: linear-gradient(
         135deg,
         rgba(255, 255, 255, 0.4) 0%,
@@ -430,15 +274,10 @@
       );
       background-size: 400% 400%;
       animation: bubbleShimmer 3s ease infinite;
-      
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
-      
-      border-radius: 32px;
-      
       border: 1.5px solid rgba(255, 255, 255, 0.7);
-      
-      box-shadow: 
+      box-shadow:
         0 6px 25px rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
         inset 0 -1px 0 rgba(255, 255, 255, 0.3),
@@ -457,187 +296,97 @@
     }
 
     .nav-indicator .bubble-highlight-top {
-      position: absolute;
-      top: 8px;
-      left: 14px;
-      width: 38%;
-      height: 32%;
-      border-radius: 50%;
-      background: linear-gradient(
-        160deg,
-        rgba(255, 255, 255, 0.95) 0%,
-        rgba(255, 255, 255, 0.5) 45%,
-        rgba(255, 255, 255, 0) 100%
-      );
-      filter: blur(2px);
-      pointer-events: none;
-      z-index: 3;
+      position: absolute; top: 8px; left: 14px; width: 38%; height: 32%; border-radius: 50%;
+      background: linear-gradient(160deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.5) 45%, rgba(255,255,255,0) 100%);
+      filter: blur(2px); pointer-events: none; z-index: 3;
     }
 
     .nav-indicator .bubble-highlight-bottom {
-      position: absolute;
-      bottom: 10px;
-      right: 16px;
-      width: 30%;
-      height: 24%;
-      border-radius: 50%;
-      background: linear-gradient(
-        315deg,
-        rgba(255, 255, 255, 0.75) 0%,
-        rgba(255, 200, 220, 0.35) 50%,
-        rgba(255, 255, 255, 0) 100%
-      );
-      filter: blur(2px);
-      pointer-events: none;
-      z-index: 3;
+      position: absolute; bottom: 10px; right: 16px; width: 30%; height: 24%; border-radius: 50%;
+      background: linear-gradient(315deg, rgba(255,255,255,0.75) 0%, rgba(255,200,220,0.35) 50%, rgba(255,255,255,0) 100%);
+      filter: blur(2px); pointer-events: none; z-index: 3;
     }
 
     .nav-indicator .rainbow-edge {
-      position: absolute;
-      top: -1px;
-      left: -1px;
-      right: -1px;
-      bottom: -1px;
-      border-radius: 32px;
-      padding: 1.5px;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 0, 100, 0.55),
-        rgba(100, 150, 255, 0.55),
-        rgba(150, 255, 200, 0.55),
-        rgba(255, 200, 150, 0.55),
-        rgba(255, 0, 100, 0.55)
-      );
-      background-size: 300% 300%;
-      animation: rainbowEdge 4s ease infinite;
-      -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-      mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-      z-index: 4;
+      position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px; border-radius: 32px; padding: 1.5px;
+      background: linear-gradient(135deg, rgba(255,0,100,0.55), rgba(100,150,255,0.55), rgba(150,255,200,0.55), rgba(255,200,150,0.55), rgba(255,0,100,0.55));
+      background-size: 300% 300%; animation: rainbowEdge 4s ease infinite;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; z-index: 4;
     }
 
     @keyframes rainbowEdge {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
     }
 
     .nav-indicator .bubble-shimmer-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 32px;
-      background: linear-gradient(
-        135deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.15) 30%,
-        rgba(255, 200, 220, 0.1) 50%,
-        rgba(200, 220, 255, 0.1) 70%,
-        transparent 100%
-      );
-      background-size: 200% 200%;
-      animation: shimmerOverlay 2.5s ease infinite;
-      pointer-events: none;
-      z-index: 2;
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 32px;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 30%, rgba(255,200,220,0.1) 50%, rgba(200,220,255,0.1) 70%, transparent 100%);
+      background-size: 200% 200%; animation: shimmerOverlay 2.5s ease infinite;
+      pointer-events: none; z-index: 2;
     }
 
     @keyframes shimmerOverlay {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 200% 200%; }
+      0% { background-position: 0% 0%; } 100% { background-position: 200% 200%; }
     }
 
     @keyframes bubbleShimmer {
       0% {
         background-position: 0% 50%;
-        box-shadow: 
-          0 6px 25px rgba(0, 0, 0, 0.15),
-          inset 0 1px 0 rgba(255, 255, 255, 0.9),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 3px 0 15px rgba(255, 255, 255, 0.5),
-          inset -3px 0 15px rgba(255, 255, 255, 0.3),
-          0 0 40px rgba(255, 200, 220, 0.4),
-          0 0 20px rgba(200, 220, 255, 0.25),
-          0 0 60px rgba(220, 255, 230, 0.15);
+        box-shadow: 0 6px 25px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(255,255,255,0.3), inset 3px 0 15px rgba(255,255,255,0.5), inset -3px 0 15px rgba(255,255,255,0.3), 0 0 40px rgba(255,200,220,0.4), 0 0 20px rgba(200,220,255,0.25), 0 0 60px rgba(220,255,230,0.15);
       }
       25% {
-        box-shadow: 
-          0 6px 25px rgba(0, 0, 0, 0.15),
-          inset 0 1px 0 rgba(255, 255, 255, 0.95),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 3px 0 15px rgba(200, 220, 255, 0.6),
-          inset -3px 0 15px rgba(255, 200, 220, 0.4),
-          0 0 45px rgba(200, 220, 255, 0.5),
-          0 0 20px rgba(220, 255, 230, 0.3),
-          0 0 60px rgba(255, 200, 220, 0.2);
+        box-shadow: 0 6px 25px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(255,255,255,0.3), inset 3px 0 15px rgba(200,220,255,0.6), inset -3px 0 15px rgba(255,200,220,0.4), 0 0 45px rgba(200,220,255,0.5), 0 0 20px rgba(220,255,230,0.3), 0 0 60px rgba(255,200,220,0.2);
       }
       50% {
         background-position: 100% 50%;
-        box-shadow: 
-          0 6px 25px rgba(0, 0, 0, 0.15),
-          inset 0 1px 0 rgba(255, 255, 255, 0.9),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 3px 0 15px rgba(220, 255, 230, 0.55),
-          inset -3px 0 15px rgba(255, 255, 255, 0.3),
-          0 0 40px rgba(220, 255, 230, 0.4),
-          0 0 20px rgba(255, 200, 220, 0.25),
-          0 0 60px rgba(200, 220, 255, 0.15);
+        box-shadow: 0 6px 25px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(255,255,255,0.3), inset 3px 0 15px rgba(220,255,230,0.55), inset -3px 0 15px rgba(255,255,255,0.3), 0 0 40px rgba(220,255,230,0.4), 0 0 20px rgba(255,200,220,0.25), 0 0 60px rgba(200,220,255,0.15);
       }
       75% {
-        box-shadow: 
-          0 6px 25px rgba(0, 0, 0, 0.15),
-          inset 0 1px 0 rgba(255, 255, 255, 0.95),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 3px 0 15px rgba(255, 200, 220, 0.6),
-          inset -3px 0 15px rgba(200, 220, 255, 0.4),
-          0 0 45px rgba(255, 200, 220, 0.5),
-          0 0 20px rgba(200, 220, 255, 0.3),
-          0 0 60px rgba(220, 255, 230, 0.2);
+        box-shadow: 0 6px 25px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(255,255,255,0.3), inset 3px 0 15px rgba(255,200,220,0.6), inset -3px 0 15px rgba(200,220,255,0.4), 0 0 45px rgba(255,200,220,0.5), 0 0 20px rgba(200,220,255,0.3), 0 0 60px rgba(220,255,230,0.2);
       }
       100% {
         background-position: 0% 50%;
-        box-shadow: 
-          0 6px 25px rgba(0, 0, 0, 0.15),
-          inset 0 1px 0 rgba(255, 255, 255, 0.9),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.3),
-          inset 3px 0 15px rgba(255, 255, 255, 0.5),
-          inset -3px 0 15px rgba(255, 255, 255, 0.3),
-          0 0 40px rgba(255, 200, 220, 0.4),
-          0 0 20px rgba(200, 220, 255, 0.25),
-          0 0 60px rgba(220, 255, 230, 0.15);
+        box-shadow: 0 6px 25px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(255,255,255,0.3), inset 3px 0 15px rgba(255,255,255,0.5), inset -3px 0 15px rgba(255,255,255,0.3), 0 0 40px rgba(255,200,220,0.4), 0 0 20px rgba(200,220,255,0.25), 0 0 60px rgba(220,255,230,0.15);
       }
+    }
+
+    /* ===== BUBBLE JIGGLE ANIMATION ===== */
+    @keyframes bubbleJiggle {
+      0% { transform: translate3d(0,0,0) scaleX(1) scaleY(1) rotate(0deg); }
+      15% { transform: translate3d(0,0,0) scaleX(1.08) scaleY(0.92) rotate(-2deg); }
+      30% { transform: translate3d(0,0,0) scaleX(0.93) scaleY(1.07) rotate(1.5deg); }
+      45% { transform: translate3d(0,0,0) scaleX(1.04) scaleY(0.96) rotate(-1deg); }
+      60% { transform: translate3d(0,0,0) scaleX(0.97) scaleY(1.03) rotate(0.5deg); }
+      80% { transform: translate3d(0,0,0) scaleX(1.01) scaleY(0.99) rotate(-0.2deg); }
+      100% { transform: translate3d(0,0,0) scaleX(1) scaleY(1) rotate(0deg); }
+    }
+
+    .nav-indicator.jiggle {
+      animation: bubbleJiggle 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     /* Модальные окна */
     .modal-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5); z-index: 200; display: none;
-      align-items: flex-end; justify-content: center;
-      backdrop-filter: blur(5px);
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);
+      z-index: 200; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(5px);
     }
     .modal-overlay.active { display: flex; }
     .modal-content {
-      background: var(--bg-primary); width: 100%; max-height: 92vh;
-      border-radius: 20px 20px 0 0; padding: 20px;
-      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      background: var(--bg-primary); width: 100%; max-height: 92vh; border-radius: 20px 20px 0 0;
+      padding: 20px; padding-bottom: max(20px, env(safe-area-inset-bottom));
       overflow-y: auto; animation: slideUp 0.3s ease;
     }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    
+
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .modal-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
     .modal-close {
       background: var(--bg-secondary); border: none; border-radius: 50%; width: 36px; height: 36px;
       font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
     }
-    
+
     .form-group { margin-bottom: 16px; }
     .form-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block; }
     .form-input {
@@ -647,17 +396,20 @@
     .photos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .photo-slot {
       aspect-ratio: 1; border: 2px dashed var(--border-color); border-radius: 12px;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; background: var(--input-bg);
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      overflow: hidden; position: relative; background: var(--input-bg);
     }
     .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
     .photo-slot .add-icon { font-size: 28px; color: var(--text-secondary); }
     .photo-slot .remove-btn {
-      position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white; border: none;
-      border-radius: 50%; width: 22px; height: 22px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white;
+      border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
     .submit-btn {
-      width: auto; margin: 10px auto 0; display: block; padding: 16px 15px; background: #000000; color: #ffffff;
-      border: none; border-radius: 100px; font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit;
+      width: auto; margin: 10px auto 0; display: block; padding: 16px 15px; background: #000000;
+      color: #ffffff; border: none; border-radius: 100px; font-size: 17px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
     }
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -666,16 +418,12 @@
       z-index: 200; display: none; overflow-y: auto;
     }
     .detail-modal.active { display: block; animation: fadeInDetail 0.3s ease; }
-    
-    @keyframes fadeInDetail {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
+    @keyframes fadeInDetail { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
     .detail-header {
       position: sticky; top: 0; background: var(--bg-primary); padding: 12px 16px;
-      padding-top: max(12px, env(safe-area-inset-top)); display: flex; justify-content: space-between; align-items: center; z-index: 10;
-      border-bottom: 1px solid var(--border-color);
+      padding-top: max(12px, env(safe-area-inset-top)); display: flex; justify-content: space-between;
+      align-items: center; z-index: 10; border-bottom: 1px solid var(--border-color);
     }
     .detail-back {
       background: var(--bg-secondary); border: none; border-radius: 50%; width: 36px; height: 36px;
@@ -697,17 +445,15 @@
     .detail-seller-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
     .detail-contact-btn {
       width: 100%; padding: 16px; background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
-      background-size: 400% 400%; animation: gradientShift 6s ease infinite; color: white; border: none; border-radius: 14px;
-      font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 20px;
+      background-size: 400% 400%; animation: gradientShift 6s ease infinite; color: white; border: none;
+      border-radius: 14px; font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 20px;
     }
     .main-content::-webkit-scrollbar { width: 0; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="app-logo">Swapka</div>
-  </div>
+  <div class="header"><div class="app-logo">Swapka</div></div>
 
   <div class="main-content" id="mainContent">
     <div class="page active" id="pageHome">
@@ -723,7 +469,6 @@
         <div class="empty-state-text">Пока нет объявлений</div>
       </div>
     </div>
-
     <div class="page" id="pageMessages">
       <div class="messages-list" id="messagesList">
         <div class="empty-state">
@@ -732,7 +477,6 @@
         </div>
       </div>
     </div>
-
     <div class="page" id="pageProfile">
       <div class="profile-moon-wrapper">
         <button class="moon-btn" id="themeToggle">🌙</button>
@@ -742,9 +486,7 @@
           <div id="profileAvatarContainer"></div>
           <div class="profile-name" id="profileName">Загрузка...</div>
           <div class="profile-username" id="profileUsername">@loading</div>
-          <div class="profile-rating">
-            <span>☆</span><span>☆</span><span>☆</span>
-          </div>
+          <div class="profile-rating"><span>☆</span><span>☆</span><span>☆</span></div>
         </div>
         <button class="create-ad-btn" id="openCreateBtn">Создать объявление</button>
         <div class="my-ads-title">Мои объявления</div>
@@ -768,18 +510,14 @@
         <div class="rainbow-edge"></div>
         <div class="bubble-shimmer-overlay"></div>
       </div>
-
       <button class="nav-item active" data-tab="home" id="navHome">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">Главная</span>
+        <span class="nav-icon">🏠</span><span class="nav-label">Главная</span>
       </button>
       <button class="nav-item" data-tab="messages" id="navMessages">
-        <span class="nav-icon">💬</span>
-        <span class="nav-label">Сообщения</span>
+        <span class="nav-icon">💬</span><span class="nav-label">Сообщения</span>
       </button>
       <button class="nav-item" data-tab="profile" id="navProfile">
-        <span class="nav-icon">👤</span>
-        <span class="nav-label">Профиль</span>
+        <span class="nav-icon">👤</span><span class="nav-label">Профиль</span>
       </button>
     </div>
   </div>
@@ -831,9 +569,7 @@
       <div class="detail-city" id="detailCity"></div>
       <div class="detail-seller">
         <div class="detail-seller-avatar" id="detailSellerAvatar">👤</div>
-        <div>
-          <div class="detail-seller-name" id="detailSellerName"></div>
-        </div>
+        <div><div class="detail-seller-name" id="detailSellerName"></div></div>
       </div>
       <button class="detail-contact-btn" onclick="contactSeller()">Написать продавцу</button>
     </div>
@@ -858,9 +594,7 @@
     const ADS_KEY = 'swapka_ads';
     const THEME_KEY = 'swapka_theme';
 
-    function loadAds() {
-      try { const d = localStorage.getItem(ADS_KEY); return d ? JSON.parse(d) : []; } catch (e) { return []; }
-    }
+    function loadAds() { try { const d = localStorage.getItem(ADS_KEY); return d ? JSON.parse(d) : []; } catch (e) { return []; } }
     function saveAds(a) { try { localStorage.setItem(ADS_KEY, JSON.stringify(a)); } catch (e) {} }
     function loadTheme() { return localStorage.getItem(THEME_KEY); }
     function saveTheme(t) { localStorage.setItem(THEME_KEY, t); }
@@ -868,21 +602,13 @@
     function applyTheme(theme) {
       const body = document.body;
       const btn = document.getElementById('themeToggle');
-      if (theme === 'dark') {
-        body.classList.add('dark-theme');
-        if (btn) btn.textContent = '☀️';
-      } else {
-        body.classList.remove('dark-theme');
-        if (btn) btn.textContent = '🌙';
-      }
+      if (theme === 'dark') { body.classList.add('dark-theme'); if (btn) btn.textContent = '☀️'; }
+      else { body.classList.remove('dark-theme'); if (btn) btn.textContent = '🌙'; }
     }
 
     const savedTheme = loadTheme();
-    if (savedTheme === 'dark' || savedTheme === 'light') {
-      applyTheme(savedTheme);
-    } else {
-      applyTheme(tg.colorScheme === 'dark' ? 'dark' : 'light');
-    }
+    if (savedTheme === 'dark' || savedTheme === 'light') applyTheme(savedTheme);
+    else applyTheme(tg.colorScheme === 'dark' ? 'dark' : 'light');
 
     document.getElementById('themeToggle').addEventListener('click', function() {
       const isDark = document.body.classList.contains('dark-theme');
@@ -893,11 +619,8 @@
 
     function setupProfile() {
       const ac = document.getElementById('profileAvatarContainer');
-      if (currentUser.photoUrl) {
-        ac.innerHTML = `<img src="${currentUser.photoUrl}" class="profile-avatar" alt="Avatar">`;
-      } else {
-        ac.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
-      }
+      if (currentUser.photoUrl) ac.innerHTML = `<img src="${currentUser.photoUrl}" class="profile-avatar" alt="Avatar">`;
+      else ac.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
       document.getElementById('profileName').textContent = currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
       document.getElementById('profileUsername').textContent = currentUser.username ? '@' + currentUser.username : '';
     }
@@ -907,7 +630,7 @@
     const navPill = document.getElementById('navPill');
     const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
-    
+
     let cachedItemWidth = navItems[0].offsetWidth;
     let isDragging = false;
     let startX = 0;
@@ -915,59 +638,57 @@
     let currentIndex = 0;
     let dragged = false;
 
+    // ===== ФИЗИКА МЫЛЬНОГО ПУЗЫРЯ =====
+    let lastX = 0;
+    let lastTime = 0;
+    let velocity = 0;
+    let prevVelocity = 0;
+    let accumulatedSquash = 0;
+    let squashX = 1;
+    let squashY = 1;
+    let rotation = 0;
+    let isReleasing = false;
+
     window.addEventListener('resize', () => {
       cachedItemWidth = navItems[0].offsetWidth;
       updateIndicatorPosition(currentIndex, false);
     });
 
-    // Получаем позицию для ЦЕНТРИРОВАНИЯ индикатора по центру вкладки
     function getCenteredPosition(index) {
       const item = navItems[index];
       const itemRect = item.getBoundingClientRect();
       const pillRect = navPill.getBoundingClientRect();
-      
-      // Центр вкладки относительно navPill
       const itemCenter = itemRect.left - pillRect.left + itemRect.width / 2;
-      
-      // Позиция индикатора = центр вкладки - половина ширины индикатора
       const indicatorWidth = navIndicator.offsetWidth;
       return itemCenter - indicatorWidth / 2;
     }
 
+    function setTransform(x, sx, sy, r) {
+      navIndicator.style.transform = `translate3d(${x}px, 0, 0) scaleX(${sx}) scaleY(${sy}) rotate(${r}deg)`;
+    }
+
     function updateIndicatorPosition(index, animate = true) {
       const xPos = getCenteredPosition(index);
-      
       if (!animate) {
         navIndicator.style.transition = 'none';
-      } else {
-        navIndicator.style.transition = 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)';
-      }
-      
-      // Форсируем reflow чтобы transition none применился мгновенно
-      if (!animate) {
         void navIndicator.offsetWidth;
+      } else {
+        navIndicator.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease';
       }
-      
-      navIndicator.style.transform = `translate3d(${xPos}px, 0, 0)`;
+      squashX = 1; squashY = 1; rotation = 0;
+      setTransform(xPos, 1, 1, 0);
     }
 
     function switchTab(tab) {
       navItems.forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-
       const activeBtn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
       if (activeBtn) activeBtn.classList.add('active');
-
       const pageMap = { 'home': 'pageHome', 'messages': 'pageMessages', 'profile': 'pageProfile' };
       const activePage = document.getElementById(pageMap[tab]);
       if (activePage) activePage.classList.add('active');
-
-      navItems.forEach((item, idx) => {
-        if (item.getAttribute('data-tab') === tab) currentIndex = idx;
-      });
-
+      navItems.forEach((item, idx) => { if (item.getAttribute('data-tab') === tab) currentIndex = idx; });
       updateIndicatorPosition(currentIndex, true);
-
       const mc = document.getElementById('mainContent');
       if (mc) mc.scrollTop = 0;
     }
@@ -979,93 +700,140 @@
         const tab = this.getAttribute('data-tab');
         if (tab) {
           switchTab(tab);
+          // Jiggle эффект при переключении вкладкой
+          triggerBubbleJiggle();
           if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
       });
     });
 
-    // ===== DRAG / SWIPE =====
-    setTimeout(() => {
-      updateIndicatorPosition(0, false);
-    }, 100);
+    function triggerBubbleJiggle() {
+      navIndicator.classList.remove('jiggle');
+      void navIndicator.offsetWidth;
+      navIndicator.classList.add('jiggle');
+      navIndicator.addEventListener('animationend', () => {
+        navIndicator.classList.remove('jiggle');
+      }, { once: true });
+    }
+
+    // ===== DRAG / SWIPE С ФИЗИКОЙ =====
+    setTimeout(() => { updateIndicatorPosition(0, false); }, 100);
 
     navPill.addEventListener('touchstart', (e) => {
       isDragging = true;
       startX = e.touches[0].clientX;
-      
-      // Запоминаем текущую позицию индикатора через transform
       const style = window.getComputedStyle(navIndicator);
       const matrix = new DOMMatrix(style.transform);
-      dragStartX = matrix.m41; // текущий translateX
-      
+      dragStartX = matrix.m41;
+      lastX = startX;
+      lastTime = performance.now();
+      velocity = 0;
+      prevVelocity = 0;
+      accumulatedSquash = 0;
       dragged = false;
-      
-      // Превращаем в мыльный пузырь
+
       navIndicator.classList.add('dragging');
-      
-      // Мгновенно отключаем transition чтобы не было рывка
       navIndicator.style.transition = 'none';
-      
+
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }, { passive: true });
 
     navPill.addEventListener('touchmove', (e) => {
       if (!isDragging) return;
-      
+
+      const now = performance.now();
       const x = e.touches[0].clientX;
+      const dt = now - lastTime;
       const diff = x - startX;
-      
+      const instantVel = dt > 0 ? (x - lastX) / dt : 0;
+
+      // Сглаживание скорости (exponential moving average)
+      velocity = velocity * 0.4 + instantVel * 0.6;
+      prevVelocity = velocity;
+
       const itemWidth = cachedItemWidth;
       const maxIndex = navItems.length - 1;
-      
-      // Считаем новую позицию от стартовой позиции индикатора
       let newPos = dragStartX + diff;
-      
+
       // Мягкие границы
       const limit = itemWidth * 0.5;
       if (newPos < -limit) newPos = -limit;
       if (newPos > (maxIndex * itemWidth) + limit) newPos = (maxIndex * itemWidth) + limit;
 
-      // Определяем dragged если сдвинули достаточно
-      if (Math.abs(diff) > 10) {
-        dragged = true;
-      }
+      // ===== ФИЗИКА: SQUASH & STRETCH =====
+      // Чем быстрее движение — тем сильнее деформация
+      const speed = Math.abs(velocity);
+      const maxSquash = 1.22; // максимальное растяжение 22%
+      const targetSquashX = 1 + Math.min(speed * 0.008, maxSquash - 1) * Math.sign(velocity || 1);
+      // Сохраняем "объём" пузыря — если растягивается по X, сжимается по Y
+      const targetSquashY = 1 / targetSquashX;
 
-      // Без transition — мгновенное следование за пальцем
-      navIndicator.style.transform = `translate3d(${newPos}px, 0, 0)`;
+      // Плавная интерполяция деформации (чтобы не было резких рывков)
+      accumulatedSquash = accumulatedSquash * 0.55 + targetSquashX * 0.45;
+      squashX = accumulatedSquash;
+      squashY = 1 / squashX;
+
+      // ===== ФИЗИКА: WOBBLE (покачивание) =====
+      // Направление покачивания зависит от знака скорости
+      // Пузырь немного наклоняется в сторону движения
+      const maxWobble = 6;
+      const targetRotation = Math.sign(velocity) * Math.min(speed * 0.04, maxWobble);
+      rotation = rotation * 0.6 + targetRotation * 0.4;
+
+      if (Math.abs(diff) > 10) dragged = true;
+
+      setTransform(newPos, squashX, squashY, rotation);
+
+      lastX = x;
+      lastTime = now;
     }, { passive: true });
 
     navPill.addEventListener('touchend', (e) => {
       if (!isDragging) return;
       isDragging = false;
-      
-      // Считываем текущую позицию из transform
+
       const style = window.getComputedStyle(navIndicator);
       const matrix = new DOMMatrix(style.transform);
       const finalLeft = matrix.m41;
-      
+
       const itemWidth = cachedItemWidth;
       let targetIndex = Math.round(finalLeft / itemWidth);
-      
       if (targetIndex < 0) targetIndex = 0;
       if (targetIndex > 2) targetIndex = 2;
-      
+
       const newTab = navItems[targetIndex].getAttribute('data-tab');
-      
-      // Убираем эффект пузыря — возвращаем серый стиль
+
+      // Убираем эффект пузыря
       navIndicator.classList.remove('dragging');
-      
-      // Включаем transition обратно
-      navIndicator.style.transition = 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)';
-      
+
       if (dragged) {
-        switchTab(newTab);
+        // ===== ФИЗИКА: OVERSHOOT ПРИ ОТПУСКАНИИ =====
+        // Пузырь "перелетает" через целевую позицию и возвращается
+        const targetPos = getCenteredPosition(targetIndex);
+        const distFromTarget = finalLeft - targetPos;
+        const overshootAmount = Math.sign(distFromTarget) * Math.min(Math.abs(distFromTarget) * 0.3, 15);
+        const overshootPos = targetPos + overshootAmount;
+
+        // Включаем transition с пружинистым easing
+        navIndicator.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease';
+
+        // Сначала перелёт к overshoot позиции
+        setTransform(overshootPos, squashX, squashY, rotation);
+
+        // Затем через небольшую задержку — к конечной позиции с jiggle
+        setTimeout(() => {
+          switchTab(newTab);
+          triggerBubbleJiggle();
+        }, 100);
+
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       } else {
         // Просто тап — возвращаем на место с анимацией
+        navIndicator.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease';
         updateIndicatorPosition(currentIndex, true);
+        triggerBubbleJiggle();
       }
-      
+
       dragged = false;
     });
 
@@ -1107,14 +875,7 @@
       const imgHtml = ad.photos && ad.photos.length > 0
         ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
-      card.innerHTML = `
-        <div class="ad-image-container">${imgHtml}</div>
-        <div class="ad-info">
-          <div class="ad-title">${escapeHtml(ad.title)}</div>
-          <div class="ad-price">${escapeHtml(ad.price)}</div>
-          <div class="ad-city">📍 ${escapeHtml(ad.city)}</div>
-        </div>
-      `;
+      card.innerHTML = `<div class="ad-image-container">${imgHtml}</div><div class="ad-info"><div class="ad-title">${escapeHtml(ad.title)}</div><div class="ad-price">${escapeHtml(ad.price)}</div><div class="ad-city">📍 ${escapeHtml(ad.city)}</div></div>`;
       return card;
     }
 
@@ -1125,27 +886,22 @@
       grid.innerHTML = '';
       const myAds = ads.filter(ad => ad.userId === currentUser.id);
       if (myAds.length === 0) { empty.style.display = 'flex'; }
-      else {
-        empty.style.display = 'none';
-        myAds.forEach(ad => grid.appendChild(createAdCard(ad)));
-      }
+      else { empty.style.display = 'none'; myAds.forEach(ad => grid.appendChild(createAdCard(ad))); }
     }
 
     let searchTimeout;
-    document.getElementById('searchInput').addEventListener('input', function (e) {
+    document.getElementById('searchInput').addEventListener('input', function(e) {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => renderAds(e.target.value), 200);
     });
 
     let selectedPhotos = [];
     const bottomNav = document.getElementById('bottomNav');
-
     function hideBottomNav() { bottomNav.classList.add('hidden'); }
     function showBottomNav() { bottomNav.classList.remove('hidden'); }
 
     function openCreateModal() {
-      selectedPhotos = [];
-      resetPhotoSlots();
+      selectedPhotos = []; resetPhotoSlots();
       document.getElementById('adTitle').value = '';
       document.getElementById('adPrice').value = '';
       document.getElementById('adCity').value = '';
@@ -1214,22 +970,14 @@
       if (!price) { tg.showAlert('Введите цену'); return; }
       if (!city) { tg.showAlert('Введите город'); return; }
       if (selectedPhotos.length === 0) { tg.showAlert('Добавьте хотя бы одну фотографию'); return; }
-
       const ads = loadAds();
       ads.unshift({
         id: 'ad_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-        userId: currentUser.id,
-        userName: currentUser.firstName,
-        userUsername: currentUser.username,
-        userPhoto: currentUser.photoUrl,
-        title, price, city,
-        photos: selectedPhotos.slice(0, 4),
-        createdAt: Date.now()
+        userId: currentUser.id, userName: currentUser.firstName,
+        userUsername: currentUser.username, userPhoto: currentUser.photoUrl,
+        title, price, city, photos: selectedPhotos.slice(0, 4), createdAt: Date.now()
       });
-      saveAds(ads);
-      closeCreateModal();
-      renderAds();
-      renderMyAds();
+      saveAds(ads); closeCreateModal(); renderAds(); renderMyAds();
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       tg.showAlert('Объявление создано! ✅');
     }
@@ -1242,23 +990,16 @@
       document.getElementById('detailPrice').textContent = ad.price;
       document.getElementById('detailCity').textContent = '📍 ' + ad.city;
       document.getElementById('detailSellerName').textContent = ad.userName || 'Продавец';
-      if (ad.userPhoto) {
-        document.getElementById('detailSellerAvatar').innerHTML = `<img src="${ad.userPhoto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`;
-      } else {
-        document.getElementById('detailSellerAvatar').innerHTML = '👤';
-      }
+      if (ad.userPhoto) document.getElementById('detailSellerAvatar').innerHTML = `<img src="${ad.userPhoto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`;
+      else document.getElementById('detailSellerAvatar').innerHTML = '👤';
       const track = document.getElementById('carouselTrack');
       const dots = document.getElementById('carouselDots');
-      track.innerHTML = '';
-      dots.innerHTML = '';
-      currentCarouselIndex = 0;
+      track.innerHTML = ''; dots.innerHTML = ''; currentCarouselIndex = 0;
       ad.photos.forEach((photo, i) => {
         track.innerHTML += `<div class="carousel-slide"><img src="${photo}" alt="Photo ${i+1}"></div>`;
         dots.innerHTML += `<button class="carousel-dot${i === 0 ? ' active' : ''}" onclick="goToSlide(${i})"></button>`;
       });
-      modal.dataset.adId = ad.id;
-      modal.classList.add('active');
-      hideBottomNav();
+      modal.dataset.adId = ad.id; modal.classList.add('active'); hideBottomNav();
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
@@ -1276,11 +1017,8 @@
     function contactSeller() {
       const adId = document.getElementById('detailModal').dataset.adId;
       const ad = loadAds().find(a => a.id === adId);
-      if (ad && ad.userUsername) {
-        tg.openTelegramLink(`https://t.me/${ad.userUsername}`);
-      } else {
-        tg.showAlert('Контакты продавца недоступны');
-      }
+      if (ad && ad.userUsername) tg.openTelegramLink(`https://t.me/${ad.userUsername}`);
+      else tg.showAlert('Контакты продавца недоступны');
     }
 
     document.getElementById('createModal').addEventListener('click', function(e) { if (e.target === this) closeCreateModal(); });
@@ -1299,8 +1037,7 @@
 
     let initialHeight = window.innerHeight;
     window.addEventListener('resize', () => {
-      if (window.innerHeight < initialHeight - 100) hideBottomNav();
-      else showBottomNav();
+      if (window.innerHeight < initialHeight - 100) hideBottomNav(); else showBottomNav();
     });
 
     renderAds();
@@ -1308,3 +1045,4 @@
   </script>
 </body>
 </html>
+
