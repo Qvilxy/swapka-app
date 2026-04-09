@@ -79,7 +79,7 @@
       -webkit-user-select: none;
     }
 
-    /* ===== HEADER (ИСПРАВЛЕНО) ===== */
+    /* ===== HEADER (ИСПРАВЛЕНО НАПРАВЛЕНИЕ) ===== */
     .header {
       position: fixed;
       top: 0;
@@ -102,14 +102,13 @@
       overflow: hidden;
       white-space: nowrap;
       position: relative;
-      /* Исправление рендеринга */
       transform: translateZ(0);
       backface-visibility: hidden;
     }
 
     .marquee-content {
       display: inline-flex;
-      /* Новая анимация для стабильности */
+      /* ИЗМЕНЕНО: Движение справа налево (текст едет вправо) */
       animation: marquee-stable 25s linear infinite;
       will-change: transform;
     }
@@ -124,13 +123,13 @@
       flex-shrink: 0;
       padding-right: 7px;
       padding-top: 0;
-      /* Предотвращение размытия */
       -webkit-font-smoothing: antialiased;
     }
 
+    /* ИЗМЕНЕНО: Обратная анимация */
     @keyframes marquee-stable {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
     }
 
     /* ===== MAIN CONTENT ===== */
@@ -1450,23 +1449,38 @@
     }
     function addPhoto(index) { document.getElementById('photoInput').dataset.index = index; document.getElementById('photoInput').click(); }
     
+    // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ ФОТО
     function handlePhotoSelect(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
+      
       const remainingSlots = 4 - selectedPhotos.length;
-      const filesToProcess = Math.min(files.length, remainingSlots);
-      for (let i = 0; i < filesToProcess; i++) {
-        const file = files[i];
+      if (remainingSlots <= 0) {
+        tg.showAlert('Максимум 4 фотографии');
+        event.target.value = '';
+        return;
+      }
+      
+      const filesToProcess = Array.from(files).slice(0, remainingSlots);
+      let processedCount = 0;
+      
+      filesToProcess.forEach(file => {
         const reader = new FileReader();
-        const slotIndex = selectedPhotos.length + i;
-        reader.onload = function (e) {
-          if (slotIndex >= 4) return;
+        reader.onload = function(e) {
           selectedPhotos.push(e.target.result);
+          processedCount++;
+          
+          // Обновляем слот сразу после чтения конкретного файла
+          const slotIndex = selectedPhotos.length - 1;
           updatePhotoSlot(slotIndex, e.target.result);
+          
+          // Если обработали все выбранные файлы, сбрасываем input
+          if (processedCount === filesToProcess.length) {
+             event.target.value = '';
+          }
         };
         reader.readAsDataURL(file);
-      }
-      event.target.value = '';
+      });
     }
     
     function updatePhotoSlot(index, dataUrl) {
