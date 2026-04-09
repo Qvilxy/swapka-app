@@ -379,7 +379,7 @@
       background: var(--card-bg); 
       border-radius: 100px;
       cursor: pointer; 
-      transition: background 0.2s, transform 0.3s;
+      transition: transform 0.2s ease-out, background 0.2s;
       position: relative;
       z-index: 2;
       touch-action: pan-y;
@@ -388,7 +388,7 @@
     }
     
     .message-item.swiping {
-      transition: transform 0.1s;
+      transition: none; /* Отключаем плавность при перетаскивании */
     }
     
     .message-item:hover { background: var(--bg-secondary); }
@@ -1430,7 +1430,6 @@
     }
     function addPhoto(index) { document.getElementById('photoInput').dataset.index = index; document.getElementById('photoInput').click(); }
     
-    // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ
     function handlePhotoSelect(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
@@ -1439,7 +1438,6 @@
       for (let i = 0; i < filesToProcess; i++) {
         const file = files[i];
         const reader = new FileReader();
-        // ✅ ИСПРАВЛЕНИЕ: вычисляем индекс ДО асинхронной операции
         const slotIndex = selectedPhotos.length + i;
         reader.onload = function (e) {
           if (slotIndex >= 4) return;
@@ -1631,6 +1629,7 @@
       if (e.key === 'Enter') sendMessage();
     });
 
+    // ✅ ИСПРАВЛЕННАЯ ЛОГИКА СВАЙПА ДЛЯ ЧАТОВ
     function initChatSwipe(item, chatId) {
       let startX = 0;
       let currentX = 0;
@@ -1653,20 +1652,20 @@
         });
 
         startX = e.touches[0].clientX;
-        currentX = 0;
+        currentX = startX;
         isSwiping = true;
         item.classList.add('swiping');
       }, { passive: true });
       
       item.addEventListener('touchmove', (e) => {
         if (!isSwiping) return;
-        currentX = e.touches[0].clientX;
-        const diff = startX - currentX;
+        const touchX = e.touches[0].clientX;
+        const diff = startX - touchX;
+        
+        // ✅ РАЗРЕШАЕМ ДВИЖЕНИЕ ТОЛЬКО ВЛЕВО (diff > 0)
         if (diff > 0) {
+          currentX = touchX;
           const translateX = Math.min(diff, deleteWidth);
-          item.style.transform = `translateX(-${translateX}px)`;
-        } else {
-          const translateX = Math.max(0, diff + deleteWidth);
           item.style.transform = `translateX(-${translateX}px)`;
         }
       }, { passive: true });
@@ -1675,26 +1674,24 @@
         if (!isSwiping) return;
         isSwiping = false;
         item.classList.remove('swiping');
+        
         const diff = startX - currentX;
         const wrapper = item.closest('.message-item-wrapper');
         const deleteBg = wrapper.querySelector('.message-delete-bg');
         const deleteBtn = wrapper.querySelector('.message-delete-btn');
         
+        // Если протащили больше половины кнопки удаления
         if (diff > deleteWidth / 2) {
-          // Активное состояние (свайп влево)
           item.style.transform = `translateX(-${deleteWidth}px)`;
           if (deleteBg) deleteBg.classList.add('visible');
           if (deleteBtn) deleteBtn.classList.add('visible');
         } else {
-          // Неактивное состояние (вернули назад)
+          // Возвращаем обратно
           item.style.transform = 'translateX(0)';
           if (deleteBg) deleteBg.classList.remove('visible');
           if (deleteBtn) deleteBtn.classList.remove('visible');
         }
       });
-      
-      // УБРАНА ЛОГИКА УДАЛЕНИЯ ПРИ КЛИКЕ ВНЕ ОБЛАСТИ
-      // Теперь удаление работает ТОЛЬКО через кнопку или зону кнопки
     }
 
     function deleteChat(chatId) {
@@ -1740,7 +1737,27 @@
         
         const messageItem = document.createElement('div');
         messageItem.className = 'message-item';
-        messageItem.onclick = () => openChat(chat);
+        // ✅ ОБРАБОТЧИК КЛИКА С ПРОВЕРКОЙ ПОЛОЖЕНИЯ
+        messageItem.onclick = function() {
+          // Получаем текущее смещение элемента
+          const style = window.getComputedStyle(this);
+          const matrix = new WebKitCSSMatrix(style.transform);
+          
+          // Если элемент сдвинут (не на месте), клик по нему возвращает его на место или ничего не делает, но не открывает чат
+          if (matrix.m41 !== 0) {
+             this.style.transform = 'translateX(0)';
+             const wrapper = this.closest('.message-item-wrapper');
+             if(wrapper) {
+                const bg = wrapper.querySelector('.message-delete-bg');
+                const btn = wrapper.querySelector('.message-delete-btn');
+                if(bg) bg.classList.remove('visible');
+                if(btn) btn.classList.remove('visible');
+             }
+             return;
+          }
+          // Если на месте - открываем чат
+          openChat(chat);
+        };
         
         const avatarHtml = chat.sellerPhoto 
           ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>`
