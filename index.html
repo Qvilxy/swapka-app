@@ -96,7 +96,6 @@
       animation: gradientShift 10s ease infinite;
       display: flex;
       justify-content: center;
-      /* Изменено на center для корректной работы margin-top */
       align-items: center; 
       pointer-events: none;
       overflow: hidden;
@@ -117,8 +116,8 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
       z-index: 2;
       pointer-events: auto;
-      /* Опускаем логотип вниз на 80px */
-      margin-top: 80px;
+      /* Поднят на 7px: было 80px, стало 73px */
+      margin-top: 73px;
     }
     /* ----------------------------- */
 
