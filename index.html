@@ -12,7 +12,8 @@
       --text-primary: #000000;
       --text-secondary: #8e8e93;
       --border-color: #e5e5ea;
-      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      /* Усиленная тень для светлой темы */
+      --shadow: 0 4px 16px rgba(0,0,0,0.08); 
       --card-bg: #ffffff;
       --search-bg: #ffffff;
       
@@ -33,7 +34,8 @@
       --text-primary: #ffffff;
       --text-secondary: #8e8e93;
       --border-color: #3a3a3c;
-      --shadow: 0 2px 12px rgba(0,0,0,0.3);
+      /* Усиленная тень для темной темы */
+      --shadow: 0 4px 16px rgba(0,0,0,0.4);
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
 
@@ -302,7 +304,7 @@
       color: var(--text-secondary);
     }
 
-    /* ✅ НОВЫЙ ДИЗАЙН ЧАТОВ */
+    /* ✅ НОВЫЙ ДИЗАЙН ЧАТОВ С ТЕНЬЮ */
     .messages-list { padding: 16px; }
     
     .message-item-wrapper {
@@ -368,7 +370,7 @@
       display: block;
     }
 
-    /* ✅ КАРТОЧКА ЧАТА */
+    /* ✅ КАРТОЧКА ЧАТА С ТЕНЬЮ */
     .message-item {
       display: flex; 
       align-items: center; 
@@ -381,11 +383,8 @@
       position: relative;
       z-index: 2;
       touch-action: pan-y;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    }
-    
-    .dark-theme .message-item {
-      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      /* Явная тень для эффекта "таблетки" */
+      box-shadow: var(--shadow);
     }
     
     .message-item.swiping {
@@ -1639,6 +1638,20 @@
       const deleteWidth = 120;
       
       item.addEventListener('touchstart', (e) => {
+        // Закрываем другие открытые свайпы перед началом нового
+        document.querySelectorAll('.message-item').forEach(el => {
+          if (el !== item) {
+            el.style.transform = 'translateX(0)';
+            const wrapper = el.closest('.message-item-wrapper');
+            if(wrapper) {
+                const bg = wrapper.querySelector('.message-delete-bg');
+                const btn = wrapper.querySelector('.message-delete-btn');
+                if(bg) bg.classList.remove('visible');
+                if(btn) btn.classList.remove('visible');
+            }
+          }
+        });
+
         startX = e.touches[0].clientX;
         currentX = 0;
         isSwiping = true;
@@ -1668,26 +1681,20 @@
         const deleteBtn = wrapper.querySelector('.message-delete-btn');
         
         if (diff > deleteWidth / 2) {
+          // Активное состояние (свайп влево)
           item.style.transform = `translateX(-${deleteWidth}px)`;
           if (deleteBg) deleteBg.classList.add('visible');
           if (deleteBtn) deleteBtn.classList.add('visible');
         } else {
+          // Неактивное состояние (вернули назад)
           item.style.transform = 'translateX(0)';
           if (deleteBg) deleteBg.classList.remove('visible');
           if (deleteBtn) deleteBtn.classList.remove('visible');
         }
       });
       
-      document.addEventListener('click', (e) => {
-        if (!item.contains(e.target)) {
-          item.style.transform = 'translateX(0)';
-          const wrapper = item.closest('.message-item-wrapper');
-          const deleteBg = wrapper?.querySelector('.message-delete-bg');
-          const deleteBtn = wrapper?.querySelector('.message-delete-btn');
-          if (deleteBg) deleteBg.classList.remove('visible');
-          if (deleteBtn) deleteBtn.classList.remove('visible');
-        }
-      });
+      // УБРАНА ЛОГИКА УДАЛЕНИЯ ПРИ КЛИКЕ ВНЕ ОБЛАСТИ
+      // Теперь удаление работает ТОЛЬКО через кнопку или зону кнопки
     }
 
     function deleteChat(chatId) {
@@ -1801,3 +1808,4 @@
   </script>
 </body>
 </html>
+
