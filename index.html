@@ -150,18 +150,18 @@
       align-items: center;
       justify-content: center;
       height: 50px; /* Фиксированная высота для прямоугольников */
-      border-radius: 8px;
+      border-radius: 0px; /* ✅ СКРУГЛЕНИЕ УГЛОВ 0 */
     }
 
     /* Стиль для красного блока SWAPKA */
     .marquee-item.red {
-      background-color: #FF3B30; /* Apple Red */
+      background-color: #E60000; /* ✅ НОВЫЙ КРАСНЫЙ ЦВЕТ */
       color: #ffffff;
     }
 
-    /* Стиль для зеленого блока В РАЗРАБОТКЕ */
+    /* Стиль для зеленого (теперь оранжевого) блока В РАЗРАБОТКЕ */
     .marquee-item.green {
-      background-color: #34C759; /* Apple Green */
+      background-color: #E68600; /* ✅ НОВЫЙ ЦВЕТ (Оранжевый) */
       color: #ffffff;
       font-size: 24px; /* Чуть меньше шрифт для длинного текста */
     }
@@ -1197,7 +1197,7 @@
       marqueeContent.innerHTML = ''; // Очистка перед генерацией
       
       // Генерируем пары элементов для бесшовной прокрутки
-      // Чередуем: Красный SWAPKA -> Зеленый В РАЗРАБОТКЕ
+      // Чередуем: Красный SWAPKA -> Зеленый (Оранжевый) В РАЗРАБОТКЕ
       const pairsCount = 8; // Количество пар (достаточно для заполнения экрана)
       
       let html = '';
@@ -1205,7 +1205,7 @@
       for (let i = 0; i < pairsCount; i++) {
         // Красный блок SWAPKA
         html += `<div class="marquee-item red">SWAPKA</div>`;
-        // Зеленый блок В РАЗРАБОТКЕ
+        // Зеленый (Оранжевый) блок В РАЗРАБОТКЕ
         html += `<div class="marquee-item green">В РАЗРАБОТКЕ</div>`;
       }
       
