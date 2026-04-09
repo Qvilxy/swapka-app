@@ -1265,6 +1265,8 @@
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
       if (tab === 'messages') renderMessages();
+      if (tab === 'profile') renderMyAds();
+      if (tab === 'home') renderAds();
     }
 
     navPill.addEventListener('touchstart', (e) => {
@@ -1404,10 +1406,13 @@
       document.getElementById('adPrice').value = '';
       document.getElementById('adCity').value = '';
       document.getElementById('createModal').classList.add('active');
-      hideBottomNav();
+      hideBottomNav(); // ✅ СКРЫВАЕМ МЕНЮ ПРИ ОТКРЫТИИ МОДАЛКИ
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
-    function closeCreateModal() { document.getElementById('createModal').classList.remove('active'); showBottomNav(); }
+    function closeCreateModal() { 
+      document.getElementById('createModal').classList.remove('active'); 
+      showBottomNav(); // ✅ ПОКАЗЫВАЕМ МЕНЮ ПРИ ЗАКРЫТИИ МОДАЛКИ
+    }
     document.getElementById('openCreateBtn').addEventListener('click', openCreateModal);
 
     function resetPhotoSlots() {
@@ -1470,8 +1475,8 @@
       ads.unshift(newAd);
       saveAds(ads);
       closeCreateModal();
-      renderAds();
-      renderMyAds();
+      renderAds(); // ✅ ОБНОВЛЯЕМ ГЛАВНУЮ
+      renderMyAds(); // ✅ ОБНОВЛЯЕМ ПРОФИЛЬ
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       tg.showAlert('Объявление создано! ✅');
     }
