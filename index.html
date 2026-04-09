@@ -79,23 +79,22 @@
       -webkit-user-select: none;
     }
 
-    /* ===== HEADER (ИЗМЕНЕНО: Высота 145px = 90px база + 55px safe area) ===== */
+    /* ===== HEADER (ИСПРАВЛЕНО) ===== */
     .header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 100;
-      /* УВЕЛИЧЕНА ВЫСОТА ШАПКИ */
       height: 145px; 
       background: var(--bg-primary);
       transition: background 0.3s;
       display: flex;
       justify-content: center;
-      align-items: flex-end; /* Прижимаем контент к низу шапки */
+      align-items: flex-end;
       pointer-events: none;
       overflow: hidden;
-      padding-bottom: 10px; /* Небольшой отступ снизу контента */
+      padding-bottom: 10px;
     }
 
     .marquee-container {
@@ -103,11 +102,15 @@
       overflow: hidden;
       white-space: nowrap;
       position: relative;
+      /* Исправление рендеринга */
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .marquee-content {
       display: inline-flex;
-      animation: marquee 20s linear infinite;
+      /* Новая анимация для стабильности */
+      animation: marquee-stable 25s linear infinite;
       will-change: transform;
     }
 
@@ -120,23 +123,23 @@
       letter-spacing: 2px;
       flex-shrink: 0;
       padding-right: 7px;
-      /* Отступ сверху убран, так как мы прижали контент к низу через flex */
       padding-top: 0;
+      /* Предотвращение размытия */
+      -webkit-font-smoothing: antialiased;
     }
 
-    @keyframes marquee {
-      0% { transform: translateX(-50%); }
-      100% { transform: translateX(0); }
+    @keyframes marquee-stable {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
 
-    /* ===== MAIN CONTENT (ИЗМЕНЕНО: Сдвиг на 145px) ===== */
+    /* ===== MAIN CONTENT ===== */
     .main-content {
       position: fixed;
-      /* СДВИГ ВНИЗ НА ВСЮ ВЫСОТУ ШАПКИ (145px) */
       top: 145px; 
       left: 0;
       right: 0;
-      bottom: 90px; /* Место под навигацию */
+      bottom: 90px;
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
@@ -319,7 +322,7 @@
       color: var(--text-secondary);
     }
 
-    /* ✅ НОВЫЙ ДИЗАЙН ЧАТОВ (ПЛОСКИЙ, БЕЗ ТЕНИ, СВЕТЛО-СЕРЫЙ) */
+    /* ✅ НОВЫЙ ДИЗАЙН ЧАТОВ */
     .messages-list { padding: 16px; }
     
     .message-item-wrapper {
@@ -329,7 +332,6 @@
       border-radius: 100px;
     }
     
-    /* ✅ КНОПКА УДАЛЕНИЯ СЗАДИ */
     .message-delete-bg {
       position: absolute;
       top: 0;
@@ -385,31 +387,27 @@
       display: block;
     }
 
-    /* ✅ КАРТОЧКА ЧАТА: ПЛОСКАЯ, СВЕТЛО-СЕРАЯ */
     .message-item {
       display: flex; 
       align-items: center; 
       padding: 12px 16px;
       padding-right: 20px;
-      background: var(--chat-pill-bg); /* Светло-серый цвет */
+      background: var(--chat-pill-bg);
       border-radius: 100px;
       cursor: pointer; 
       transition: transform 0.2s ease-out, background 0.2s;
       position: relative;
       z-index: 2;
       touch-action: pan-y;
-      
-      /* ✅ ТЕНЬ УДАЛЕНА */
       box-shadow: none;
     }
     
     .message-item.swiping {
-      transition: none; /* Отключаем плавность при перетаскивании */
+      transition: none;
     }
     
     .message-item:hover { background: var(--bg-secondary); }
     
-    /* ✅ АВАТАРКА */
     .message-avatar {
       width: 56px; 
       height: 56px; 
@@ -430,7 +428,6 @@
       object-fit: cover;
     }
     
-    /* ✅ КОНТЕНТ */
     .message-content { 
       flex: 1; 
       min-width: 0;
@@ -457,7 +454,6 @@
       line-height: 1.3;
     }
     
-    /* ✅ СЧЁТЧИК НЕПРОЧИТАННЫХ */
     .unread-badge {
       width: 24px;
       height: 24px;
@@ -477,7 +473,6 @@
     /* Chat Modal */
     .chat-modal {
       position: fixed;
-      /* ИЗМЕНЕНО: Сдвиг вниз на 145px (высота новой шапки) */
       top: 145px;
       left: 0;
       right: 0;
@@ -590,7 +585,6 @@
       fill: white;
     }
 
-    /* ✅ ЦЕНТРИРОВАНИЕ EMPTY STATE */
     .empty-state {
       position: absolute;
       top: 50%;
@@ -930,6 +924,7 @@
   <div class="header">
     <div class="marquee-container">
       <div class="marquee-content" id="marqueeContent">
+        <!-- JS заполнит это -->
       </div>
     </div>
   </div>
@@ -1145,24 +1140,32 @@
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
-    // ✅ БЕГУЩАЯ СТРОКА
+    // ✅ ИСПРАВЛЕННАЯ БЕГУЩАЯ СТРОКА
     function initMarquee() {
       const marqueeContent = document.getElementById('marqueeContent');
-      const itemCount = 8;
-      for (let i = 0; i < itemCount; i++) {
-        const item = document.createElement('div');
-        item.className = 'marquee-item';
-        item.textContent = 'SWAPKA';
-        marqueeContent.appendChild(item);
+      marqueeContent.innerHTML = ''; // Очистка перед генерацией
+      
+      // Генерируем достаточное количество элементов для заполнения экрана + запас
+      // Используем два набора одинаковых данных для бесшовной прокрутки
+      const baseItems = 10; 
+      
+      let html = '';
+      // Первый набор
+      for (let i = 0; i < baseItems; i++) {
+        html += `<div class="marquee-item">SWAPKA</div>`;
       }
-      for (let i = 0; i < itemCount; i++) {
-        const item = document.createElement('div');
-        item.className = 'marquee-item';
-        item.textContent = 'SWAPKA';
-        marqueeContent.appendChild(item);
+      // Второй набор (дубликат для бесшовности)
+      for (let i = 0; i < baseItems; i++) {
+        html += `<div class="marquee-item">SWAPKA</div>`;
       }
+      
+      marqueeContent.innerHTML = html;
     }
+    
+    // Запускаем сразу
     initMarquee();
+    // Перезапускаем при загрузке страницы на всякий случай
+    window.addEventListener('load', initMarquee);
     
     const tg = window.Telegram.WebApp;
     tg.ready();
@@ -1477,6 +1480,8 @@
       resetPhotoSlots();
       selectedPhotos.forEach((photo, i) => updatePhotoSlot(i, photo));
     }
+    
+    // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ СОЗДАНИЯ ОБЪЯВЛЕНИЯ
     function createAd() {
       const title = document.getElementById('adTitle').value.trim();
       const price = document.getElementById('adPrice').value.trim();
@@ -1485,6 +1490,7 @@
       if (!price) { tg.showAlert('Введите цену'); return; }
       if (!city) { tg.showAlert('Введите город'); return; }
       if (selectedPhotos.length === 0) { tg.showAlert('Добавьте хотя бы одну фотографию'); return; }
+      
       const ads = loadAds();
       const newAd = {
         id: 'ad_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
@@ -1496,9 +1502,12 @@
         photos: selectedPhotos.slice(0, 4),
         createdAt: Date.now()
       };
+      
+      // Добавляем в начало массива
       ads.unshift(newAd);
       saveAds(ads);
       
+      // Очищаем форму
       selectedPhotos = [];
       resetPhotoSlots();
       document.getElementById('adTitle').value = '';
@@ -1507,8 +1516,12 @@
       
       closeCreateModal();
       
+      // ✅ ЯВНЫЙ ВЫЗОВ РЕНДЕРИНГА
       renderAds(); 
       renderMyAds(); 
+      
+      // Переключаемся на главную, чтобы пользователь увидел результат (опционально, но логично)
+      switchTab('home', 0);
       
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       tg.showAlert('Объявление создано! ✅');
@@ -1646,7 +1659,7 @@
       if (e.key === 'Enter') sendMessage();
     });
 
-    // ✅ ИСПРАВЛЕННАЯ ЛОГИКА СВАЙПА ДЛЯ ЧАТОВ
+    // ✅ ЛОГИКА СВАЙПА ДЛЯ ЧАТОВ
     function initChatSwipe(item, chatId) {
       let startX = 0;
       let currentX = 0;
