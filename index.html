@@ -608,20 +608,17 @@
       font-weight: 500;
     }
 
+    /* ИСПРАВЛЕННЫЙ КОНТЕЙНЕР СООБЩЕНИЙ */
     .chat-messages {
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      /* Уменьшаем верхний отступ чтобы сообщения могли заходить под шапку */
-      padding: 20px 16px 20px;
+      padding: 100px 16px 20px;
       display: flex;
       flex-direction: column;
       gap: 8px;
       background: var(--bg-primary);
       scroll-behavior: smooth;
-      /* Добавляем отрицательный margin чтобы компенсировать padding при скролле */
-      margin-top: -60px;
-      padding-top: 80px;
     }
 
     .chat-message {
@@ -1991,6 +1988,7 @@
         renderMessages();
       }
       renderChatMessages(chat);
+      // Прокрутка вниз после открытия чата
       setTimeout(() => {
         const messagesContainer = document.getElementById('chatMessages');
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -2002,10 +2000,8 @@
       currentAdForChat = null;
       removeAttachedPhoto();
       
-      // Сбрасываем индикатор физики и принудительно переключаемся на Messages
       setTimeout(() => {
         switchTab('messages', 1);
-        // Дополнительный сброс позиции индикатора
         setTimeout(() => {
           updateIndicatorPosition(1, false);
         }, 50);
@@ -2121,11 +2117,11 @@
         renderChatMessages(chat);
         updateChatHeaderStatus(chat);
         
-        // Принудительная прокрутка вниз с задержкой для корректного отображения первого сообщения
+        // ИСПРАВЛЕНИЕ: Прокрутка вниз с большей задержкой для корректного отображения
         setTimeout(() => {
           const messagesContainer = document.getElementById('chatMessages');
           messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }, 50);
+        }, 100);
         
         renderMessages();
       }
