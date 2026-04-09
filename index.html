@@ -140,15 +140,30 @@
 
     .marquee-item {
       font-family: 'Arial Black', 'Impact', 'Helvetica Neue', Arial, sans-serif;
-      font-size: 42px; 
+      font-size: 32px; /* Немного уменьшил, чтобы влезали прямоугольники */
       font-weight: 900;
-      color: #000000;
       text-transform: uppercase;
       letter-spacing: 2px;
       flex-shrink: 0;
-      padding-right: 7px;
-      padding-top: 0;
-      -webkit-font-smoothing: antialiased;
+      padding: 0 15px; /* Отступы между блоками */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 50px; /* Фиксированная высота для прямоугольников */
+      border-radius: 8px;
+    }
+
+    /* Стиль для красного блока SWAPKA */
+    .marquee-item.red {
+      background-color: #FF3B30; /* Apple Red */
+      color: #ffffff;
+    }
+
+    /* Стиль для зеленого блока В РАЗРАБОТКЕ */
+    .marquee-item.green {
+      background-color: #34C759; /* Apple Green */
+      color: #ffffff;
+      font-size: 24px; /* Чуть меньше шрифт для длинного текста */
     }
 
     /* ИЗМЕНЕНО: Обратная анимация */
@@ -1176,23 +1191,28 @@
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
-    // ✅ ИСПРАВЛЕННАЯ БЕГУЩАЯ СТРОКА
+    // ✅ ОБНОВЛЕННАЯ БЕГУЩАЯ СТРОКА С ЧЕРЕДОВАНИЕМ
     function initMarquee() {
       const marqueeContent = document.getElementById('marqueeContent');
       marqueeContent.innerHTML = ''; // Очистка перед генерацией
       
-      // Генерируем достаточное количество элементов для заполнения экрана + запас
-      // Используем два набора одинаковых данных для бесшовной прокрутки
-      const baseItems = 10; 
+      // Генерируем пары элементов для бесшовной прокрутки
+      // Чередуем: Красный SWAPKA -> Зеленый В РАЗРАБОТКЕ
+      const pairsCount = 8; // Количество пар (достаточно для заполнения экрана)
       
       let html = '';
-      // Первый набор
-      for (let i = 0; i < baseItems; i++) {
-        html += `<div class="marquee-item">SWAPKA</div>`;
+      
+      for (let i = 0; i < pairsCount; i++) {
+        // Красный блок SWAPKA
+        html += `<div class="marquee-item red">SWAPKA</div>`;
+        // Зеленый блок В РАЗРАБОТКЕ
+        html += `<div class="marquee-item green">В РАЗРАБОТКЕ</div>`;
       }
-      // Второй набор (дубликат для бесшовности)
-      for (let i = 0; i < baseItems; i++) {
-        html += `<div class="marquee-item">SWAPKA</div>`;
+      
+      // Дублируем еще раз для бесшовности анимации
+      for (let i = 0; i < pairsCount; i++) {
+        html += `<div class="marquee-item red">SWAPKA</div>`;
+        html += `<div class="marquee-item green">В РАЗРАБОТКЕ</div>`;
       }
       
       marqueeContent.innerHTML = html;
