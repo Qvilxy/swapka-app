@@ -648,6 +648,8 @@
       flex-direction: column;
       gap: 8px;
       background: var(--bg-primary);
+      /* Важно для правильного скролла */
+      scroll-behavior: smooth;
     }
 
     .chat-message {
@@ -658,6 +660,13 @@
       line-height: 1.4;
       word-wrap: break-word;
       position: relative;
+      /* Анимация появления */
+      animation: messagePopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes messagePopIn {
+      from { opacity: 0; transform: scale(0.9) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
     }
     
     .chat-message img {
@@ -2052,11 +2061,7 @@
       removeAttachedPhoto();
       
       // ✅ ИСПРАВЛЕНИЕ БАГА ИНДИКАТОРА
-      // Восстанавливаем позицию индикатора на активной вкладке
-      // Обычно после чата мы хотим вернуться на вкладку сообщений или ту, где были
-      // Здесь мы просто обновляем индикатор до текущего активного состояния в навигации
-      
-      // Находим активную кнопку в навигации
+      // Находим активную кнопку в навигации и принудительно ставим индикатор на неё
       const activeNavBtn = document.querySelector('.nav-item.active');
       if (activeNavBtn) {
         const index = Array.from(navItems).indexOf(activeNavBtn);
@@ -2108,6 +2113,8 @@
       
       if (chat.messages.length === 0) {
         // ✅ ЦЕНТРИРОВАНИЕ И НОВЫЙ ТЕКСТ
+        // Используем абсолютное позиционирование, чтобы текст был по центру экрана,
+        // но не мешал появлению сообщений снизу
         container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Напишите свое первое сообщение</div></div>';
         return;
       }
@@ -2187,6 +2194,7 @@
         updateChatHeaderStatus(chat); // Обновить статус на "В сети"
         
         // ✅ ПРОКРУТКА ВНИЗ ПОСЛЕ ОТПРАВКИ
+        // Это заставляет новые сообщения появляться снизу и расти вверх
         const messagesContainer = document.getElementById('chatMessages');
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
