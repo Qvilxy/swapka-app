@@ -83,22 +83,21 @@
       }
     }
 
-    /* --- НОВЫЕ СТИЛИ ДЛЯ ШАПКИ --- */
+    /* --- СТИЛИ ДЛЯ ШАПКИ --- */
     .header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 100;
-      /* УМЕНЬШЕНО НА 23px: было 145px, стало 122px */
       height: 122px;
-      /* Градиент в стиле палитры: Красный -> Бордовый -> Темный -> Красный */
       background: linear-gradient(-45deg, #ff4d4d, #800020, #2b0000, #cc0000);
       background-size: 400% 400%;
       animation: gradientShift 10s ease infinite;
       display: flex;
       justify-content: center;
-      align-items: center;
+      /* Изменено с center на flex-end для прижатия к низу */
+      align-items: flex-end;
       pointer-events: none;
       overflow: hidden;
       max-width: 430px;
@@ -117,13 +116,14 @@
       height: auto;
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
       z-index: 2;
-      pointer-events: auto; /* Чтобы можно было кликать, если нужно */
+      pointer-events: auto;
+      /* Добавлен отступ снизу 15px */
+      margin-bottom: 15px;
     }
     /* ----------------------------- */
 
     .main-content {
       position: fixed;
-      /* УМЕНЬШЕНО НА 23px: было 145px, стало 122px */
       top: 122px;
       left: 0;
       right: 0;
@@ -2276,4 +2276,3 @@
   </script>
 </body>
 </html>
-
