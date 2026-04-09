@@ -512,7 +512,7 @@
     /* ===== НОВЫЙ ИНТЕРФЕЙС ОКНА ЧАТА ===== */
     .chat-modal {
       position: fixed;
-      top: 0; /* Занимает весь экран поверх всего, кроме системных баров */
+      top: 0;
       left: 0;
       right: 0;
       bottom: 0;
@@ -541,12 +541,12 @@
       display: flex;
       align-items: center;
       padding: 0 10px;
-      pointer-events: none; /* Чтобы клики проходили сквозь контейнер, кроме элементов */
+      pointer-events: none;
     }
 
     .chat-back-btn {
       pointer-events: auto;
-      background: rgba(120, 120, 128, 0.12); /* iOS system gray overlay */
+      background: rgba(120, 120, 128, 0.12);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border: none;
@@ -565,7 +565,7 @@
     .chat-back-btn svg {
       width: 20px;
       height: 20px;
-      stroke: var(--icon-active); /* Синяя стрелка */
+      stroke: var(--icon-active);
       stroke-width: 2.5;
       fill: none;
     }
@@ -580,14 +580,16 @@
       -webkit-backdrop-filter: blur(20px);
       border-radius: 100px;
       padding: 6px 12px 6px 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      /* ✅ ТЕНЬ ДЛЯ ЭФФЕКТА ВОЗВЫШЕНИЯ */
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.05);
       cursor: pointer;
-      transition: transform 0.1s, background 0.2s;
+      transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
       max-width: 85%;
     }
     .chat-profile-pill:active {
       transform: scale(0.98);
       background: var(--bg-secondary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .chat-pill-avatar {
@@ -632,7 +634,7 @@
     }
     
     .chat-pill-status.online {
-      color: #34C759; /* Зеленый цвет для "В сети" */
+      color: #34C759;
       font-weight: 500;
     }
 
@@ -640,7 +642,7 @@
     .chat-messages {
       flex: 1;
       overflow-y: auto;
-      /* ✅ ОТСТУП СВЕРХУ 80PX (ПУСТОЕ ПРОСТРАНСТВО) */
+      /* ✅ ОТСТУП СВЕРХУ 80PX */
       padding: 80px 16px 20px; 
       display: flex;
       flex-direction: column;
@@ -724,7 +726,7 @@
 
     .chat-input {
       width: 100%;
-      padding: 10px 45px 10px 16px; /* Место справа для кнопки отправки внутри поля */
+      padding: 10px 45px 10px 16px;
       border: 1px solid var(--border-color);
       border-radius: 24px;
       background: var(--bg-secondary);
@@ -757,7 +759,7 @@
       width: 16px;
       height: 16px;
       fill: white;
-      margin-left: 2px; /* Визуальная компенсация иконки самолетика */
+      margin-left: 2px;
     }
     
     /* Превью прикрепленного фото */
@@ -2048,6 +2050,22 @@
       document.getElementById('chatModal').classList.remove('active');
       currentAdForChat = null;
       removeAttachedPhoto();
+      
+      // ✅ ИСПРАВЛЕНИЕ БАГА ИНДИКАТОРА
+      // Восстанавливаем позицию индикатора на активной вкладке
+      // Обычно после чата мы хотим вернуться на вкладку сообщений или ту, где были
+      // Здесь мы просто обновляем индикатор до текущего активного состояния в навигации
+      
+      // Находим активную кнопку в навигации
+      const activeNavBtn = document.querySelector('.nav-item.active');
+      if (activeNavBtn) {
+        const index = Array.from(navItems).indexOf(activeNavBtn);
+        if (index !== -1) {
+           updateIndicatorPosition(index, false);
+        }
+      }
+      
+      showBottomNav();
     }
 
     // ===== ПРОФИЛЬ СОБЕСЕДНИКА =====
@@ -2087,10 +2105,13 @@
     function renderChatMessages(chat) {
       const container = document.getElementById('chatMessages');
       container.innerHTML = '';
+      
       if (chat.messages.length === 0) {
-        container.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:40px 20px;font-size:14px;">Напишите первое сообщение продавцу</div>';
+        // ✅ ЦЕНТРИРОВАНИЕ И НОВЫЙ ТЕКСТ
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Напишите свое первое сообщение</div></div>';
         return;
       }
+      
       chat.messages.forEach(msg => {
         const isSent = msg.senderId === currentUser.id;
         const messageDiv = document.createElement('div');
@@ -2165,7 +2186,10 @@
         renderChatMessages(chat);
         updateChatHeaderStatus(chat); // Обновить статус на "В сети"
         
-        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        // ✅ ПРОКРУТКА ВНИЗ ПОСЛЕ ОТПРАВКИ
+        const messagesContainer = document.getElementById('chatMessages');
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
         renderMessages(); // Обновить список чатов (превью)
       }
     }
