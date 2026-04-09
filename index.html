@@ -361,6 +361,11 @@
       border: none;
       cursor: pointer;
       z-index: 3;
+      display: none;
+    }
+    
+    .message-delete-btn.visible {
+      display: block;
     }
 
     /* ✅ КАРТОЧКА ЧАТА */
@@ -465,6 +470,7 @@
       z-index: 150;
       display: none;
       flex-direction: column;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
     }
     .chat-modal.active { display: flex; }
     
@@ -1406,12 +1412,12 @@
       document.getElementById('adPrice').value = '';
       document.getElementById('adCity').value = '';
       document.getElementById('createModal').classList.add('active');
-      hideBottomNav(); // ✅ СКРЫВАЕМ МЕНЮ ПРИ ОТКРЫТИИ МОДАЛКИ
+      hideBottomNav();
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
     function closeCreateModal() { 
       document.getElementById('createModal').classList.remove('active'); 
-      showBottomNav(); // ✅ ПОКАЗЫВАЕМ МЕНЮ ПРИ ЗАКРЫТИИ МОДАЛКИ
+      showBottomNav();
     }
     document.getElementById('openCreateBtn').addEventListener('click', openCreateModal);
 
@@ -1424,6 +1430,8 @@
       }
     }
     function addPhoto(index) { document.getElementById('photoInput').dataset.index = index; document.getElementById('photoInput').click(); }
+    
+    // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ
     function handlePhotoSelect(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
@@ -1432,8 +1440,9 @@
       for (let i = 0; i < filesToProcess; i++) {
         const file = files[i];
         const reader = new FileReader();
+        // ✅ ИСПРАВЛЕНИЕ: вычисляем индекс ДО асинхронной операции
+        const slotIndex = selectedPhotos.length + i;
         reader.onload = function (e) {
-          const slotIndex = selectedPhotos.length;
           if (slotIndex >= 4) return;
           selectedPhotos.push(e.target.result);
           updatePhotoSlot(slotIndex, e.target.result);
@@ -1442,6 +1451,7 @@
       }
       event.target.value = '';
     }
+    
     function updatePhotoSlot(index, dataUrl) {
       const slot = document.getElementById('photoSlot' + index);
       slot.innerHTML = `<img src="${dataUrl}" alt="Photo"><button class="remove-btn" onclick="removePhoto(event, ${index})">✕</button>`;
@@ -1475,7 +1485,6 @@
       ads.unshift(newAd);
       saveAds(ads);
       
-      // Очистка формы
       selectedPhotos = [];
       resetPhotoSlots();
       document.getElementById('adTitle').value = '';
@@ -1484,7 +1493,6 @@
       
       closeCreateModal();
       
-      // Принудительный ререндер
       renderAds(); 
       renderMyAds(); 
       
@@ -1557,6 +1565,7 @@
         chats.push(chat);
         saveChats(chats);
       }
+      closeDetailModal();
       openChat(chat);
     }
 
@@ -1566,7 +1575,6 @@
       document.getElementById('chatSellerAd').textContent = chat.adTitle;
       chatModal.dataset.chatId = chat.id;
       chatModal.classList.add('active');
-      // Сбрасываем непрочитанные
       const chats = loadChats();
       const chatIdx = chats.findIndex(c => c.id === chat.id);
       if (chatIdx !== -1) {
@@ -1624,7 +1632,6 @@
       if (e.key === 'Enter') sendMessage();
     });
 
-    // ✅ СВАЙП ДЛЯ УДАЛЕНИЯ ЧАТА
     function initChatSwipe(item, chatId) {
       let startX = 0;
       let currentX = 0;
@@ -1656,21 +1663,29 @@
         isSwiping = false;
         item.classList.remove('swiping');
         const diff = startX - currentX;
-        const deleteBg = item.closest('.message-item-wrapper').querySelector('.message-delete-bg');
+        const wrapper = item.closest('.message-item-wrapper');
+        const deleteBg = wrapper.querySelector('.message-delete-bg');
+        const deleteBtn = wrapper.querySelector('.message-delete-btn');
+        
         if (diff > deleteWidth / 2) {
           item.style.transform = `translateX(-${deleteWidth}px)`;
           if (deleteBg) deleteBg.classList.add('visible');
+          if (deleteBtn) deleteBtn.classList.add('visible');
         } else {
           item.style.transform = 'translateX(0)';
           if (deleteBg) deleteBg.classList.remove('visible');
+          if (deleteBtn) deleteBtn.classList.remove('visible');
         }
       });
       
       document.addEventListener('click', (e) => {
         if (!item.contains(e.target)) {
           item.style.transform = 'translateX(0)';
-          const deleteBg = item.closest('.message-item-wrapper')?.querySelector('.message-delete-bg');
+          const wrapper = item.closest('.message-item-wrapper');
+          const deleteBg = wrapper?.querySelector('.message-delete-bg');
+          const deleteBtn = wrapper?.querySelector('.message-delete-btn');
           if (deleteBg) deleteBg.classList.remove('visible');
+          if (deleteBtn) deleteBtn.classList.remove('visible');
         }
       });
     }
@@ -1704,7 +1719,6 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'message-item-wrapper';
         
-        // ✅ КРАСНАЯ КНОПКА УДАЛЕНИЯ СЗАДИ
         const deleteBg = document.createElement('div');
         deleteBg.className = 'message-delete-bg';
         deleteBg.innerHTML = `
@@ -1717,7 +1731,6 @@
           <span>Удалить</span>
         `;
         
-        // ✅ КАРТОЧКА ЧАТА
         const messageItem = document.createElement('div');
         messageItem.className = 'message-item';
         messageItem.onclick = () => openChat(chat);
@@ -1726,7 +1739,6 @@
           ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>`
           : '<div class="message-avatar">👤</div>';
         
-        // ✅ СЧЁТЧИК НЕПРОЧИТАННЫХ
         const unreadBadge = chat.unreadCount > 0 ? `<div class="unread-badge">${chat.unreadCount}</div>` : '';
         
         messageItem.innerHTML = `
@@ -1738,7 +1750,6 @@
           ${unreadBadge}
         `;
         
-        // ✅ СКРЫТАЯ КНОПКА УДАЛЕНИЯ
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'message-delete-btn';
         deleteBtn.onclick = (e) => {
@@ -1772,15 +1783,11 @@
       }
     }, { passive: true });
 
-    // ✅ ИСПРАВЛЕНИЕ БАГА С КЛАВИАТУРОЙ И НАВИГАЦИЕЙ
-    // Используем visualViewport для точного отслеживания высоты экрана при открытии клавиатуры
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', () => {
-        // Если высота визуальной области меньше высоты окна более чем на 150px, значит клавиатура открыта
         if (window.innerHeight - window.visualViewport.height > 150) {
            hideBottomNav();
         } else {
-           // Клавиатура закрыта. Показываем меню только если модалка создания закрыта
            if (!document.getElementById('createModal').classList.contains('active')) {
              showBottomNav();
            }
