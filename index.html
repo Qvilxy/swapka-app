@@ -1474,9 +1474,20 @@
       };
       ads.unshift(newAd);
       saveAds(ads);
+      
+      // Очистка формы
+      selectedPhotos = [];
+      resetPhotoSlots();
+      document.getElementById('adTitle').value = '';
+      document.getElementById('adPrice').value = '';
+      document.getElementById('adCity').value = '';
+      
       closeCreateModal();
-      renderAds(); // ✅ ОБНОВЛЯЕМ ГЛАВНУЮ
-      renderMyAds(); // ✅ ОБНОВЛЯЕМ ПРОФИЛЬ
+      
+      // Принудительный ререндер
+      renderAds(); 
+      renderMyAds(); 
+      
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       tg.showAlert('Объявление создано! ✅');
     }
@@ -1761,11 +1772,21 @@
       }
     }, { passive: true });
 
-    let initialHeight = window.innerHeight;
-    window.addEventListener('resize', () => {
-      if (window.innerHeight < initialHeight - 100) hideBottomNav();
-      else showBottomNav();
-    });
+    // ✅ ИСПРАВЛЕНИЕ БАГА С КЛАВИАТУРОЙ И НАВИГАЦИЕЙ
+    // Используем visualViewport для точного отслеживания высоты экрана при открытии клавиатуры
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        // Если высота визуальной области меньше высоты окна более чем на 150px, значит клавиатура открыта
+        if (window.innerHeight - window.visualViewport.height > 150) {
+           hideBottomNav();
+        } else {
+           // Клавиатура закрыта. Показываем меню только если модалка создания закрыта
+           if (!document.getElementById('createModal').classList.contains('active')) {
+             showBottomNav();
+           }
+        }
+      });
+    }
 
     setRandomSearchPlaceholder();
     renderAds();
