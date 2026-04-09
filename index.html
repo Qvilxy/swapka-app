@@ -77,6 +77,28 @@
       transition: background 0.3s, color 0.3s;
       user-select: none;
       -webkit-user-select: none;
+      
+      /* ✅ ОГРАНИЧЕНИЕ ДЛЯ ПК И ПЛАНШЕТОВ (iPhone 17 Pro Max style) */
+      max-width: 430px; 
+      margin: 0 auto;
+      position: relative;
+      box-shadow: 0 0 50px rgba(0,0,0,0.1);
+    }
+
+    /* Фон для десктопа, чтобы видеть границы приложения */
+    @media (min-width: 431px) {
+      body {
+        border-left: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        background: var(--bg-primary); /* Цвет фона самого "телефона" */
+      }
+      /* Красим фон страницы за пределами телефона в серый */
+      html {
+        background: #e5e5ea;
+      }
+      .dark-theme html {
+        background: #000000;
+      }
     }
 
     /* ===== HEADER (ИСПРАВЛЕНО НАПРАВЛЕНИЕ) ===== */
@@ -95,6 +117,9 @@
       pointer-events: none;
       overflow: hidden;
       padding-bottom: 10px;
+      /* Для корректного отображения внутри ограниченного body */
+      max-width: 430px;
+      margin: 0 auto;
     }
 
     .marquee-container {
@@ -144,6 +169,9 @@
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
       will-change: scroll-position;
+      /* Центрирование контента если body уже экрана */
+      max-width: 430px;
+      margin: 0 auto;
     }
 
     .page {
@@ -481,6 +509,9 @@
       display: none;
       flex-direction: column;
       box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+      /* Для корректного отображения на ПК */
+      max-width: 430px;
+      margin: 0 auto;
     }
     .chat-modal.active { display: flex; }
     
@@ -694,6 +725,9 @@
       pointer-events: none;
       transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
       will-change: transform;
+      /* Для корректного отображения на ПК */
+      max-width: 430px;
+      margin: 0 auto;
     }
 
     .bottom-nav.hidden { transform: translateY(150%); }
@@ -868,6 +902,9 @@
     .detail-modal {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary);
       z-index: 200; display: none; overflow-y: auto;
+      /* Для корректного отображения на ПК */
+      max-width: 430px;
+      margin: 0 auto;
     }
     .detail-modal.active { display: block; animation: fadeInDetail 0.3s ease; }
     
@@ -1169,6 +1206,13 @@
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
+
+    // ✅ ПРИНУДИТЕЛЬНАЯ УСТАНОВКА ШИРИНЫ ДЛЯ БОЛЬШИХ ЭКРАНОВ
+    if (window.innerWidth > 430) {
+      document.body.style.width = '430px';
+    } else {
+      document.body.style.width = '100%';
+    }
 
     const user = tg.initDataUnsafe?.user;
     const currentUser = {
