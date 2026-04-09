@@ -613,9 +613,9 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 100px 16px 20px;
+      padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse; /* Ключевое изменение: сообщения растут снизу вверх */
       gap: 8px;
       background: var(--bg-primary);
       scroll-behavior: smooth;
@@ -1988,10 +1988,10 @@
         renderMessages();
       }
       renderChatMessages(chat);
-      // Прокрутка вниз после открытия чата
+      // При использовании column-reverse прокрутка вниз = scrollTop = 0
       setTimeout(() => {
         const messagesContainer = document.getElementById('chatMessages');
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        messagesContainer.scrollTop = 0;
       }, 100);
     }
 
@@ -2046,7 +2046,8 @@
         return;
       }
       
-      chat.messages.forEach(msg => {
+      // При column-reverse порядок должен быть обратным: новые сверху
+      [...chat.messages].reverse().forEach(msg => {
         const isSent = msg.senderId === currentUser.id;
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
@@ -2117,11 +2118,11 @@
         renderChatMessages(chat);
         updateChatHeaderStatus(chat);
         
-        // ИСПРАВЛЕНИЕ: Прокрутка вниз с большей задержкой для корректного отображения
+        // При column-reverse прокрутка вниз = scrollTop = 0
         setTimeout(() => {
           const messagesContainer = document.getElementById('chatMessages');
-          messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }, 100);
+          messagesContainer.scrollTop = 0;
+        }, 50);
         
         renderMessages();
       }
