@@ -83,6 +83,7 @@
       }
     }
 
+    /* --- НОВЫЕ СТИЛИ ДЛЯ ШАПКИ --- */
     .header {
       position: fixed;
       top: 0;
@@ -90,63 +91,34 @@
       right: 0;
       z-index: 100;
       height: 145px;
-      background: var(--bg-primary);
-      transition: background 0.3s;
+      /* Градиент в стиле палитры: Красный -> Бордовый -> Темный -> Красный */
+      background: linear-gradient(-45deg, #ff4d4d, #800020, #2b0000, #cc0000);
+      background-size: 400% 400%;
+      animation: gradientShift 10s ease infinite;
       display: flex;
       justify-content: center;
-      align-items: flex-end;
+      align-items: center;
       pointer-events: none;
       overflow: hidden;
-      padding-bottom: 10px;
       max-width: 430px;
       margin: 0 auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    .marquee-container {
-      width: 100%;
-      overflow: hidden;
-      white-space: nowrap;
-      position: relative;
-      transform: translateZ(0);
-      backface-visibility: hidden;
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    .marquee-content {
-      display: inline-flex;
-      animation: marquee-stable 25s linear infinite;
-      will-change: transform;
+    .header-logo {
+      width: 160px;
+      height: auto;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+      z-index: 2;
+      pointer-events: auto; /* Чтобы можно было кликать, если нужно */
     }
-
-    .marquee-item {
-      font-family: 'Arial Black', 'Impact', 'Helvetica Neue', Arial, sans-serif;
-      font-size: 32px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      flex-shrink: 0;
-      padding: 0 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 50px;
-      border-radius: 0px;
-    }
-
-    .marquee-item.red {
-      background-color: #E60000;
-      color: #ffffff;
-    }
-
-    .marquee-item.green {
-      background-color: #E68600;
-      color: #ffffff;
-      font-size: 24px;
-    }
-
-    @keyframes marquee-stable {
-      0% { transform: translateX(-50%); }
-      100% { transform: translateX(0); }
-    }
+    /* ----------------------------- */
 
     .main-content {
       position: fixed;
@@ -608,14 +580,13 @@
       font-weight: 500;
     }
 
-    /* ИСПРАВЛЕННЫЙ КОНТЕЙНЕР СООБЩЕНИЙ */
     .chat-messages {
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
       padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
       display: flex;
-      flex-direction: column-reverse; /* Ключевое изменение: сообщения растут снизу вверх */
+      flex-direction: column-reverse;
       gap: 8px;
       background: var(--bg-primary);
       scroll-behavior: smooth;
@@ -1172,9 +1143,8 @@
 
   <!-- HEADER -->
   <div class="header">
-    <div class="marquee-container">
-      <div class="marquee-content" id="marqueeContent"></div>
-    </div>
+    <!-- Логотип SWAPKA по центру -->
+    <img src="https://i.imgur.com/vHqQvQl.png" alt="Swapka Logo" class="header-logo">
   </div>
 
   <div class="main-content" id="mainContent">
@@ -1447,24 +1417,7 @@
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
-    function initMarquee() {
-      const marqueeContent = document.getElementById('marqueeContent');
-      marqueeContent.innerHTML = '';
-      const pairsCount = 8;
-      let html = '';
-      for (let i = 0; i < pairsCount; i++) {
-        html += `<div class="marquee-item red">SWAPKA</div>`;
-        html += `<div class="marquee-item green">В РАЗРАБОТКЕ</div>`;
-      }
-      for (let i = 0; i < pairsCount; i++) {
-        html += `<div class="marquee-item red">SWAPKA</div>`;
-        html += `<div class="marquee-item green">В РАЗРАБОТКЕ</div>`;
-      }
-      marqueeContent.innerHTML = html;
-    }
-    
-    initMarquee();
-    window.addEventListener('load', initMarquee);
+    // Marquee logic removed as requested
     
     const tg = window.Telegram.WebApp;
     tg.ready();
@@ -2321,3 +2274,4 @@
   </script>
 </body>
 </html>
+
