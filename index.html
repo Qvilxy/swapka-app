@@ -133,7 +133,7 @@
       padding-bottom: 20px;
       opacity: 0;
       transform: translateY(10px);
-      position: relative; /* Для позиционирования empty-state */
+      position: relative;
     }
 
     .page.active {
@@ -302,22 +302,85 @@
       color: var(--text-secondary);
     }
 
-    /* Messages Styles */
-    .messages-list { padding: 8px 16px; }
+    /* ✅ НОВЫЙ ДИЗАЙН ЧАТОВ */
+    .messages-list { padding: 16px; }
     
     .message-item-wrapper {
       position: relative;
       overflow: hidden;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      border-radius: 100px;
     }
     
+    /* ✅ КНОПКА УДАЛЕНИЯ СЗАДИ */
+    .message-delete-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 120px;
+      background: rgba(255, 59, 48, 0.65);
+      border-radius: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.3s;
+      gap: 4px;
+    }
+    
+    .message-delete-bg.visible {
+      opacity: 1;
+    }
+    
+    .message-delete-bg svg {
+      width: 28px;
+      height: 28px;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    
+    .message-delete-bg span {
+      font-size: 12px;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .message-delete-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 120px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    /* ✅ КАРТОЧКА ЧАТА */
     .message-item {
-      display: flex; align-items: center; padding: 12px;
-      background: var(--card-bg); border-radius: 14px;
-      cursor: pointer; transition: background 0.2s, transform 0.3s;
+      display: flex; 
+      align-items: center; 
+      padding: 12px 16px;
+      padding-right: 20px;
+      background: var(--card-bg); 
+      border-radius: 100px;
+      cursor: pointer; 
+      transition: background 0.2s, transform 0.3s;
       position: relative;
       z-index: 2;
       touch-action: pan-y;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    
+    .dark-theme .message-item {
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
     }
     
     .message-item.swiping {
@@ -326,57 +389,19 @@
     
     .message-item:hover { background: var(--bg-secondary); }
     
-    .message-delete-bg {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 80px;
-      background: #ff3b30;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    
-    .message-delete-bg.visible {
-      opacity: 1;
-    }
-    
-    .message-delete-bg svg {
-      width: 24px;
-      height: 24px;
-      stroke: white;
-      stroke-width: 2.5;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    
-    .message-delete-btn {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 80px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      z-index: 3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
+    /* ✅ АВАТАРКА */
     .message-avatar {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: var(--bg-secondary); margin-right: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; flex-shrink: 0;
+      width: 56px; 
+      height: 56px; 
+      border-radius: 50%;
+      margin-right: 14px;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      font-size: 24px; 
+      flex-shrink: 0;
       overflow: hidden;
+      background: var(--bg-secondary);
     }
     
     .message-avatar img {
@@ -385,10 +410,49 @@
       object-fit: cover;
     }
     
-    .message-content { flex: 1; min-width: 0; }
-    .message-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
-    .message-preview { font-size: 14px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
-    .message-time { font-size: 12px; color: var(--text-secondary); margin-left: 8px; }
+    /* ✅ КОНТЕНТ */
+    .message-content { 
+      flex: 1; 
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .message-name { 
+      font-size: 17px; 
+      font-weight: 700; 
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .message-preview { 
+      font-size: 14px; 
+      color: var(--text-secondary); 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    
+    /* ✅ СЧЁТЧИК НЕПРОЧИТАННЫХ */
+    .unread-badge {
+      width: 24px;
+      height: 24px;
+      background: #FF3B30;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-left: 12px;
+      line-height: 1;
+    }
 
     /* Chat Modal */
     .chat-modal {
@@ -517,7 +581,11 @@
       justify-content: center; 
       padding: 20px; 
       text-align: center;
-      pointer-events: none; /* Чтобы клики проходили сквозь пустое место, если нужно */
+      pointer-events: none;
+    }
+    
+    #myAdsEmpty {
+      transform: translateY(calc(-50% + 80px));
     }
     
     .empty-state-text { 
@@ -840,7 +908,6 @@
   <div class="header">
     <div class="marquee-container">
       <div class="marquee-content" id="marqueeContent">
-        <!-- Надписи SWAPKA будут добавлены через JavaScript -->
       </div>
     </div>
   </div>
@@ -1056,20 +1123,16 @@
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
-    // ✅ СОЗДАНИЕ БЕГУЩЕЙ СТРОКИ С SWAPKA
+    // ✅ БЕГУЩАЯ СТРОКА
     function initMarquee() {
       const marqueeContent = document.getElementById('marqueeContent');
-      const itemCount = 8; // Количество надписей
-      
-      // Создаем надписи SWAPKA
+      const itemCount = 8;
       for (let i = 0; i < itemCount; i++) {
         const item = document.createElement('div');
         item.className = 'marquee-item';
         item.textContent = 'SWAPKA';
         marqueeContent.appendChild(item);
       }
-      
-      // Дублируем контент для бесшовной анимации
       for (let i = 0; i < itemCount; i++) {
         const item = document.createElement('div');
         item.className = 'marquee-item';
@@ -1077,7 +1140,6 @@
         marqueeContent.appendChild(item);
       }
     }
-    
     initMarquee();
     
     const tg = window.Telegram.WebApp;
@@ -1098,27 +1160,17 @@
     const CHATS_KEY = 'swapka_chats';
 
     function loadAds() {
-      try {
-        const data = localStorage.getItem(ADS_KEY);
-        return data ? JSON.parse(data) : [];
-      } catch (e) { return []; }
+      try { const data = localStorage.getItem(ADS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
     }
-
     function saveAds(ads) {
       try { localStorage.setItem(ADS_KEY, JSON.stringify(ads)); } catch (e) {}
     }
-
     function loadChats() {
-      try {
-        const data = localStorage.getItem(CHATS_KEY);
-        return data ? JSON.parse(data) : [];
-      } catch (e) { return []; }
+      try { const data = localStorage.getItem(CHATS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
     }
-
     function saveChats(chats) {
       try { localStorage.setItem(CHATS_KEY, JSON.stringify(chats)); } catch (e) {}
     }
-
     function loadTheme() { return localStorage.getItem(THEME_KEY); }
     function saveTheme(theme) { localStorage.setItem(THEME_KEY, theme); }
 
@@ -1126,7 +1178,6 @@
       const body = document.body;
       const iconMoon = document.getElementById('iconMoon');
       const iconSun = document.getElementById('iconSun');
-      
       if (theme === 'dark') {
         body.classList.add('dark-theme');
         if (iconMoon) iconMoon.style.display = 'none';
@@ -1170,31 +1221,16 @@
     function setRandomSearchPlaceholder() {
       const searchInput = document.getElementById('searchInput');
       const rand = Math.random();
-      
-      if (rand < 0.1) {
-        searchInput.placeholder = 'Свиной навоз оптом';
-      } else if (rand < 0.55) {
-        searchInput.placeholder = 'Что ищем?';
-      } else {
-        searchInput.placeholder = 'Погнали за покупками!';
-      }
+      if (rand < 0.1) searchInput.placeholder = 'Свиной навоз оптом';
+      else if (rand < 0.55) searchInput.placeholder = 'Что ищем?';
+      else searchInput.placeholder = 'Погнали за покупками!';
     }
 
-    // ===== ФИЗИКА ИНДИКАТОРА НАВИГАЦИИ =====
+    // ===== ФИЗИКА ИНДИКАТОРА =====
     const navPill = document.getElementById('navPill');
     const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
-    
-    let indicatorPhysics = {
-      isDragging: false,
-      currentTransformX: 0,
-      touchOffsetX: 0,
-      velocity: 0,
-      lastX: 0,
-      lastTime: 0,
-      currentIndex: 0,
-      cachedItemWidth: 0
-    };
+    let indicatorPhysics = { isDragging: false, currentTransformX: 0, touchOffsetX: 0, velocity: 0, lastX: 0, lastTime: 0, currentIndex: 0, cachedItemWidth: 0 };
 
     function initIndicatorPhysics() {
       indicatorPhysics.cachedItemWidth = navItems[0].offsetWidth;
@@ -1209,9 +1245,7 @@
       const targetX = index * indicatorPhysics.cachedItemWidth;
       indicatorPhysics.currentTransformX = targetX;
       indicatorPhysics.currentIndex = index;
-
       if (isDragging) return;
-
       navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
       navIndicator.style.transform = `translate3d(${targetX}px, 0, 0) scale(1)`;
       navIndicator.style.width = `calc(33.33% - 8px)`;
@@ -1221,24 +1255,16 @@
     function switchTab(tab, index) {
       navItems.forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-
       const activeBtn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
       if(activeBtn) activeBtn.classList.add('active');
-
       const pageMap = { 'home': 'pageHome', 'messages': 'pageMessages', 'profile': 'pageProfile' };
       const activePage = document.getElementById(pageMap[tab]);
       if(activePage) activePage.classList.add('active');
-
       updateIndicatorPosition(index, false);
       indicatorPhysics.currentIndex = index;
-
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
-      
-      // Обновляем список чатов при переходе на вкладку сообщений
-      if (tab === 'messages') {
-        renderMessages();
-      }
+      if (tab === 'messages') renderMessages();
     }
 
     navPill.addEventListener('touchstart', (e) => {
@@ -1246,71 +1272,44 @@
       indicatorPhysics.lastX = e.touches[0].clientX;
       indicatorPhysics.lastTime = Date.now();
       indicatorPhysics.velocity = 0;
-
-      navItems.forEach((item, idx) => {
-        if(item.classList.contains('active')) indicatorPhysics.currentIndex = idx;
-      });
-
+      navItems.forEach((item, idx) => { if(item.classList.contains('active')) indicatorPhysics.currentIndex = idx; });
       indicatorPhysics.touchOffsetX = e.touches[0].clientX - indicatorPhysics.currentTransformX;
       navIndicator.style.transition = 'none';
     }, { passive: true });
 
     navPill.addEventListener('touchmove', (e) => {
       if (!indicatorPhysics.isDragging) return;
-
       const touchX = e.touches[0].clientX;
       const currentTime = Date.now();
       const dt = currentTime - indicatorPhysics.lastTime;
-
-      if (dt > 10) {
-        indicatorPhysics.velocity = (touchX - indicatorPhysics.lastX) / dt;
-        indicatorPhysics.lastX = touchX;
-        indicatorPhysics.lastTime = currentTime;
-      }
-
+      if (dt > 10) { indicatorPhysics.velocity = (touchX - indicatorPhysics.lastX) / dt; indicatorPhysics.lastX = touchX; indicatorPhysics.lastTime = currentTime; }
       let newX = touchX - indicatorPhysics.touchOffsetX;
-
       const maxIndex = navItems.length - 1;
       const minX = 0;
       const maxX = maxIndex * indicatorPhysics.cachedItemWidth;
       const limit = indicatorPhysics.cachedItemWidth * 0.4;
-
-      if (newX < minX - limit) {
-        newX = (minX - limit) + (newX - (minX - limit)) * 0.15;
-      } else if (newX > maxX + limit) {
-        newX = (maxX + limit) + (newX - (maxX + limit)) * 0.15;
-      }
-
+      if (newX < minX - limit) newX = (minX - limit) + (newX - (minX - limit)) * 0.15;
+      else if (newX > maxX + limit) newX = (maxX + limit) + (newX - (maxX + limit)) * 0.15;
       const diffFromCenter = Math.abs(newX - (indicatorPhysics.currentIndex * indicatorPhysics.cachedItemWidth));
       const stretch = Math.min(diffFromCenter / 100, 0.25);
-
       navIndicator.style.transform = `translate3d(${newX}px, 0, 0) scale(1.2)`;
       navIndicator.style.width = `calc(33.33% - 8px + ${stretch * 15}px)`;
       navIndicator.style.borderRadius = `${24 - stretch * 8}px`;
-
       indicatorPhysics.currentTransformX = newX;
     }, { passive: true });
 
     navPill.addEventListener('touchend', (e) => {
       if (!indicatorPhysics.isDragging) return;
       indicatorPhysics.isDragging = false;
-
       const momentum = indicatorPhysics.velocity * 15;
       let finalX = indicatorPhysics.currentTransformX + momentum;
       finalX = Math.max(0, Math.min(finalX, 2 * indicatorPhysics.cachedItemWidth));
-
       let targetIndex = Math.round(finalX / indicatorPhysics.cachedItemWidth);
       targetIndex = Math.max(0, Math.min(2, targetIndex));
-
       const newTab = navItems[targetIndex].getAttribute('data-tab');
       const currentTab = navItems[indicatorPhysics.currentIndex].getAttribute('data-tab');
-
-      if (newTab !== currentTab) {
-        switchTab(newTab, targetIndex);
-      } else {
-        updateIndicatorPosition(indicatorPhysics.currentIndex, false);
-      }
-
+      if (newTab !== currentTab) switchTab(newTab, targetIndex);
+      else updateIndicatorPosition(indicatorPhysics.currentIndex, false);
       navIndicator.style.width = `calc(33.33% - 8px)`;
       navIndicator.style.borderRadius = '24px';
     });
@@ -1319,15 +1318,11 @@
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         const tab = this.getAttribute('data-tab');
-        if (tab) {
-          switchTab(tab, index);
-        }
+        if (tab) switchTab(tab, index);
       });
     });
 
-    setTimeout(() => {
-      initIndicatorPhysics();
-    }, 100);
+    setTimeout(() => { initIndicatorPhysics(); }, 100);
 
     function escapeHtml(text) {
       const div = document.createElement('div');
@@ -1347,11 +1342,8 @@
       }
       if (filteredAds.length === 0) {
         empty.style.display = 'flex';
-        if (filter.trim() && ads.length > 0) {
-          empty.querySelector('.empty-state-text').textContent = 'Ничего не найдено';
-        } else {
-          empty.querySelector('.empty-state-text').textContent = 'Пока нет объявлений';
-        }
+        if (filter.trim() && ads.length > 0) empty.querySelector('.empty-state-text').textContent = 'Ничего не найдено';
+        else empty.querySelector('.empty-state-text').textContent = 'Пока нет объявлений';
       } else {
         empty.style.display = 'none';
         filteredAds.forEach(ad => grid.appendChild(createAdCard(ad)));
@@ -1362,42 +1354,22 @@
       const card = document.createElement('div');
       card.className = 'ad-card';
       card.onclick = () => openDetailModal(ad);
-      
       const imgHtml = ad.photos && ad.photos.length > 0
         ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
-      
       let deleteBtn = '';
       if (isMyAd) {
-        deleteBtn = `
-          <button class="ad-delete-btn" onclick="deleteAd(event, '${ad.id}')">
-            <svg viewBox="0 0 24 24">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        `;
+        deleteBtn = `<button class="ad-delete-btn" onclick="deleteAd(event, '${ad.id}')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>`;
       }
-      
-      card.innerHTML = `
-        ${deleteBtn}
-        <div class="ad-image-container">${imgHtml}</div>
-        <div class="ad-info">
-          <div class="ad-title">${escapeHtml(ad.title)}</div>
-          <div class="ad-price">${escapeHtml(ad.price)}</div>
-          <div class="ad-city">📍 ${escapeHtml(ad.city)}</div>
-        </div>
-      `;
+      card.innerHTML = `${deleteBtn}<div class="ad-image-container">${imgHtml}</div><div class="ad-info"><div class="ad-title">${escapeHtml(ad.title)}</div><div class="ad-price">${escapeHtml(ad.price)}</div><div class="ad-city">📍 ${escapeHtml(ad.city)}</div></div>`;
       return card;
     }
 
     function deleteAd(event, adId) {
       event.stopPropagation();
-      
       if (confirm('Удалить это объявление?')) {
         const ads = loadAds();
-        const filteredAds = ads.filter(ad => ad.id !== adId);
-        saveAds(filteredAds);
+        saveAds(ads.filter(ad => ad.id !== adId));
         renderAds();
         renderMyAds();
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
@@ -1410,12 +1382,8 @@
       const empty = document.getElementById('myAdsEmpty');
       grid.innerHTML = '';
       const myAds = ads.filter(ad => ad.userId === currentUser.id);
-      if (myAds.length === 0) { 
-        empty.style.display = 'flex'; 
-      } else {
-        empty.style.display = 'none';
-        myAds.forEach(ad => grid.appendChild(createAdCard(ad, true)));
-      }
+      if (myAds.length === 0) { empty.style.display = 'flex'; }
+      else { empty.style.display = 'none'; myAds.forEach(ad => grid.appendChild(createAdCard(ad, true))); }
     }
 
     let searchTimeout;
@@ -1426,7 +1394,6 @@
 
     let selectedPhotos = [];
     const bottomNav = document.getElementById('bottomNav');
-
     function hideBottomNav() { bottomNav.classList.add('hidden'); }
     function showBottomNav() { bottomNav.classList.remove('hidden'); }
 
@@ -1440,12 +1407,7 @@
       hideBottomNav();
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
-
-    function closeCreateModal() {
-      document.getElementById('createModal').classList.remove('active');
-      showBottomNav();
-    }
-
+    function closeCreateModal() { document.getElementById('createModal').classList.remove('active'); showBottomNav(); }
     document.getElementById('openCreateBtn').addEventListener('click', openCreateModal);
 
     function resetPhotoSlots() {
@@ -1456,12 +1418,7 @@
         slot.onclick = () => addPhoto(i);
       }
     }
-
-    function addPhoto(index) {
-      document.getElementById('photoInput').dataset.index = index;
-      document.getElementById('photoInput').click();
-    }
-
+    function addPhoto(index) { document.getElementById('photoInput').dataset.index = index; document.getElementById('photoInput').click(); }
     function handlePhotoSelect(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
@@ -1471,30 +1428,26 @@
         const file = files[i];
         const reader = new FileReader();
         reader.onload = function (e) {
-          const dataUrl = e.target.result;
           const slotIndex = selectedPhotos.length;
           if (slotIndex >= 4) return;
-          selectedPhotos.push(dataUrl);
-          updatePhotoSlot(slotIndex, dataUrl);
+          selectedPhotos.push(e.target.result);
+          updatePhotoSlot(slotIndex, e.target.result);
         };
         reader.readAsDataURL(file);
       }
       event.target.value = '';
     }
-
     function updatePhotoSlot(index, dataUrl) {
       const slot = document.getElementById('photoSlot' + index);
       slot.innerHTML = `<img src="${dataUrl}" alt="Photo"><button class="remove-btn" onclick="removePhoto(event, ${index})">✕</button>`;
       slot.onclick = null;
     }
-
     function removePhoto(event, index) {
       event.stopPropagation();
       selectedPhotos.splice(index, 1);
       resetPhotoSlots();
       selectedPhotos.forEach((photo, i) => updatePhotoSlot(i, photo));
     }
-
     function createAd() {
       const title = document.getElementById('adTitle').value.trim();
       const price = document.getElementById('adPrice').value.trim();
@@ -1503,7 +1456,6 @@
       if (!price) { tg.showAlert('Введите цену'); return; }
       if (!city) { tg.showAlert('Введите город'); return; }
       if (selectedPhotos.length === 0) { tg.showAlert('Добавьте хотя бы одну фотографию'); return; }
-
       const ads = loadAds();
       const newAd = {
         id: 'ad_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
@@ -1511,9 +1463,7 @@
         userName: currentUser.firstName,
         userUsername: currentUser.username,
         userPhoto: currentUser.photoUrl,
-        title: title,
-        price: price,
-        city: city,
+        title, price, city,
         photos: selectedPhotos.slice(0, 4),
         createdAt: Date.now()
       };
@@ -1567,36 +1517,22 @@
       currentCarouselIndex = index;
       document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === index));
     }
+    function closeDetailModal() { document.getElementById('detailModal').classList.remove('active'); showBottomNav(); }
 
-    function closeDetailModal() {
-      document.getElementById('detailModal').classList.remove('active');
-      showBottomNav();
-    }
-
-    // ✅ НОВАЯ ФУНКЦИЯ: СОЗДАНИЕ/ОТКРЫТИЕ ЧАТА ВНУТРИ ПРИЛОЖЕНИЯ
     function contactSeller() {
       const modal = document.getElementById('detailModal');
       const adId = modal.dataset.adId;
       const ads = loadAds();
       const ad = ads.find(a => a.id === adId);
-      
       if (!ad) return;
-      
       currentAdForChat = ad;
-      
-      // Получаем или создаем чат
       const chats = loadChats();
       let chat = chats.find(c => c.adId === adId && c.sellerId === ad.userId);
-      
       if (!chat) {
-        // Создаем новый чат
         chat = {
           id: 'chat_' + Date.now(),
-          adId: adId,
-          adTitle: ad.title,
-          sellerId: ad.userId,
-          sellerName: ad.userName,
-          sellerPhoto: ad.userPhoto,
+          adId, adTitle: ad.title,
+          sellerId: ad.userId, sellerName: ad.userName, sellerPhoto: ad.userPhoto,
           buyerId: currentUser.id,
           messages: [],
           createdAt: Date.now(),
@@ -1605,8 +1541,6 @@
         chats.push(chat);
         saveChats(chats);
       }
-      
-      // Открываем чат
       openChat(chat);
     }
 
@@ -1614,13 +1548,17 @@
       const chatModal = document.getElementById('chatModal');
       document.getElementById('chatSellerName').textContent = chat.sellerName;
       document.getElementById('chatSellerAd').textContent = chat.adTitle;
-      
       chatModal.dataset.chatId = chat.id;
       chatModal.classList.add('active');
-      
+      // Сбрасываем непрочитанные
+      const chats = loadChats();
+      const chatIdx = chats.findIndex(c => c.id === chat.id);
+      if (chatIdx !== -1) {
+        chats[chatIdx].unreadCount = 0;
+        saveChats(chats);
+        renderMessages();
+      }
       renderChatMessages(chat);
-      
-      // Прокрутка вниз
       const messagesContainer = document.getElementById('chatMessages');
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
@@ -1633,24 +1571,16 @@
     function renderChatMessages(chat) {
       const container = document.getElementById('chatMessages');
       container.innerHTML = '';
-      
       if (chat.messages.length === 0) {
         container.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:40px 20px;font-size:14px;">Напишите первое сообщение продавцу</div>';
         return;
       }
-      
       chat.messages.forEach(msg => {
         const isSent = msg.senderId === currentUser.id;
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
-        
         const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-        
-        messageDiv.innerHTML = `
-          ${escapeHtml(msg.text)}
-          <div class="chat-message-time">${time}</div>
-        `;
-        
+        messageDiv.innerHTML = `${escapeHtml(msg.text)}<div class="chat-message-time">${time}</div>`;
         container.appendChild(messageDiv);
       });
     }
@@ -1658,41 +1588,24 @@
     function sendMessage() {
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
-      
       if (!text) return;
-      
       const chatModal = document.getElementById('chatModal');
       const chatId = chatModal.dataset.chatId;
       const chats = loadChats();
       const chat = chats.find(c => c.id === chatId);
-      
       if (chat) {
-        chat.messages.push({
-          id: 'msg_' + Date.now(),
-          senderId: currentUser.id,
-          text: text,
-          timestamp: Date.now()
-        });
+        chat.messages.push({ id: 'msg_' + Date.now(), senderId: currentUser.id, text, timestamp: Date.now() });
         chat.updatedAt = Date.now();
         saveChats(chats);
-        
         input.value = '';
         renderChatMessages(chat);
-        
-        // Прокрутка вниз
-        const messagesContainer = document.getElementById('chatMessages');
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Обновляем список чатов
+        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
         renderMessages();
       }
     }
 
-    // Отправка по Enter
     document.getElementById('chatInput')?.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        sendMessage();
-      }
+      if (e.key === 'Enter') sendMessage();
     });
 
     // ✅ СВАЙП ДЛЯ УДАЛЕНИЯ ЧАТА
@@ -1700,7 +1613,7 @@
       let startX = 0;
       let currentX = 0;
       let isSwiping = false;
-      const deleteWidth = 80;
+      const deleteWidth = 120;
       
       item.addEventListener('touchstart', (e) => {
         startX = e.touches[0].clientX;
@@ -1711,16 +1624,12 @@
       
       item.addEventListener('touchmove', (e) => {
         if (!isSwiping) return;
-        
         currentX = e.touches[0].clientX;
         const diff = startX - currentX;
-        
         if (diff > 0) {
-          // Свайп влево
           const translateX = Math.min(diff, deleteWidth);
           item.style.transform = `translateX(-${translateX}px)`;
         } else {
-          // Свайп вправо (возврат)
           const translateX = Math.max(0, diff + deleteWidth);
           item.style.transform = `translateX(-${translateX}px)`;
         }
@@ -1730,26 +1639,21 @@
         if (!isSwiping) return;
         isSwiping = false;
         item.classList.remove('swiping');
-        
         const diff = startX - currentX;
-        const deleteBg = item.querySelector('.message-delete-bg');
-        
+        const deleteBg = item.closest('.message-item-wrapper').querySelector('.message-delete-bg');
         if (diff > deleteWidth / 2) {
-          // Открыть кнопку удаления
           item.style.transform = `translateX(-${deleteWidth}px)`;
           if (deleteBg) deleteBg.classList.add('visible');
         } else {
-          // Закрыть кнопку удаления
           item.style.transform = 'translateX(0)';
           if (deleteBg) deleteBg.classList.remove('visible');
         }
       });
       
-      // Клик вне элемента закрывает свайп
       document.addEventListener('click', (e) => {
         if (!item.contains(e.target)) {
           item.style.transform = 'translateX(0)';
-          const deleteBg = item.querySelector('.message-delete-bg');
+          const deleteBg = item.closest('.message-item-wrapper')?.querySelector('.message-delete-bg');
           if (deleteBg) deleteBg.classList.remove('visible');
         }
       });
@@ -1758,8 +1662,7 @@
     function deleteChat(chatId) {
       if (confirm('Удалить этот чат?')) {
         const chats = loadChats();
-        const filteredChats = chats.filter(c => c.id !== chatId);
-        saveChats(filteredChats);
+        saveChats(chats.filter(c => c.id !== chatId));
         renderMessages();
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       }
@@ -1768,31 +1671,37 @@
     function renderMessages() {
       const chats = loadChats();
       const container = document.getElementById('messagesList');
-      
-      // Фильтруем чаты где текущий пользователь - покупатель
       const userChats = chats.filter(c => c.buyerId === currentUser.id);
       
       if (userChats.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-text">У вас пока нет чатов</div>
-          </div>
-        `;
+        container.innerHTML = `<div class="empty-state"><div class="empty-state-text">У вас пока нет чатов</div></div>`;
         return;
       }
       
-      // Сортируем по дате обновления
       userChats.sort((a, b) => b.updatedAt - a.updatedAt);
-      
       container.innerHTML = '';
+      
       userChats.forEach(chat => {
         const lastMessage = chat.messages[chat.messages.length - 1];
         const preview = lastMessage ? lastMessage.text : 'Нет сообщений';
-        const time = new Date(chat.updatedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         
         const wrapper = document.createElement('div');
         wrapper.className = 'message-item-wrapper';
         
+        // ✅ КРАСНАЯ КНОПКА УДАЛЕНИЯ СЗАДИ
+        const deleteBg = document.createElement('div');
+        deleteBg.className = 'message-delete-bg';
+        deleteBg.innerHTML = `
+          <svg viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+          <span>Удалить</span>
+        `;
+        
+        // ✅ КАРТОЧКА ЧАТА
         const messageItem = document.createElement('div');
         messageItem.className = 'message-item';
         messageItem.onclick = () => openChat(chat);
@@ -1801,26 +1710,19 @@
           ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>`
           : '<div class="message-avatar">👤</div>';
         
+        // ✅ СЧЁТЧИК НЕПРОЧИТАННЫХ
+        const unreadBadge = chat.unreadCount > 0 ? `<div class="unread-badge">${chat.unreadCount}</div>` : '';
+        
         messageItem.innerHTML = `
           ${avatarHtml}
           <div class="message-content">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div class="message-name">${escapeHtml(chat.sellerName)}</div>
-              <div class="message-time">${time}</div>
-            </div>
+            <div class="message-name">${escapeHtml(chat.sellerName)}</div>
             <div class="message-preview">${escapeHtml(preview)}</div>
           </div>
+          ${unreadBadge}
         `;
         
-        const deleteBg = document.createElement('div');
-        deleteBg.className = 'message-delete-bg';
-        deleteBg.innerHTML = `
-          <svg viewBox="0 0 24 24">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          </svg>
-        `;
-        
+        // ✅ СКРЫТАЯ КНОПКА УДАЛЕНИЯ
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'message-delete-btn';
         deleteBtn.onclick = (e) => {
@@ -1833,7 +1735,6 @@
         wrapper.appendChild(deleteBtn);
         container.appendChild(wrapper);
         
-        // Инициализация свайпа
         initChatSwipe(messageItem, chat.id);
       });
     }
@@ -1856,13 +1757,9 @@
     }, { passive: true });
 
     let initialHeight = window.innerHeight;
-
     window.addEventListener('resize', () => {
-      if (window.innerHeight < initialHeight - 100) {
-        hideBottomNav();
-      } else {
-        showBottomNav();
-      }
+      if (window.innerHeight < initialHeight - 100) hideBottomNav();
+      else showBottomNav();
     });
 
     setRandomSearchPlaceholder();
