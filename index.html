@@ -524,11 +524,17 @@
       margin: 0 auto;
     }
     .chat-modal.active { display: flex; }
+
+    /* ✅ СКРЫТИЕ НАВИГАЦИИ ПРИ ОТКРЫТОМ ЧАТЕ */
+    .chat-modal.active ~ .bottom-nav {
+      display: none !important;
+    }
     
-    /* Верхняя таблетка чата */
+    /* Верхняя плавающая панель */
     .chat-header-pill-container {
       position: absolute;
-      top: 10px; /* Отступ сверху */
+      /* ✅ СДВИГ ВНИЗ НА 90PX */
+      top: 90px; 
       left: 0;
       right: 0;
       z-index: 10;
@@ -634,7 +640,8 @@
     .chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 80px 16px 20px; /* Большой отступ сверху для хедера */
+      /* ✅ ОТСТУП СВЕРХУ 80PX (ПУСТОЕ ПРОСТРАНСТВО) */
+      padding: 80px 16px 20px; 
       display: flex;
       flex-direction: column;
       gap: 8px;
