@@ -82,7 +82,8 @@
     /* ===== HEADER ===== */
     .header {
       position: fixed;
-      top: 0;
+      /* ИЗМЕНЕНО: Сдвиг вниз на 25px для безопасной зоны */
+      top: 25px; 
       left: 0;
       right: 0;
       z-index: 100;
@@ -128,7 +129,8 @@
 
     .main-content {
       position: fixed;
-      top: 55px;
+      /* ИЗМЕНЕНО: 25px (safe area) + 55px (header height) = 80px */
+      top: 80px;
       left: 0;
       right: 0;
       bottom: 90px;
@@ -472,7 +474,8 @@
     /* Chat Modal */
     .chat-modal {
       position: fixed;
-      top: 55px;
+      /* ИЗМЕНЕНО: Сдвиг вниз на 25px (было 55px, стало 80px) */
+      top: 80px;
       left: 0;
       right: 0;
       bottom: 90px;
