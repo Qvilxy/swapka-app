@@ -116,7 +116,6 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
       z-index: 2;
       pointer-events: auto;
-      /* Поднят еще на 10px: было 73px, стало 63px */
       margin-top: 63px;
     }
     /* ----------------------------- */
@@ -585,7 +584,8 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+      /* ИЗМЕНЕНИЕ: Padding-top увеличен с 20px до 50px (20 + 30) */
+      padding: 50px 16px calc(20px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column-reverse;
       gap: 8px;
@@ -639,7 +639,8 @@
       padding: 10px 16px;
       padding-bottom: max(10px, env(safe-area-inset-bottom));
       background: var(--bg-primary);
-      border-top: 1px solid var(--border-color);
+      /* ИЗМЕНЕНИЕ: Убрана верхняя граница (была 1px solid ...) */
+      border-top: none;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -1954,12 +1955,9 @@
       currentAdForChat = null;
       removeAttachedPhoto();
       
-      setTimeout(() => {
-        switchTab('messages', 1);
-        setTimeout(() => {
-          updateIndicatorPosition(1, false);
-        }, 50);
-      }, 100);
+      // ИСПРАВЛЕНИЕ БАГА: Явно переключаем на вкладку сообщений
+      // Это гарантирует, что индикатор останется на сообщениях
+      switchTab('messages', 1);
       
       showBottomNav();
     }
