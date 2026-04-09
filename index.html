@@ -79,23 +79,23 @@
       -webkit-user-select: none;
     }
 
-    /* ===== HEADER (ИЗМЕНЕНО) ===== */
+    /* ===== HEADER (ИЗМЕНЕНО: Высота 145px = 90px база + 55px safe area) ===== */
     .header {
       position: fixed;
-      top: 0; /* Приклеено к самому верху экрана */
+      top: 0;
       left: 0;
       right: 0;
       z-index: 100;
       /* УВЕЛИЧЕНА ВЫСОТА ШАПКИ */
-      height: 90px; 
+      height: 145px; 
       background: var(--bg-primary);
-      /* ❌ КРАСНАЯ ЛИНИЯ УДАЛЕНА */
       transition: background 0.3s;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-end; /* Прижимаем контент к низу шапки */
       pointer-events: none;
       overflow: hidden;
+      padding-bottom: 10px; /* Небольшой отступ снизу контента */
     }
 
     .marquee-container {
@@ -113,7 +113,6 @@
 
     .marquee-item {
       font-family: 'Arial Black', 'Impact', 'Helvetica Neue', Arial, sans-serif;
-      /* УВЕЛИЧЕН РАЗМЕР ТЕКСТА ДЛЯ НОВОЙ ВЫСОТЫ */
       font-size: 42px; 
       font-weight: 900;
       color: #000000;
@@ -121,8 +120,8 @@
       letter-spacing: 2px;
       flex-shrink: 0;
       padding-right: 7px;
-      /* ✅ ОПУСКАЕМ ТЕКСТ ВНИЗ НА 12px */
-      padding-top: 12px;
+      /* Отступ сверху убран, так как мы прижали контент к низу через flex */
+      padding-top: 0;
     }
 
     @keyframes marquee {
@@ -130,11 +129,11 @@
       100% { transform: translateX(0); }
     }
 
-    /* ===== MAIN CONTENT (ИЗМЕНЕНО) ===== */
+    /* ===== MAIN CONTENT (ИЗМЕНЕНО: Сдвиг на 145px) ===== */
     .main-content {
       position: fixed;
-      /* СДВИГ ВНИЗ НА ВСЮ ВЫСОТУ ШАПКИ (90px) */
-      top: 90px; 
+      /* СДВИГ ВНИЗ НА ВСЮ ВЫСОТУ ШАПКИ (145px) */
+      top: 145px; 
       left: 0;
       right: 0;
       bottom: 90px; /* Место под навигацию */
@@ -478,8 +477,8 @@
     /* Chat Modal */
     .chat-modal {
       position: fixed;
-      /* ИЗМЕНЕНО: Сдвиг вниз на 90px (высота новой шапки) */
-      top: 90px;
+      /* ИЗМЕНЕНО: Сдвиг вниз на 145px (высота новой шапки) */
+      top: 145px;
       left: 0;
       right: 0;
       bottom: 90px;
