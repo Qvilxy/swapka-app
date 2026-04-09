@@ -12,8 +12,10 @@
       --text-primary: #000000;
       --text-secondary: #8e8e93;
       --border-color: #e5e5ea;
-      /* Усиленная тень для светлой темы */
+      
+      /* Стандартная тень для карточек товаров */
       --shadow: 0 4px 16px rgba(0,0,0,0.08); 
+      
       --card-bg: #ffffff;
       --search-bg: #ffffff;
       
@@ -34,8 +36,10 @@
       --text-primary: #ffffff;
       --text-secondary: #8e8e93;
       --border-color: #3a3a3c;
-      /* Усиленная тень для темной темы */
+      
+      /* Стандартная тень для темной темы */
       --shadow: 0 4px 16px rgba(0,0,0,0.4);
+      
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
 
@@ -304,7 +308,7 @@
       color: var(--text-secondary);
     }
 
-    /* ✅ НОВЫЙ ДИЗАЙН ЧАТОВ С ТЕНЬЮ */
+    /* ✅ НОВЫЙ ДИЗАЙН ЧАТОВ С УСИЛЕННОЙ ТЕНЬЮ */
     .messages-list { padding: 16px; }
     
     .message-item-wrapper {
@@ -370,7 +374,7 @@
       display: block;
     }
 
-    /* ✅ КАРТОЧКА ЧАТА С ТЕНЬЮ */
+    /* ✅ КАРТОЧКА ЧАТА С ЭФФЕКТОМ ВОЗВЫШЕНИЯ */
     .message-item {
       display: flex; 
       align-items: center; 
@@ -379,12 +383,22 @@
       background: var(--card-bg); 
       border-radius: 100px;
       cursor: pointer; 
-      transition: transform 0.2s ease-out, background 0.2s;
+      transition: transform 0.2s ease-out, background 0.2s, box-shadow 0.2s;
       position: relative;
       z-index: 2;
       touch-action: pan-y;
-      /* Явная тень для эффекта "таблетки" */
-      box-shadow: var(--shadow);
+      
+      /* Усиленная тень для эффекта "таблетки" */
+      box-shadow: 
+        0 6px 15px rgba(0,0,0,0.08),   /* Мягкая широкая тень */
+        0 2px 6px rgba(0,0,0,0.06);    /* Более четкая тень у основания */
+    }
+
+    /* Адаптация тени для темной темы */
+    .dark-theme .message-item {
+      box-shadow: 
+        0 6px 15px rgba(0,0,0,0.4),
+        0 2px 6px rgba(0,0,0,0.3);
     }
     
     .message-item.swiping {
