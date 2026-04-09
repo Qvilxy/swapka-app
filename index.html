@@ -2060,15 +2060,9 @@
       currentAdForChat = null;
       removeAttachedPhoto();
       
-      // ✅ ИСПРАВЛЕНИЕ БАГА ИНДИКАТОРА
-      // Находим активную кнопку в навигации и принудительно ставим индикатор на неё
-      const activeNavBtn = document.querySelector('.nav-item.active');
-      if (activeNavBtn) {
-        const index = Array.from(navItems).indexOf(activeNavBtn);
-        if (index !== -1) {
-           updateIndicatorPosition(index, false);
-        }
-      }
+      // ✅ ИСПРАВЛЕНИЕ: Всегда переключаемся на вкладку "Сообщения" при закрытии чата
+      // Это предотвращает застревание индикатора на вкладке "Главная"
+      switchTab('messages', 1);
       
       showBottomNav();
     }
@@ -2193,10 +2187,12 @@
         renderChatMessages(chat);
         updateChatHeaderStatus(chat); // Обновить статус на "В сети"
         
-        // ✅ ПРОКРУТКА ВНИЗ ПОСЛЕ ОТПРАВКИ
-        // Это заставляет новые сообщения появляться снизу и расти вверх
-        const messagesContainer = document.getElementById('chatMessages');
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        // ✅ ИСПРАВЛЕНИЕ: Используем requestAnimationFrame для гарантии прокрутки после отрисовки DOM
+        // Это обеспечивает появление первого сообщения внизу экрана (у поля ввода)
+        requestAnimationFrame(() => {
+          const messagesContainer = document.getElementById('chatMessages');
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        });
         
         renderMessages(); // Обновить список чатов (превью)
       }
