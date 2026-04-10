@@ -2224,8 +2224,12 @@
       if (!chat) {
         chat = {
           id: 'chat_' + Date.now(),
-          adId: ad.id, adTitle: ad.title,
-          sellerId: ad.userId, sellerName: ad.userName, sellerPhoto: ad.userPhoto, sellerUsername: ad.userUsername,
+          adId: ad.id,
+          adTitle: ad.title,
+          sellerId: ad.userId,
+          sellerName: ad.userName || 'Пользователь',
+          sellerPhoto: ad.userPhoto || '',
+          sellerUsername: ad.userUsername || '',
           buyerId: currentUser.id,
           messages: [],
           createdAt: Date.now(),
@@ -2271,12 +2275,16 @@
 
     function openChat(chat) {
       const chatScreen = document.getElementById('chatScreen');
-      document.getElementById('chatHeaderName').textContent = chat.sellerName;
+      document.getElementById('chatHeaderName').textContent = 
+        (chat.sellerName && chat.sellerName.trim() !== '') ? chat.sellerName : 'Пользователь';
+      
       const avatarEl = document.getElementById('chatHeaderAvatar');
-      if (chat.sellerPhoto) {
-        avatarEl.innerHTML = `<img src="${chat.sellerPhoto}" alt="">`;
+      const sellerPhoto = chat.sellerPhoto && chat.sellerPhoto.trim() !== '' ? chat.sellerPhoto : null;
+      
+      if (sellerPhoto) {
+        avatarEl.innerHTML = `<img src="${sellerPhoto}" alt="">`;
       } else {
-        avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
+        avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-secondary);color:var(--text-secondary);font-size:16px;">👤</div>`;
       }
       chatScreen.dataset.chatId = chat.id;
       
@@ -2329,12 +2337,12 @@
         return;
       }
 
-      const modal = document.getElementById('otherProfileModal');
-      
       const avatarImg = document.getElementById('otherProfileAvatar');
       const placeholder = document.getElementById('otherProfileAvatarPlaceholder');
-      if (chat.sellerPhoto) {
-        avatarImg.src = chat.sellerPhoto;
+      const sellerPhoto = chat.sellerPhoto && chat.sellerPhoto.trim() !== '' ? chat.sellerPhoto : null;
+      
+      if (sellerPhoto) {
+        avatarImg.src = sellerPhoto;
         avatarImg.style.display = 'block';
         placeholder.style.display = 'none';
       } else {
@@ -2342,7 +2350,8 @@
         placeholder.style.display = 'flex';
       }
 
-      document.getElementById('otherProfileName').textContent = chat.sellerName || 'Пользователь';
+      document.getElementById('otherProfileName').textContent = 
+        (chat.sellerName && chat.sellerName.trim() !== '') ? chat.sellerName : 'Пользователь';
       
       renderStars('otherProfileRating', 0);
 
