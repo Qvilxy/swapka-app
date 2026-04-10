@@ -833,15 +833,25 @@
     .profile-username { font-size: 15px; color: var(--text-secondary); margin-top: 4px; transform: translateY(-5px); }
     .profile-rating { display: flex; justify-content: center; gap: 4px; margin-top: 8px; font-size: 18px; transform: translateY(-10px); }
 
+    /* ИЗМЕНЕННЫЕ СТИЛИ КНОПКИ "СОЗДАТЬ ОБЪЯВЛЕНИЕ" */
     .create-ad-btn {
       display: block; margin: 0 auto 20px; padding: 14px 15px; width: fit-content; min-width: 200px;
-      background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
-      background-size: 400% 400%; animation: gradientShift 6s ease infinite;
-      color: white; border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
+      /* Статичный градиент: Голубой -> Бирюзовый -> Белый */
+      background: linear-gradient(135deg, #87CEEB, #40E0D0, #FFFFFF);
+      color: #000000; /* Темный текст для контраста на светлом фоне */
+      border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
       transform: translateY(38px); box-shadow: 0 4px 20px rgba(135, 206, 235, 0.4);
     }
     .create-ad-btn:active { transform: translateY(38px) scale(0.97); opacity: 0.9; }
+
+    /* Стили для темной темы */
+    .dark-theme .create-ad-btn {
+      /* Фиолетовый -> Розовый */
+      background: linear-gradient(135deg, #8A2BE2, #FF69B4);
+      color: #ffffff; /* Белый текст для контраста */
+      box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4);
+    }
 
     .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
     .my-ads-grid-wrapper { transform: translateY(30px); }
