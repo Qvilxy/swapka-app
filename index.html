@@ -1110,26 +1110,75 @@
     }
     .other-profile-modal.active { display: block; animation: slideUp 0.3s ease; }
     
-    .other-profile-header {
-      position: sticky; top: 0; background: var(--bg-primary); padding: 12px 16px;
-      padding-top: max(12px, env(safe-area-inset-top)); display: flex; align-items: center; z-index: 10;
-      border-bottom: 1px solid var(--border-color);
+    /* Шапка для чужого профиля */
+    .other-profile-header-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 170; /* Выше чем контент, но ниже модалок если нужно */
+      height: 122px;
+      
+      background: linear-gradient(90deg, 
+        #8A2BE2 0%, 
+        #FFD60A 25%, 
+        #007AFF 50%, 
+        #FFFFFF 75%, 
+        #FF00FF 100%,
+        #8A2BE2 100% 
+      );
+      background-size: 400% 100%;
+      animation: gradientFlow 15s ease infinite;
+      
+      display: flex;
+      justify-content: center;
+      align-items: center; 
+      pointer-events: none;
+      overflow: hidden;
+      max-width: 430px;
+      margin: 0 auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    .other-profile-back {
-      background: var(--bg-secondary); border: none; border-radius: 50%; width: 36px; height: 36px;
-      font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
-      margin-right: 12px;
-    }
-    .other-profile-back svg {
-      width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.5; fill: none;
-    }
-    .other-profile-title {
-      font-size: 18px; font-weight: 600; color: var(--text-primary);
+
+    .other-profile-header-fixed .header-logo {
+      width: 160px;
+      height: auto;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+      z-index: 2;
+      pointer-events: auto;
+      margin-top: 63px;
     }
     
-    /* Используем те же классы, что и в основном профиле для единообразия */
+    .other-profile-back-fixed {
+      position: absolute;
+      top: max(12px, env(safe-area-inset-top));
+      left: 16px;
+      z-index: 180;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    
+    .other-profile-back-fixed svg {
+      width: 18px; height: 18px; stroke: #000; stroke-width: 2.5; fill: none;
+    }
+    
+    .dark-theme .other-profile-back-fixed svg {
+      stroke: #fff;
+    }
+
     .other-profile-content {
-      /* padding удален, так как используем profile-shifted-content */
+      padding-top: 122px; /* Отступ сверху равен высоте шапки */
+      min-height: 100vh;
     }
 
     .other-profile-avatar {
@@ -1303,32 +1352,35 @@
 
   <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА (ОБНОВЛЕНО) -->
   <div class="other-profile-modal" id="otherProfileModal">
-    <div class="other-profile-header">
-      <button class="other-profile-back" onclick="closeOtherProfile()">
+    <!-- Новая шапка для чужого профиля -->
+    <div class="other-profile-header-fixed">
+      <img src="logos.png" alt="Swapka Logo" class="header-logo">
+      <button class="other-profile-back-fixed" onclick="closeOtherProfile()">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
-      <div class="other-profile-title">Профиль</div>
     </div>
     
-    <!-- Используем структуру, аналогичную личному профилю -->
-    <div class="profile-shifted-content">
-      <div class="profile-user-info">
-        <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
-        <div class="other-profile-name" id="otherProfileName">Имя</div>
-        
-        <!-- Рейтинг вместо юзернейма -->
-        <div class="other-profile-rating" id="otherProfileRating">
-           <!-- Звезды будут добавлены через JS -->
+    <div class="other-profile-content">
+      <!-- Используем структуру, аналогичную личному профилю -->
+      <div class="profile-shifted-content">
+        <div class="profile-user-info">
+          <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
+          <div class="other-profile-name" id="otherProfileName">Имя</div>
+          
+          <!-- Рейтинг вместо юзернейма -->
+          <div class="other-profile-rating" id="otherProfileRating">
+             <!-- Звезды будут добавлены через JS -->
+          </div>
         </div>
-      </div>
 
-      <!-- Кнопка создания и луна убраны -->
+        <!-- Кнопка создания и луна убраны -->
 
-      <div class="other-ads-title" id="otherAdsTitle">Активные объявления (0)</div>
-      <div class="other-ads-grid-wrapper">
-        <div class="ads-grid" id="otherAdsGrid"></div>
-        <div class="empty-state" id="otherAdsEmpty" style="position:relative; transform:none; margin-top:20px;">
-          <div class="empty-state-text">Нет активных объявлений</div>
+        <div class="other-ads-title" id="otherAdsTitle">Активные объявления (0)</div>
+        <div class="other-ads-grid-wrapper">
+          <div class="ads-grid" id="otherAdsGrid"></div>
+          <div class="empty-state" id="otherAdsEmpty" style="position:relative; transform:none; margin-top:20px;">
+            <div class="empty-state-text">Нет активных объявлений</div>
+          </div>
         </div>
       </div>
     </div>
