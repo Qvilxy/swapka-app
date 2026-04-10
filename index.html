@@ -26,7 +26,7 @@
       --chat-header-bg: rgba(249, 249, 249, 0.85);
       --star-empty: #c7c7cc;
       --star-filled: #FFD60A;
-      --header-height: 122px; /* Высота градиентной шапки */
+      --header-height: 122px;
     }
 
     .dark-theme {
@@ -114,7 +114,6 @@
       max-width: 430px;
       margin: 0 auto;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      /* Важно: отступ сверху для безопасной зоны iOS, если нужно, но TWA обычно сам рулит */
       padding-top: env(safe-area-inset-top); 
     }
 
@@ -130,7 +129,7 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
       z-index: 2;
       pointer-events: auto;
-      margin-top: 20px; /* Корректировка под safe area */
+      margin-top: 20px;
     }
 
     .main-content {
@@ -147,7 +146,6 @@
       max-width: 430px;
       margin: 0 auto;
       background: var(--bg-primary);
-      /* Учитываем safe area сверху для контента, если хедер прозрачный, но у нас он цветной */
     }
 
     .page {
@@ -495,32 +493,42 @@
     
     .chat-header-pill-container {
       position: absolute;
-      top: 90px; /* Отступ под нативной кнопкой Telegram */
+      top: 90px;
       left: 0;
       right: 0;
       z-index: 10;
       display: flex;
       align-items: center;
+      justify-content: center; /* Центрируем контейнер */
       padding: 0 10px;
       pointer-events: none;
     }
 
+    /* --- ИЗМЕНЕНИЯ ТАБЛЕТКИ ПРОФИЛЯ --- */
     .chat-profile-pill {
       pointer-events: auto;
-      flex: 1;
+      /* Убрали flex:1 и max-width: 85%, чтобы контролировать размер контентом и паддингами */
       display: flex;
       align-items: center;
       background: var(--chat-header-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-radius: 100px;
-      padding: 6px 12px 6px 6px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.05);
+      
+      /* Увеличенные отступы для эффекта 1.5x */
+      padding: 10px 24px 10px 10px; 
+      
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15), 0 2px 5px rgba(0,0,0,0.05);
       cursor: pointer;
       transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
-      max-width: 85%;
-      margin-left: 50px; /* Отступ чтобы не перекрывать область кнопки Назад */
+      
+      /* Центрирование */
+      margin: 0 auto; 
+      
+      /* Ограничиваем ширину, чтобы не вылезало за экран на узких устройствах, но оставляем простор */
+      max-width: 90%; 
     }
+    
     .chat-profile-pill:active {
       transform: scale(0.98);
       background: var(--bg-secondary);
@@ -528,11 +536,12 @@
     }
 
     .chat-pill-avatar {
-      width: 36px;
-      height: 36px;
+      /* Немного увеличили аватарку пропорционально таблетке */
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: var(--bg-secondary);
-      margin-right: 10px;
+      margin-right: 14px;
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -550,19 +559,21 @@
     }
 
     .chat-pill-name {
-      font-size: 15px;
+      /* Увеличили шрифт имени */
+      font-size: 17px;
       font-weight: 600;
       color: var(--text-primary);
-      line-height: 1.1;
+      line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .chat-pill-status {
-      font-size: 12px;
+      /* Увеличили шрифт статуса */
+      font-size: 13px;
       color: var(--text-secondary);
-      line-height: 1.1;
+      line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -572,12 +583,13 @@
       color: #34C759;
       font-weight: 500;
     }
+    /* --- КОНЕЦ ИЗМЕНЕНИЙ ТАБЛЕТКИ --- */
 
     .chat-messages {
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 160px 16px calc(20px + env(safe-area-inset-bottom)); /* Увеличен padding сверху */
+      padding: 180px 16px calc(20px + env(safe-area-inset-bottom)); /* Увеличен padding сверху из-за большой таблетки */
       display: flex;
       flex-direction: column-reverse;
       gap: 8px;
@@ -1149,7 +1161,7 @@
 </head>
 <body>
 
-  <!-- ГЛОБАЛЬНАЯ ШАПКА (Только логотип, кнопка Назад управляется Telegram API) -->
+  <!-- ГЛОБАЛЬНАЯ ШАПКА -->
   <div class="app-header">
     <img src="logos.png" alt="Swapka Logo" class="header-logo">
   </div>
@@ -1441,12 +1453,10 @@
     });
 
     function updateTelegramBackButton() {
-      // Если мы на главной вкладке или стек пуст -> скрываем кнопку
       const currentScreen = getCurrentScreenId();
       if (!currentScreen || mainTabs.includes(currentScreen)) {
         tg.BackButton.hide();
       } else {
-        // Если мы в глубине (чат, деталь, профиль) -> показываем кнопку
         tg.BackButton.show();
       }
     }
@@ -1454,17 +1464,14 @@
     function navigateTo(screenId, data = null) {
       const currentScreen = getCurrentScreenId();
       
-      // Логика стека: запоминаем, откуда пришли
       if (currentScreen) {
         navStack.push(currentScreen);
       }
 
-      // Скрываем все экраны
       document.querySelectorAll('.page, .chat-screen, .detail-modal, .other-profile-modal').forEach(el => {
         el.classList.remove('active');
       });
 
-      // Показываем целевой экран
       let targetEl;
       if (screenId === 'home') targetEl = document.getElementById('pageHome');
       else if (screenId === 'messages') targetEl = document.getElementById('pageMessages');
@@ -1476,14 +1483,12 @@
       if (targetEl) {
         targetEl.classList.add('active');
         
-        // Обновляем вершину стека
         if (navStack.length > 0) {
            navStack.pop(); 
         }
         navStack.push(screenId);
       }
 
-      // Управление нижней навигацией
       if (mainTabs.includes(screenId)) {
         document.getElementById('bottomNav').classList.remove('hidden');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1497,10 +1502,8 @@
         document.getElementById('bottomNav').classList.add('hidden');
       }
 
-      // Обновляем кнопку Telegram
       updateTelegramBackButton();
 
-      // Данные для экранов
       if (screenId === 'messages') renderMessages();
       if (screenId === 'profile') renderMyAds();
       if (screenId === 'home') renderAds();
@@ -1527,7 +1530,6 @@
 
     function goBack() {
       if (navStack.length <= 1) {
-        // Если стек почти пуст, возвращаемся на домашнюю
         navigateTo('home');
         navStack = ['home'];
         return;
