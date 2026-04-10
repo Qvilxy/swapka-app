@@ -24,6 +24,8 @@
       --icon-inactive: #8e8e93;
       --icon-active: #007AFF;
       --chat-header-bg: rgba(249, 249, 249, 0.85);
+      --star-empty: #c7c7cc;
+      --star-filled: #FFD60A;
     }
 
     .dark-theme {
@@ -44,6 +46,8 @@
       --icon-inactive: #8e8e93;
       --icon-active: #0A84FF;
       --chat-header-bg: rgba(44, 44, 46, 0.85);
+      --star-empty: #48484a;
+      --star-filled: #FFD60A;
     }
 
     * {
@@ -92,8 +96,6 @@
       z-index: 100;
       height: 122px;
       
-      /* ИЗМЕНЕНИЕ: Градиент растянут (400%) для плавности и анимации движения */
-      /* Порядок: Фиолетовый -> Желтый -> Синий -> Белый -> Фуксия -> Повтор начала для бесшовности */
       background: linear-gradient(90deg, 
         #8A2BE2 0%, 
         #FFD60A 25%, 
@@ -115,17 +117,10 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    /* Анимация течения градиента */
     @keyframes gradientFlow {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     .header-logo {
@@ -136,7 +131,6 @@
       pointer-events: auto;
       margin-top: 63px;
     }
-    /* ----------------------------- */
 
     .main-content {
       position: fixed;
@@ -850,22 +844,19 @@
     .profile-username { font-size: 15px; color: var(--text-secondary); margin-top: 4px; transform: translateY(-5px); }
     .profile-rating { display: flex; justify-content: center; gap: 4px; margin-top: 8px; font-size: 18px; transform: translateY(-10px); }
 
-    /* ИЗМЕНЕННЫЕ СТИЛИ КНОПКИ "СОЗДАТЬ ОБЪЯВЛЕНИЕ" - СПЛОШНОЙ СИНИЙ ЦВЕТ */
     .create-ad-btn {
       display: block; margin: 0 auto 20px; padding: 14px 15px; width: fit-content; min-width: 200px;
-      /* Статичный синий цвет */
       background: #007AFF;
-      color: #ffffff; /* Белый текст для контраста */
+      color: #ffffff;
       border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
       transform: translateY(38px); box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
     }
     .create-ad-btn:active { transform: translateY(38px) scale(0.97); opacity: 0.9; }
 
-    /* Стили для темной темы - тоже синий */
     .dark-theme .create-ad-btn {
       background: #0A84FF;
-      color: #ffffff; /* Белый текст для контраста */
+      color: #ffffff;
       box-shadow: 0 4px 20px rgba(10, 132, 255, 0.4);
     }
 
@@ -1110,6 +1101,7 @@
     }
     .main-content::-webkit-scrollbar { width: 0; }
 
+    /* --- OTHER PROFILE STYLES (UPDATED) --- */
     .other-profile-modal {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary);
       z-index: 160; display: none; overflow-y: auto;
@@ -1135,34 +1127,45 @@
       font-size: 18px; font-weight: 600; color: var(--text-primary);
     }
     
+    /* Используем те же классы, что и в основном профиле для единообразия */
     .other-profile-content {
-      padding: 20px 16px;
-      text-align: center;
+      /* padding удален, так как используем profile-shifted-content */
     }
+
     .other-profile-avatar {
-      width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px;
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px;
       display: block; background: var(--bg-secondary);
     }
-    .other-profile-name { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
-    .other-profile-username { font-size: 16px; color: var(--text-secondary); margin-bottom: 12px; }
-    .other-profile-rating { display: flex; justify-content: center; gap: 4px; font-size: 20px; color: #FFD700; margin-bottom: 20px; }
+    .other-profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
     
-    .other-profile-stats {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 16px 0;
-      border-top: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 20px;
+    .other-profile-rating { 
+      display: flex; justify-content: center; gap: 4px; 
+      margin-top: 8px; 
+      font-size: 20px; 
+      transform: translateY(-10px); /* Выравнивание с основным профилем */
     }
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    
+    .other-profile-rating svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--star-empty);
     }
-    .stat-value { font-size: 18px; font-weight: 700; color: var(--text-primary); }
-    .stat-label { font-size: 12px; color: var(--text-secondary); }
+    .other-profile-rating svg.filled {
+      fill: var(--star-filled);
+    }
+
+    .other-ads-title { 
+      font-size: 18px; font-weight: 700; 
+      padding: 0 16px 12px; 
+      color: var(--text-primary); 
+      transform: translateY(30px); 
+      text-align: left;
+    }
+    
+    .other-ads-grid-wrapper { 
+      transform: translateY(30px); 
+      padding-bottom: 40px;
+    }
 
   </style>
 </head>
@@ -1170,7 +1173,6 @@
 
   <!-- HEADER -->
   <div class="header">
-    <!-- Логотип SWAPKA по центру -->
     <img src="logos.png" alt="Swapka Logo" class="header-logo">
   </div>
 
@@ -1299,7 +1301,7 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА -->
+  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА (ОБНОВЛЕНО) -->
   <div class="other-profile-modal" id="otherProfileModal">
     <div class="other-profile-header">
       <button class="other-profile-back" onclick="closeOtherProfile()">
@@ -1307,28 +1309,28 @@
       </button>
       <div class="other-profile-title">Профиль</div>
     </div>
-    <div class="other-profile-content">
-      <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
-      <div class="other-profile-name" id="otherProfileName">Имя</div>
-      <div class="other-profile-username" id="otherProfileUsername">@username</div>
-      <div class="other-profile-rating">
-        <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
-      </div>
-      
-      <div class="other-profile-stats">
-        <div class="stat-item">
-          <div class="stat-value" id="otherProfileAdsCount">0</div>
-          <div class="stat-label">Объявлений</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value">4.8</div>
-          <div class="stat-label">Рейтинг</div>
+    
+    <!-- Используем структуру, аналогичную личному профилю -->
+    <div class="profile-shifted-content">
+      <div class="profile-user-info">
+        <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
+        <div class="other-profile-name" id="otherProfileName">Имя</div>
+        
+        <!-- Рейтинг вместо юзернейма -->
+        <div class="other-profile-rating" id="otherProfileRating">
+           <!-- Звезды будут добавлены через JS -->
         </div>
       </div>
-      
-      <p style="color:var(--text-secondary); font-size:14px; line-height:1.5;">
-        Пользователь Swapka. Предпочитает безопасные сделки и быстрые ответы.
-      </p>
+
+      <!-- Кнопка создания и луна убраны -->
+
+      <div class="other-ads-title" id="otherAdsTitle">Активные объявления (0)</div>
+      <div class="other-ads-grid-wrapper">
+        <div class="ads-grid" id="otherAdsGrid"></div>
+        <div class="empty-state" id="otherAdsEmpty" style="position:relative; transform:none; margin-top:20px;">
+          <div class="empty-state-text">Нет активных объявлений</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1444,8 +1446,6 @@
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
-    // Marquee logic removed as requested
-    
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
@@ -1554,9 +1554,7 @@
       });
     }
 
-    // ИСПРАВЛЕНИЕ БАГА: Функция updateIndicatorPosition теперь пересчитывает ширину, если она равна 0
     function updateIndicatorPosition(index, isDragging = false) {
-      // Пересчитываем ширину элемента навигации, если она не установлена или равна 0
       if (!indicatorPhysics.cachedItemWidth || indicatorPhysics.cachedItemWidth === 0) {
         const navItem = navItems[index] || navItems[0];
         if (navItem) {
@@ -1564,7 +1562,6 @@
         }
       }
       
-      // Если ширина все еще 0, пробуем вычислить её заново
       if (indicatorPhysics.cachedItemWidth === 0) {
         const navItem = navItems[0];
         if (navItem) {
@@ -1985,25 +1982,42 @@
         renderMessages();
       }
       renderChatMessages(chat);
-      // При использовании column-reverse прокрутка вниз = scrollTop = 0
       setTimeout(() => {
         const messagesContainer = document.getElementById('chatMessages');
         messagesContainer.scrollTop = 0;
       }, 100);
     }
 
-    // ИСПРАВЛЕНИЕ БАГА: Добавлена задержка для обновления DOM перед переключением вкладки
     function closeChat() {
       document.getElementById('chatModal').classList.remove('active');
       currentAdForChat = null;
       removeAttachedPhoto();
-      
-      // Небольшая задержка для обновления DOM перед переключением вкладки
       setTimeout(() => {
         switchTab('messages', 1);
       }, 50);
-      
       showBottomNav();
+    }
+
+    // Функция рендеринга звезд рейтинга
+    function renderStars(containerId, ratingValue) {
+      const container = document.getElementById(containerId);
+      if(!container) return;
+      container.innerHTML = '';
+      const maxStars = 3;
+      // Пока рейтинг всегда 0, но логика готова
+      const filledCount = 0; 
+
+      for(let i=0; i<maxStars; i++) {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        if(i < filledCount) svg.classList.add('filled');
+        
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z");
+        
+        svg.appendChild(path);
+        container.appendChild(svg);
+      }
     }
 
     function openOtherProfile() {
@@ -2014,18 +2028,46 @@
       if (!chat) return;
 
       const modal = document.getElementById('otherProfileModal');
+      
+      // Аватар
       const avatar = document.getElementById('otherProfileAvatar');
       if (chat.sellerPhoto) {
         avatar.src = chat.sellerPhoto;
         avatar.style.display = 'block';
       } else {
+        // Если фото нет, показываем плейсхолдер или скрываем
         avatar.style.display = 'none';
+        // Можно добавить fallback на div с иконкой, если нужно, но по ТЗ "с установленной аватаркой"
       }
+
+      // Имя
       document.getElementById('otherProfileName').textContent = chat.sellerName;
-      document.getElementById('otherProfileUsername').textContent = chat.sellerUsername ? '@' + chat.sellerUsername : '';
+      
+      // Рейтинг (3 звезды, изначально 0)
+      renderStars('otherProfileRating', 0);
+
+      // Объявления
       const ads = loadAds();
       const userAds = ads.filter(ad => ad.userId === chat.sellerId);
-      document.getElementById('otherProfileAdsCount').textContent = userAds.length;
+      const count = userAds.length;
+      const displayCount = count > 99 ? '99+' : count;
+      
+      document.getElementById('otherAdsTitle').textContent = `Активные объявления (${displayCount})`;
+      
+      const otherGrid = document.getElementById('otherAdsGrid');
+      const otherEmpty = document.getElementById('otherAdsEmpty');
+      otherGrid.innerHTML = '';
+      
+      if(count === 0) {
+        otherEmpty.style.display = 'flex';
+      } else {
+        otherEmpty.style.display = 'none';
+        userAds.forEach(ad => {
+          // Создаем обычную карточку (не мою, без кнопки удаления)
+          otherGrid.appendChild(createAdCard(ad, false));
+        });
+      }
+
       modal.classList.add('active');
     }
 
@@ -2042,7 +2084,6 @@
         return;
       }
       
-      // При column-reverse порядок должен быть обратным: новые сверху
       [...chat.messages].reverse().forEach(msg => {
         const isSent = msg.senderId === currentUser.id;
         const messageDiv = document.createElement('div');
@@ -2114,7 +2155,6 @@
         renderChatMessages(chat);
         updateChatHeaderStatus(chat);
         
-        // При column-reverse прокрутка вниз = scrollTop = 0
         setTimeout(() => {
           const messagesContainer = document.getElementById('chatMessages');
           messagesContainer.scrollTop = 0;
