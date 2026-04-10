@@ -833,11 +833,11 @@
     .profile-username { font-size: 15px; color: var(--text-secondary); margin-top: 4px; transform: translateY(-5px); }
     .profile-rating { display: flex; justify-content: center; gap: 4px; margin-top: 8px; font-size: 18px; transform: translateY(-10px); }
 
-    /* ИЗМЕНЕННЫЕ СТИЛИ КНОПКИ "СОЗДАТЬ ОБЪЯВЛЕНИЕ" */
+    /* ИЗМЕНЕННЫЕ СТИЛИ КНОПКИ "СОЗДАТЬ ОБЪЯВЛЕНИЕ" - СПЛОШНОЙ СИНИЙ ЦВЕТ */
     .create-ad-btn {
       display: block; margin: 0 auto 20px; padding: 14px 15px; width: fit-content; min-width: 200px;
-      /* Статичный градиент: Синий -> Розовый */
-      background: linear-gradient(135deg, #007AFF, #FF2D55);
+      /* Статичный синий цвет */
+      background: #007AFF;
       color: #ffffff; /* Белый текст для контраста */
       border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
@@ -845,12 +845,11 @@
     }
     .create-ad-btn:active { transform: translateY(38px) scale(0.97); opacity: 0.9; }
 
-    /* Стили для темной темы */
+    /* Стили для темной темы - тоже синий */
     .dark-theme .create-ad-btn {
-      /* Фиолетовый -> Розовый */
-      background: linear-gradient(135deg, #8A2BE2, #FF69B4);
+      background: #0A84FF;
       color: #ffffff; /* Белый текст для контраста */
-      box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4);
+      box-shadow: 0 4px 20px rgba(10, 132, 255, 0.4);
     }
 
     .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
