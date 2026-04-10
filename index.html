@@ -26,7 +26,6 @@
       --chat-header-bg: rgba(249, 249, 249, 0.85);
       --star-empty: #c7c7cc;
       --star-filled: #FFD60A;
-      --header-height: 122px;
     }
 
     .dark-theme {
@@ -88,14 +87,15 @@
       }
     }
 
-    /* --- HEADER & NAVIGATION --- */
-    .app-header {
+    /* --- СТИЛИ ДЛЯ ШАПКИ С АНИМАЦИЕЙ --- */
+    .header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 100;
-      height: var(--header-height);
+      height: 122px;
+      
       background: linear-gradient(90deg, 
         #8A2BE2 0%, 
         #FFD60A 25%, 
@@ -106,6 +106,7 @@
       );
       background-size: 400% 100%;
       animation: gradientFlow 15s ease infinite;
+      
       display: flex;
       justify-content: center;
       align-items: center; 
@@ -131,53 +132,9 @@
       margin-top: 63px;
     }
 
-    /* Кнопка Назад/Закрыть в шапке */
-    .global-back-btn {
-      position: absolute;
-      top: max(12px, env(safe-area-inset-top));
-      left: 16px;
-      z-index: 101;
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: none; /* Скрыта по умолчанию на главных вкладках */
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      pointer-events: auto;
-      transition: transform 0.1s, opacity 0.2s;
-    }
-    
-    .global-back-btn.visible {
-      display: flex;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .global-back-btn:active {
-      transform: scale(0.9);
-      background: rgba(255, 255, 255, 0.5);
-    }
-
-    .global-back-btn svg {
-      width: 18px; height: 18px; stroke: #000; stroke-width: 2.5; fill: none;
-    }
-    
-    .dark-theme .global-back-btn svg {
-      stroke: #fff;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
     .main-content {
       position: fixed;
-      top: var(--header-height);
+      top: 122px;
       left: 0;
       right: 0;
       bottom: 90px;
@@ -188,7 +145,6 @@
       will-change: scroll-position;
       max-width: 430px;
       margin: 0 auto;
-      background: var(--bg-primary); /* Фон контента */
     }
 
     .page {
@@ -210,7 +166,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- SEARCH & ADS --- */
     .search-container {
       padding: 12px 16px;
       background: var(--bg-primary);
@@ -366,7 +321,6 @@
       color: var(--text-secondary);
     }
 
-    /* --- MESSAGES --- */
     .messages-list { padding: 16px; }
     
     .message-item-wrapper {
@@ -514,8 +468,7 @@
       line-height: 1;
     }
 
-    /* --- CHAT SCREEN --- */
-    .chat-screen {
+    .chat-modal {
       position: fixed;
       top: 0;
       left: 0;
@@ -528,15 +481,15 @@
       max-width: 430px;
       margin: 0 auto;
     }
-    .chat-screen.active { display: flex; }
+    .chat-modal.active { display: flex; }
 
-    .chat-screen.active ~ .bottom-nav {
+    .chat-modal.active ~ .bottom-nav {
       display: none !important;
     }
     
     .chat-header-pill-container {
       position: absolute;
-      top: 90px; /* Отступ под глобальной кнопкой назад */
+      top: 90px;
       left: 0;
       right: 0;
       z-index: 10;
@@ -546,7 +499,31 @@
       pointer-events: none;
     }
 
-    /* Убрали локальную кнопку назад из чата, используем глобальную */
+    .chat-back-btn {
+      pointer-events: auto;
+      background: rgba(120, 120, 128, 0.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-right: 8px;
+      flex-shrink: 0;
+      transition: transform 0.1s;
+    }
+    .chat-back-btn:active { transform: scale(0.9); }
+    .chat-back-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--icon-active);
+      stroke-width: 2.5;
+      fill: none;
+    }
 
     .chat-profile-pill {
       pointer-events: auto;
@@ -562,7 +539,6 @@
       cursor: pointer;
       transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
       max-width: 85%;
-      margin-left: 50px; /* Отступ чтобы не перекрывать глобальную кнопку */
     }
     .chat-profile-pill:active {
       transform: scale(0.98);
@@ -620,7 +596,7 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 160px 16px calc(20px + env(safe-area-inset-bottom)); /* Увеличен padding сверху */
+      padding: 50px 16px calc(20px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column-reverse;
       gap: 8px;
@@ -812,7 +788,6 @@
       font-weight: 500;
     }
 
-    /* --- PROFILE --- */
     .profile-moon-wrapper {
       position: relative; height: 50px; display: flex;
       justify-content: flex-end; align-items: center; padding: 0 16px; z-index: 10;
@@ -903,7 +878,6 @@
     .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
     .my-ads-grid-wrapper { transform: translateY(30px); }
 
-    /* --- BOTTOM NAV --- */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -1044,7 +1018,6 @@
       opacity: 0;
     }
 
-    /* --- MODALS --- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5); z-index: 200; display: none;
@@ -1090,7 +1063,6 @@
     }
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* --- DETAIL MODAL (FULL SCREEN) --- */
     .detail-modal {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary);
       z-index: 200; display: none; overflow-y: auto;
@@ -1104,12 +1076,24 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* Убираем локальный хедер детали, так как есть глобальный */
-    .detail-header-spacer {
-       height: var(--header-height);
-       width: 100%;
+    .detail-header {
+      position: sticky; top: 0; background: var(--bg-primary); padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top)); display: flex; justify-content: space-between; align-items: center; z-index: 10;
+      border-bottom: 1px solid var(--border-color);
     }
-
+    .detail-back {
+      background: var(--bg-secondary); border: none; border-radius: 50%; width: 36px; height: 36px;
+      font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
+    }
+    .detail-back svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--text-secondary);
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
     .image-carousel { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: var(--bg-secondary); }
     .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
     .carousel-slide { min-width: 100%; height: 100%; }
@@ -1132,7 +1116,7 @@
     }
     .main-content::-webkit-scrollbar { width: 0; }
 
-    /* --- OTHER PROFILE STYLES --- */
+    /* --- OTHER PROFILE STYLES (UPDATED) --- */
     .other-profile-modal {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary);
       z-index: 160; display: none; overflow-y: auto;
@@ -1141,17 +1125,74 @@
     }
     .other-profile-modal.active { display: block; animation: slideUp 0.3s ease; }
     
+    /* Шапка для чужого профиля */
     .other-profile-header-fixed {
-      /* Используем глобальную шапку, этот блок нужен только для фона если нужно, но у нас градиент общий */
       position: fixed;
-      top: 0; left: 0; right: 0;
-      height: var(--header-height);
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 170; /* Выше чем контент, но ниже модалок если нужно */
+      height: 122px;
+      
+      background: linear-gradient(90deg, 
+        #8A2BE2 0%, 
+        #FFD60A 25%, 
+        #007AFF 50%, 
+        #FFFFFF 75%, 
+        #FF00FF 100%,
+        #8A2BE2 100% 
+      );
+      background-size: 400% 100%;
+      animation: gradientFlow 15s ease infinite;
+      
+      display: flex;
+      justify-content: center;
+      align-items: center; 
       pointer-events: none;
-      z-index: 155;
+      overflow: hidden;
+      max-width: 430px;
+      margin: 0 auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .other-profile-header-fixed .header-logo {
+      width: 160px;
+      height: auto;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+      z-index: 2;
+      pointer-events: auto;
+      margin-top: 63px;
     }
     
+    .other-profile-back-fixed {
+      position: absolute;
+      top: max(12px, env(safe-area-inset-top));
+      left: 16px;
+      z-index: 180;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    
+    .other-profile-back-fixed svg {
+      width: 18px; height: 18px; stroke: #000; stroke-width: 2.5; fill: none;
+    }
+    
+    .dark-theme .other-profile-back-fixed svg {
+      stroke: #fff;
+    }
+
     .other-profile-content {
-      padding-top: 172px; 
+      padding-top: 172px; /* ИЗМЕНЕНО: Было 122px, увеличено на 50px для выравнивания с личным профилем */
       min-height: 100vh;
     }
 
@@ -1165,7 +1206,7 @@
       display: flex; justify-content: center; gap: 4px; 
       margin-top: 8px; 
       font-size: 20px; 
-      transform: translateY(-10px); 
+      transform: translateY(-10px); /* Выравнивание с основным профилем */
     }
     
     .other-profile-rating svg {
@@ -1194,20 +1235,15 @@
 </head>
 <body>
 
-  <!-- ГЛОБАЛЬНАЯ ШАПКА -->
-  <div class="app-header">
+  <!-- HEADER -->
+  <div class="header">
     <img src="logos.png" alt="Swapka Logo" class="header-logo">
-    
-    <!-- Глобальная кнопка Назад -->
-    <button class="global-back-btn" id="globalBackBtn" onclick="goBack()">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-    </button>
   </div>
 
   <div class="main-content" id="mainContent">
 
     <!-- HOME PAGE -->
-    <div class="page active" id="pageHome" data-screen-id="home">
+    <div class="page active" id="pageHome">
       <div class="search-container">
         <div class="search-bar">
           <div class="search-icon">
@@ -1226,7 +1262,7 @@
     </div>
 
     <!-- MESSAGES PAGE -->
-    <div class="page" id="pageMessages" data-screen-id="messages">
+    <div class="page" id="pageMessages">
       <div class="messages-list" id="messagesList">
         <div class="empty-state">
           <div class="empty-state-text">У вас пока нет чатов</div>
@@ -1235,7 +1271,7 @@
     </div>
 
     <!-- PROFILE PAGE -->
-    <div class="page" id="pageProfile" data-screen-id="profile">
+    <div class="page" id="pageProfile">
       <div class="profile-moon-wrapper">
         <button class="moon-btn" id="themeToggle">
           <svg id="iconMoon" viewBox="0 0 24 24" style="display:block">
@@ -1261,7 +1297,7 @@
           <div class="profile-name" id="profileName">Загрузка...</div>
           <div class="profile-username" id="profileUsername">@loading</div>
           
-          <!-- SVG Звезды -->
+          <!-- ИЗМЕНЕНО: SVG Звезды вместо текста -->
           <div class="profile-rating" id="profileRating">
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -1282,13 +1318,17 @@
     </div>
   </div>
 
-  <!-- CHAT SCREEN (Бывший Chat Modal) -->
-  <div class="chat-screen" id="chatScreen" data-screen-id="chat">
+  <!-- CHAT MODAL -->
+  <div class="chat-modal" id="chatModal">
     
     <div class="chat-header-pill-container">
-      <!-- Локальная кнопка убрана, используется глобальная -->
+      <button class="chat-back-btn" onclick="closeChat()">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
       
-      <div class="chat-profile-pill" onclick="navigateTo('otherProfile')">
+      <div class="chat-profile-pill" onclick="openOtherProfile()">
         <div class="chat-pill-avatar" id="chatHeaderAvatar"></div>
         <div class="chat-pill-info">
           <div class="chat-pill-name" id="chatHeaderName">Имя</div>
@@ -1329,22 +1369,30 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА -->
-  <div class="other-profile-modal" id="otherProfileModal" data-screen-id="otherProfile">
+  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА (ОБНОВЛЕНО) -->
+  <div class="other-profile-modal" id="otherProfileModal">
+    <!-- Новая шапка для чужого профиля -->
     <div class="other-profile-header-fixed">
-      <!-- Фон шапки наследуется от глобальной -->
+      <img src="logos.png" alt="Swapka Logo" class="header-logo">
+      <button class="other-profile-back-fixed" onclick="closeOtherProfile()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
     </div>
     
     <div class="other-profile-content">
+      <!-- Используем структуру, аналогичную личному профилю -->
       <div class="profile-shifted-content">
         <div class="profile-user-info">
           <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
           <div class="other-profile-name" id="otherProfileName">Имя</div>
           
+          <!-- Рейтинг вместо юзернейма -->
           <div class="other-profile-rating" id="otherProfileRating">
              <!-- Звезды будут добавлены через JS -->
           </div>
         </div>
+
+        <!-- Кнопка создания и луна убраны -->
 
         <div class="other-ads-title" id="otherAdsTitle">Активные объявления (0)</div>
         <div class="other-ads-grid-wrapper">
@@ -1393,7 +1441,7 @@
     </div>
   </div>
 
-  <!-- CREATE AD MODAL (Остается модалкой снизу) -->
+  <!-- CREATE AD MODAL -->
   <div class="modal-overlay" id="createModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -1435,11 +1483,19 @@
     </div>
   </div>
 
-  <!-- AD DETAIL MODAL (Full Screen) -->
-  <div class="detail-modal" id="detailModal" data-screen-id="detail">
-    <!-- Пустой спейсер вместо хедера, чтобы контент был ниже глобальной кнопки -->
-    <div class="detail-header-spacer"></div>
-    
+  <!-- AD DETAIL MODAL -->
+  <div class="detail-modal" id="detailModal">
+    <div class="detail-header">
+      <button class="detail-back" onclick="closeDetailModal()">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <div style="width:30px;height:30px;"></div>
+      <button class="detail-back" style="visibility:hidden">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+    </div>
     <div class="image-carousel" id="detailCarousel">
       <div class="carousel-track" id="carouselTrack"></div>
       <div class="carousel-dots" id="carouselDots"></div>
@@ -1483,165 +1539,6 @@
     const ADS_KEY = 'swapka_ads';
     const THEME_KEY = 'swapka_theme';
     const CHATS_KEY = 'swapka_chats';
-
-    // --- NAVIGATION STACK LOGIC ---
-    let navStack = []; // Стек истории: ['home', 'detail', 'chat']
-    const mainTabs = ['home', 'messages', 'profile'];
-    const globalBackBtn = document.getElementById('globalBackBtn');
-
-    function updateGlobalBackButton() {
-      // Если стек пуст или мы на главной вкладке, кнопка скрыта
-      if (navStack.length === 0 || mainTabs.includes(navStack[navStack.length - 1])) {
-        globalBackBtn.classList.remove('visible');
-      } else {
-        globalBackBtn.classList.add('visible');
-      }
-    }
-
-    // Функция перехода на любой экран
-    function navigateTo(screenId, data = null) {
-      // 1. Добавляем текущий экран в стек, если он не главный (или если мы переходим с главного)
-      const currentScreen = getCurrentScreenId();
-      if (currentScreen && !mainTabs.includes(currentScreen)) {
-         // Если мы уже в глубине, просто пушим
-         navStack.push(currentScreen);
-      } else if (mainTabs.includes(currentScreen)) {
-         // Если мы на главной вкладке, она является "базой", не пушим её в стек глубины, 
-         // но запоминаем, откуда пришли, если нужно вернуться именно на вкладку.
-         // Для простоты: главные вкладки очищают стек или являются корнем.
-         // В данной реализации: если мы на главной, стек очищается перед новым переходом? 
-         // Нет, лучше просто пушить всё, кроме случаев возврата.
-         navStack.push(currentScreen);
-      }
-
-      // 2. Скрываем все экраны
-      document.querySelectorAll('.page, .chat-screen, .detail-modal, .other-profile-modal').forEach(el => {
-        el.classList.remove('active');
-      });
-
-      // 3. Показываем целевой экран
-      let targetEl;
-      if (screenId === 'home') targetEl = document.getElementById('pageHome');
-      else if (screenId === 'messages') targetEl = document.getElementById('pageMessages');
-      else if (screenId === 'profile') targetEl = document.getElementById('pageProfile');
-      else if (screenId === 'chat') targetEl = document.getElementById('chatScreen');
-      else if (screenId === 'detail') targetEl = document.getElementById('detailModal');
-      else if (screenId === 'otherProfile') targetEl = document.getElementById('otherProfileModal');
-
-      if (targetEl) {
-        targetEl.classList.add('active');
-        
-        // Обновляем стек: последний элемент - текущий экран
-        // Но мы уже запушили предыдущий выше. Теперь текущий становится вершиной.
-        // Логика стека: [Prev, Current]. При нажатии Назад -> pop Current -> show Prev.
-        // Здесь мы просто заменяем вершину стека на новый экран.
-        if (navStack.length > 0) {
-           navStack.pop(); // Удаляем "предыдущий", который мы временно добавили как базу
-        }
-        navStack.push(screenId);
-      }
-
-      // 4. Управление нижней навигацией
-      if (mainTabs.includes(screenId)) {
-        document.getElementById('bottomNav').classList.remove('hidden');
-        // Подсветка активной вкладки
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        const activeNav = document.querySelector(`.nav-item[data-tab="${screenId}"]`);
-        if(activeNav) activeNav.classList.add('active');
-        
-        // Индикатор
-        const index = mainTabs.indexOf(screenId);
-        updateIndicatorPosition(index, false);
-        indicatorPhysics.currentIndex = index;
-      } else {
-        document.getElementById('bottomNav').classList.add('hidden');
-      }
-
-      // 5. Обновляем кнопку назад
-      updateGlobalBackButton();
-
-      // 6. Специфичная логика для экранов
-      if (screenId === 'messages') renderMessages();
-      if (screenId === 'profile') renderMyAds();
-      if (screenId === 'home') renderAds();
-      
-      // Скролл вверх
-      const mainContent = document.getElementById('mainContent');
-      if(mainContent) mainContent.scrollTop = 0;
-    }
-
-    function getCurrentScreenId() {
-      // Ищем активный элемент среди известных экранов
-      const activePage = document.querySelector('.page.active');
-      if (activePage) return activePage.dataset.screenId;
-      
-      const activeChat = document.querySelector('.chat-screen.active');
-      if (activeChat) return activeChat.dataset.screenId;
-      
-      const activeDetail = document.querySelector('.detail-modal.active');
-      if (activeDetail) return activeDetail.dataset.screenId;
-      
-      const activeOther = document.querySelector('.other-profile-modal.active');
-      if (activeOther) return activeOther.dataset.screenId;
-      
-      return null;
-    }
-
-    function goBack() {
-      if (navStack.length <= 1) {
-        // Если стек почти пуст, возвращаемся на домашнюю
-        navigateTo('home');
-        navStack = ['home']; // Сброс стека
-        return;
-      }
-
-      // Удаляем текущий экран
-      navStack.pop();
-      // Предыдущий экран становится текущим
-      const previousScreen = navStack[navStack.length - 1];
-      
-      // Переходим на него без добавления в стек (так как мы уже "там" были)
-      // Для этого вызываем navigateTo, но модифицируем логику или просто вручную переключаем классы
-      
-      // Простой способ: вызвать navigateTo, но не пушить в стек снова.
-      // Так как navigateTo сейчас пушит, сделаем "тихий" переход.
-      
-      document.querySelectorAll('.page, .chat-screen, .detail-modal, .other-profile-modal').forEach(el => {
-        el.classList.remove('active');
-      });
-
-      let targetEl;
-      if (previousScreen === 'home') targetEl = document.getElementById('pageHome');
-      else if (previousScreen === 'messages') targetEl = document.getElementById('pageMessages');
-      else if (previousScreen === 'profile') targetEl = document.getElementById('pageProfile');
-      else if (previousScreen === 'chat') targetEl = document.getElementById('chatScreen');
-      else if (previousScreen === 'detail') targetEl = document.getElementById('detailModal');
-      else if (previousScreen === 'otherProfile') targetEl = document.getElementById('otherProfileModal');
-
-      if (targetEl) targetEl.classList.add('active');
-
-      // Навбар
-      if (mainTabs.includes(previousScreen)) {
-        document.getElementById('bottomNav').classList.remove('hidden');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        const activeNav = document.querySelector(`.nav-item[data-tab="${previousScreen}"]`);
-        if(activeNav) activeNav.classList.add('active');
-        const index = mainTabs.indexOf(previousScreen);
-        updateIndicatorPosition(index, false);
-        indicatorPhysics.currentIndex = index;
-      } else {
-        document.getElementById('bottomNav').classList.add('hidden');
-      }
-
-      updateGlobalBackButton();
-      
-      // Скролл
-      const mainContent = document.getElementById('mainContent');
-      if(mainContent) mainContent.scrollTop = 0;
-    }
-
-    // --- END NAVIGATION STACK LOGIC ---
-
 
     function loadAds() {
       try { const data = localStorage.getItem(ADS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
@@ -1753,9 +1650,21 @@
       navIndicator.style.borderRadius = '24px';
     }
 
-    // Переопределяем switchTab для использования новой навигации
     function switchTab(tab, index) {
-      navigateTo(tab);
+      navItems.forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const activeBtn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
+      if(activeBtn) activeBtn.classList.add('active');
+      const pageMap = { 'home': 'pageHome', 'messages': 'pageMessages', 'profile': 'pageProfile' };
+      const activePage = document.getElementById(pageMap[tab]);
+      if(activePage) activePage.classList.add('active');
+      updateIndicatorPosition(index, false);
+      indicatorPhysics.currentIndex = index;
+      const mainContent = document.getElementById('mainContent');
+      if(mainContent) mainContent.scrollTop = 0;
+      if (tab === 'messages') renderMessages();
+      if (tab === 'profile') renderMyAds();
+      if (tab === 'home') renderAds();
     }
 
     navPill.addEventListener('touchstart', (e) => {
@@ -1844,14 +1753,7 @@
     function createAdCard(ad, isMyAd = false) {
       const card = document.createElement('div');
       card.className = 'ad-card';
-      // ИЗМЕНЕНО: Используем navigateTo вместо openDetailModal
-      card.onclick = () => {
-        // Сохраняем данные для отображения в деталях
-        window.currentAdData = ad;
-        renderDetailModalContent(ad);
-        navigateTo('detail');
-      };
-      
+      card.onclick = () => openDetailModal(ad);
       const imgHtml = ad.photos && ad.photos.length > 0
         ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
@@ -2034,8 +1936,8 @@
     let currentCarouselIndex = 0;
     let currentAdForChat = null;
 
-    // ИЗМЕНЕНО: Рендер контента детали отдельно
-    function renderDetailModalContent(ad) {
+    function openDetailModal(ad) {
+      const modal = document.getElementById('detailModal');
       document.getElementById('detailTitle').textContent = ad.title;
       document.getElementById('detailPrice').textContent = ad.price;
       document.getElementById('detailCity').textContent = '📍 ' + ad.city;
@@ -2060,6 +1962,10 @@
         dot.onclick = () => goToSlide(i);
         dots.appendChild(dot);
       });
+      modal.dataset.adId = ad.id;
+      modal.classList.add('active');
+      hideBottomNav();
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
     function goToSlide(index) {
@@ -2068,22 +1974,21 @@
       currentCarouselIndex = index;
       document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === index));
     }
-    
-    // Убрана функция closeDetailModal, используем goBack()
+    function closeDetailModal() { document.getElementById('detailModal').classList.remove('active'); showBottomNav(); }
 
     function contactSeller() {
-      // detailModal больше не имеет dataset.adId напрямую в HTML, берем из глобальной переменной или замыкания
-      // Но проще взять из window.currentAdData, который мы установили при клике на карточку
-      const ad = window.currentAdData;
+      const modal = document.getElementById('detailModal');
+      const adId = modal.dataset.adId;
+      const ads = loadAds();
+      const ad = ads.find(a => a.id === adId);
       if (!ad) return;
-      
       currentAdForChat = ad;
       const chats = loadChats();
-      let chat = chats.find(c => c.adId === ad.id && c.sellerId === ad.userId);
+      let chat = chats.find(c => c.adId === adId && c.sellerId === ad.userId);
       if (!chat) {
         chat = {
           id: 'chat_' + Date.now(),
-          adId: ad.id, adTitle: ad.title,
+          adId, adTitle: ad.title,
           sellerId: ad.userId, sellerName: ad.userName, sellerPhoto: ad.userPhoto, sellerUsername: ad.userUsername,
           buyerId: currentUser.id,
           messages: [],
@@ -2094,8 +1999,7 @@
         chats.push(chat);
         saveChats(chats);
       }
-      
-      // Переход в чат
+      closeDetailModal();
       openChat(chat);
     }
 
@@ -2130,7 +2034,7 @@
     }
 
     function openChat(chat) {
-      const chatScreen = document.getElementById('chatScreen');
+      const chatModal = document.getElementById('chatModal');
       document.getElementById('chatHeaderName').textContent = chat.sellerName;
       const avatarEl = document.getElementById('chatHeaderAvatar');
       if (chat.sellerPhoto) {
@@ -2138,11 +2042,8 @@
       } else {
         avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
       }
-      chatScreen.dataset.chatId = chat.id;
-      
-      // Используем navigateTo
-      navigateTo('chat');
-      
+      chatModal.dataset.chatId = chat.id;
+      chatModal.classList.add('active');
       updateChatHeaderStatus(chat);
       const chats = loadChats();
       const chatIdx = chats.findIndex(c => c.id === chat.id);
@@ -2158,7 +2059,15 @@
       }, 100);
     }
 
-    // Убрана функция closeChat, используем goBack()
+    function closeChat() {
+      document.getElementById('chatModal').classList.remove('active');
+      currentAdForChat = null;
+      removeAttachedPhoto();
+      setTimeout(() => {
+        switchTab('messages', 1);
+      }, 50);
+      showBottomNav();
+    }
 
     // Функция рендеринга звезд рейтинга
     function renderStars(containerId, ratingValue) {
@@ -2183,8 +2092,8 @@
     }
 
     function openOtherProfile() {
-      const chatScreen = document.getElementById('chatScreen');
-      const chatId = chatScreen.dataset.chatId;
+      const chatModal = document.getElementById('chatModal');
+      const chatId = chatModal.dataset.chatId;
       const chats = loadChats();
       const chat = chats.find(c => c.id === chatId);
       if (!chat) return;
@@ -2197,7 +2106,9 @@
         avatar.src = chat.sellerPhoto;
         avatar.style.display = 'block';
       } else {
+        // Если фото нет, показываем плейсхолдер или скрываем
         avatar.style.display = 'none';
+        // Можно добавить fallback на div с иконкой, если нужно, но по ТЗ "с установленной аватаркой"
       }
 
       // Имя
@@ -2223,15 +2134,17 @@
       } else {
         otherEmpty.style.display = 'none';
         userAds.forEach(ad => {
+          // Создаем обычную карточку (не мою, без кнопки удаления)
           otherGrid.appendChild(createAdCard(ad, false));
         });
       }
 
-      // Используем navigateTo
-      navigateTo('otherProfile');
+      modal.classList.add('active');
     }
 
-    // Убрана closeOtherProfile, используем goBack()
+    function closeOtherProfile() {
+      document.getElementById('otherProfileModal').classList.remove('active');
+    }
 
     function renderChatMessages(chat) {
       const container = document.getElementById('chatMessages');
@@ -2287,8 +2200,8 @@
       
       if (!text && !attachedChatPhoto) return;
       
-      const chatScreen = document.getElementById('chatScreen');
-      const chatId = chatScreen.dataset.chatId;
+      const chatModal = document.getElementById('chatModal');
+      const chatId = chatModal.dataset.chatId;
       const chats = loadChats();
       const chat = chats.find(c => c.id === chatId);
       
@@ -2508,10 +2421,6 @@
         }
       });
     }
-
-    // Инициализация стека
-    navStack = ['home'];
-    updateGlobalBackButton();
 
     setRandomSearchPlaceholder();
     renderAds();
