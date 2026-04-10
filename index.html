@@ -1197,17 +1197,14 @@
     }
     .main-content::-webkit-scrollbar { width: 0; }
 
-    /* --- OTHER PROFILE STYLES (FIXED) --- */
+    /* --- OTHER PROFILE STYLES (REDESIGNED) --- */
     .other-profile-modal {
       position: fixed; 
       top: 0; 
       left: 0; 
       right: 0; 
       bottom: 0; 
-      
-      /* ИСПРАВЛЕНИЕ: Явный фон, чтобы перекрыть всё остальное и сделать текст видимым */
       background: var(--bg-primary); 
-      
       z-index: 160; 
       display: none; 
       overflow-y: auto;
@@ -1217,27 +1214,48 @@
     
     .other-profile-modal.active { 
       display: block; 
-      animation: slideUp 0.3s ease; 
+      animation: fadeInUp 0.3s ease; 
     }
-    
-    .other-profile-header-fixed {
+
+    /* Копия шапки для чужого профиля */
+    .other-profile-header {
       position: fixed;
-      top: 0; 
-      left: 0; 
+      top: 0;
+      left: 0;
       right: 0;
       height: var(--header-height);
+      background: linear-gradient(90deg, 
+        #8A2BE2 0%, 
+        #FFD60A 25%, 
+        #007AFF 50%, 
+        #FFFFFF 75%, 
+        #FF00FF 100%,
+        #8A2BE2 100% 
+      );
+      background-size: 400% 100%;
+      animation: gradientFlow 15s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center; 
       pointer-events: none;
+      overflow: hidden;
       z-index: 155;
+      padding-top: env(safe-area-inset-top);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    
+
     .other-profile-content {
-      /* ИСПРАВЛЕНИЕ: Увеличенный отступ, чтобы контент не прятался под шапкой */
-      padding-top: calc(var(--header-height) + 50px); 
+      padding-top: var(--header-height);
       min-height: 100vh;
-      
-      /* ИСПРАВЛЕНИЕ: Фон контента совпадает с фоном модалки */
       background: var(--bg-primary);
       width: 100%;
+      padding-bottom: 40px;
+    }
+
+    .other-profile-user-section {
+      padding: 20px 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .other-profile-avatar {
@@ -1256,7 +1274,6 @@
       font-weight: 700; 
       color: var(--text-primary); 
       margin-bottom: 4px; 
-      text-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     
     .other-profile-rating { 
@@ -1264,8 +1281,6 @@
       justify-content: center; 
       gap: 4px; 
       margin-top: 8px; 
-      font-size: 20px; 
-      transform: translateY(-10px); 
     }
     
     .other-profile-rating svg {
@@ -1277,18 +1292,26 @@
       fill: var(--star-filled);
     }
 
+    .other-ads-section {
+      padding: 16px;
+    }
+
     .other-ads-title { 
       font-size: 18px; 
       font-weight: 700; 
-      padding: 0 16px 12px; 
       color: var(--text-primary); 
-      transform: translateY(30px); 
+      margin-bottom: 12px;
       text-align: left;
     }
-    
-    .other-ads-grid-wrapper { 
-      transform: translateY(30px); 
-      padding-bottom: 40px;
+
+    .other-search-container {
+      margin-bottom: 16px;
+    }
+
+    .other-ads-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
   </style>
@@ -1423,31 +1446,55 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА -->
+  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА (НОВЫЙ ДИЗАЙН) -->
   <div class="other-profile-modal" id="otherProfileModal" data-screen-id="otherProfile">
-    <div class="other-profile-header-fixed">
-      <!-- Фон шапки наследуется от глобальной -->
+    
+    <!-- Шапка с логотипом (копия главной) -->
+    <div class="other-profile-header">
+      <img src="logos.png" alt="Swapka Logo" class="header-logo">
     </div>
     
     <div class="other-profile-content">
-      <div class="profile-shifted-content">
-        <div class="profile-user-info">
-          <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
-          <div class="other-profile-name" id="otherProfileName">Имя</div>
-          
-          <div class="other-profile-rating" id="otherProfileRating">
-             <!-- Звезды будут добавлены через JS -->
+      
+      <!-- Секция пользователя -->
+      <div class="other-profile-user-section">
+        <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
+        <div class="other-profile-name" id="otherProfileName">Имя</div>
+        
+        <!-- Рейтинг 3 звезды -->
+        <div class="other-profile-rating" id="otherProfileRating">
+           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+        </div>
+      </div>
+
+      <!-- Секция объявлений -->
+      <div class="other-ads-section">
+        <div class="other-ads-title">Объявления пользователя</div>
+        
+        <!-- Поисковая строка -->
+        <div class="other-search-container">
+          <div class="search-bar">
+            <div class="search-icon">
+              <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <input type="text" class="search-input" id="otherProfileSearchInput" placeholder="Поиск по объявлениям...">
           </div>
         </div>
 
-        <div class="other-ads-title" id="otherAdsTitle">Активные объявления (0)</div>
-        <div class="other-ads-grid-wrapper">
-          <div class="ads-grid" id="otherAdsGrid"></div>
-          <div class="empty-state" id="otherAdsEmpty" style="position:relative; transform:none; margin-top:20px;">
-            <div class="empty-state-text">Нет активных объявлений</div>
-          </div>
+        <!-- Сетка объявлений -->
+        <div class="other-ads-grid" id="otherAdsGrid"></div>
+        
+        <!-- Пустое состояние -->
+        <div class="empty-state" id="otherAdsEmpty" style="position:relative; transform:none; margin-top:20px; display:none;">
+          <div class="empty-state-text">Нет активных объявлений</div>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -2344,6 +2391,41 @@
       }
     }
 
+    // Переменная для хранения текущего ID продавца в профиле
+    let currentOtherProfileUserId = null;
+
+    // Функция рендера объявлений в чужом профиле с фильтром
+    function renderOtherProfileAds(filter = '') {
+      if (!currentOtherProfileUserId) return;
+
+      const ads = loadAds();
+      const userAds = ads.filter(ad => ad.userId === currentOtherProfileUserId);
+      
+      let filteredAds = userAds;
+      if (filter.trim()) {
+        const q = filter.toLowerCase().trim();
+        filteredAds = userAds.filter(ad => ad.title.toLowerCase().includes(q));
+      }
+
+      const otherGrid = document.getElementById('otherAdsGrid');
+      const otherEmpty = document.getElementById('otherAdsEmpty');
+      otherGrid.innerHTML = '';
+
+      if (filteredAds.length === 0) {
+        otherEmpty.style.display = 'flex';
+        if (filter.trim() && userAds.length > 0) {
+            otherEmpty.querySelector('.empty-state-text').textContent = 'Ничего не найдено';
+        } else {
+            otherEmpty.querySelector('.empty-state-text').textContent = 'Нет активных объявлений';
+        }
+      } else {
+        otherEmpty.style.display = 'none';
+        filteredAds.forEach(ad => {
+          otherGrid.appendChild(createAdCard(ad, false));
+        });
+      }
+    }
+
     function openOtherProfile() {
       const chatScreen = document.getElementById('chatScreen');
       const chatId = chatScreen.dataset.chatId;
@@ -2354,6 +2436,9 @@
         console.error("Chat not found for ID:", chatId);
         return;
       }
+
+      // Сохраняем ID продавца для поиска
+      currentOtherProfileUserId = chat.sellerId;
 
       const modal = document.getElementById('otherProfileModal');
       
@@ -2369,32 +2454,23 @@
       // Имя
       document.getElementById('otherProfileName').textContent = chat.sellerName;
       
-      // Рейтинг
+      // Рейтинг (пока пустой, можно добавить логику позже)
       renderStars('otherProfileRating', 0);
 
-      // Объявления
-      const ads = loadAds();
-      const userAds = ads.filter(ad => ad.userId === chat.sellerId);
-      const count = userAds.length;
-      const displayCount = count > 99 ? '99+' : count;
-      
-      document.getElementById('otherAdsTitle').textContent = `Активные объявления (${displayCount})`;
-      
-      const otherGrid = document.getElementById('otherAdsGrid');
-      const otherEmpty = document.getElementById('otherAdsEmpty');
-      otherGrid.innerHTML = '';
-      
-      if(count === 0) {
-        otherEmpty.style.display = 'flex';
-      } else {
-        otherEmpty.style.display = 'none';
-        userAds.forEach(ad => {
-          otherGrid.appendChild(createAdCard(ad, false));
-        });
-      }
+      // Очищаем поиск при открытии
+      const searchInput = document.getElementById('otherProfileSearchInput');
+      if(searchInput) searchInput.value = '';
+
+      // Рендерим объявления
+      renderOtherProfileAds();
 
       navigateTo('otherProfile');
     }
+
+    // Обработчик поиска в чужом профиле
+    document.getElementById('otherProfileSearchInput').addEventListener('input', function(e) {
+      renderOtherProfileAds(e.target.value);
+    });
 
     function renderChatMessages(chat) {
       const container = document.getElementById('chatMessages');
