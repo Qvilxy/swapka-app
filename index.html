@@ -83,7 +83,7 @@
       }
     }
 
-    /* --- СТИЛИ ДЛЯ ШАПКИ --- */
+    /* --- СТИЛИ ДЛЯ ШАПКИ С АНИМАЦИЕЙ --- */
     .header {
       position: fixed;
       top: 0;
@@ -91,15 +91,20 @@
       right: 0;
       z-index: 100;
       height: 122px;
-      /* ИЗМЕНЕНИЕ: Градиент с четкими границами по 20% для каждого цвета */
-      /* Порядок: Фиолетовый -> Желтый -> Синий -> Белый -> Фуксия */
-      background: linear-gradient(to right, 
-        #8A2BE2 0%, #8A2BE2 20%, 
-        #FFD60A 20%, #FFD60A 40%, 
-        #007AFF 40%, #007AFF 60%, 
-        #FFFFFF 60%, #FFFFFF 80%, 
-        #FF00FF 80%, #FF00FF 100%
+      
+      /* ИЗМЕНЕНИЕ: Градиент растянут (400%) для плавности и анимации движения */
+      /* Порядок: Фиолетовый -> Желтый -> Синий -> Белый -> Фуксия -> Повтор начала для бесшовности */
+      background: linear-gradient(90deg, 
+        #8A2BE2 0%, 
+        #FFD60A 25%, 
+        #007AFF 50%, 
+        #FFFFFF 75%, 
+        #FF00FF 100%,
+        #8A2BE2 100% 
       );
+      background-size: 400% 100%;
+      animation: gradientFlow 15s ease infinite;
+      
       display: flex;
       justify-content: center;
       align-items: center; 
@@ -108,6 +113,19 @@
       max-width: 430px;
       margin: 0 auto;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* Анимация течения градиента */
+    @keyframes gradientFlow {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
 
     .header-logo {
