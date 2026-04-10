@@ -630,7 +630,6 @@
     .chat-input-area {
       padding: 10px 16px;
       padding-bottom: max(10px, env(safe-area-inset-bottom));
-      /* ИЗМЕНЕНО: Убран фон, сделан прозрачным */
       background: transparent; 
       border-top: none;
       display: flex;
@@ -1075,7 +1074,7 @@
       z-index: 210;
       width: 44px;
       height: 44px;
-      display: none; /* Скрыто по умолчанию, показываем если это мое объявление */
+      display: none;
     }
     .detail-settings-container.visible {
       display: block;
@@ -1143,14 +1142,12 @@
     .action-btn.edit {
       background: #007AFF;
       color: white;
-      /* Позиция слева от шестеренки */
       right: 55px; 
     }
 
     .action-btn.delete {
       background: var(--danger-color);
       color: white;
-      /* Позиция ниже шестеренки */
       top: 55px;
     }
 
@@ -1198,7 +1195,7 @@
     }
     .main-content::-webkit-scrollbar { width: 0; }
 
-    /* --- OTHER PROFILE STYLES --- */
+    /* --- OTHER PROFILE STYLES (ИСПРАВЛЕНО) --- */
     .other-profile-modal {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary);
       z-index: 160; display: none; overflow-y: auto;
@@ -1211,8 +1208,13 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       height: var(--header-height);
-      pointer-events: none;
       z-index: 155;
+      pointer-events: none;
+    }
+    .other-profile-header-fixed .app-header {
+      pointer-events: auto;
+      position: relative;
+      height: 100%;
     }
     
     .other-profile-content {
@@ -1220,9 +1222,24 @@
       min-height: 100vh;
     }
 
+    .other-profile-avatar-wrapper {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 12px;
+      position: relative;
+    }
     .other-profile-avatar {
-      width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px;
-      display: block; background: var(--bg-secondary);
+      width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+    }
+    .other-profile-avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
     }
     .other-profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
     
@@ -1321,7 +1338,6 @@
           <div class="profile-name" id="profileName">Загрузка...</div>
           <div class="profile-username" id="profileUsername">@loading</div>
           
-          <!-- SVG Звезды -->
           <div class="profile-rating" id="profileRating">
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -1344,7 +1360,6 @@
 
   <!-- CHAT SCREEN -->
   <div class="chat-screen" id="chatScreen" data-screen-id="chat">
-    
     <div class="chat-header-pill-container">
       <div class="chat-profile-pill" onclick="navigateTo('otherProfile')">
         <div class="chat-pill-avatar" id="chatHeaderAvatar"></div>
@@ -1387,16 +1402,21 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА -->
+  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА (ИСПРАВЛЕННОЕ) -->
   <div class="other-profile-modal" id="otherProfileModal" data-screen-id="otherProfile">
     <div class="other-profile-header-fixed">
-      <!-- Фон шапки наследуется от глобальной -->
+      <div class="app-header">
+        <img src="logos.png" alt="Swapka Logo" class="header-logo">
+      </div>
     </div>
     
     <div class="other-profile-content">
       <div class="profile-shifted-content">
         <div class="profile-user-info">
-          <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
+          <div class="other-profile-avatar-wrapper">
+            <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar" style="display: none;">
+            <div class="other-profile-avatar-placeholder" id="otherProfileAvatarPlaceholder">👤</div>
+          </div>
           <div class="other-profile-name" id="otherProfileName">Имя</div>
           
           <div class="other-profile-rating" id="otherProfileRating">
@@ -1489,7 +1509,6 @@
         <input type="text" class="form-input" id="adCity" placeholder="Введите город">
       </div>
 
-      <!-- НОВОЕ ПОЛЕ ОПИСАНИЯ -->
       <div class="form-group">
         <label class="form-label">Описание (макс. 250 симв.)</label>
         <textarea class="form-input" id="adDesc" rows="3" maxlength="250" placeholder="Опишите товар..." style="resize: none;"></textarea>
@@ -1505,7 +1524,6 @@
   <!-- AD DETAIL MODAL -->
   <div class="detail-modal" id="detailModal" data-screen-id="detail">
     
-    <!-- КНОПКА НАСТРОЕК (ШЕСТЕРЕНКА) -->
     <div class="detail-settings-container" id="detailSettingsContainer">
       <button class="settings-gear-btn" id="settingsGearBtn" onclick="toggleSettingsMenu()">
         <svg viewBox="0 0 24 24">
@@ -1541,7 +1559,7 @@
       <div class="detail-title" id="detailTitle"></div>
       <div class="detail-price" id="detailPrice"></div>
       <div class="detail-city" id="detailCity"></div>
-      <div class="detail-desc" id="detailDesc"></div> <!-- Блок описания -->
+      <div class="detail-desc" id="detailDesc"></div>
       <div class="detail-seller">
         <div class="detail-seller-avatar" id="detailSellerAvatar">👤</div>
         <div>
@@ -1555,6 +1573,7 @@
   <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
 
   <script>
+    // === ПОЛНЫЙ JS-КОД С ИСПРАВЛЕНИЯМИ ===
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
@@ -1582,7 +1601,6 @@
     let navStack = []; 
     const mainTabs = ['home', 'messages', 'profile'];
 
-    // Инициализация кнопки Назад Telegram
     tg.BackButton.onClick(() => {
       goBack();
     });
@@ -1664,7 +1682,6 @@
     }
 
     function goBack() {
-      // Закрываем меню настроек если открыто
       closeSettingsMenu();
 
       if (navStack.length <= 1) {
@@ -1707,9 +1724,6 @@
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
     }
-
-    // --- END NAVIGATION STACK LOGIC ---
-
 
     function loadAds() {
       try { const data = localStorage.getItem(ADS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
@@ -1978,7 +1992,6 @@
     }
     document.getElementById('openCreateBtn').addEventListener('click', openCreateModal);
 
-    // Логика счетчика описания
     const descInput = document.getElementById('adDesc');
     const descCounter = document.getElementById('descCounter');
     
@@ -2090,7 +2103,7 @@
         userUsername: currentUser.username,
         userPhoto: currentUser.photoUrl,
         title, price, city,
-        description: desc, // Сохраняем описание
+        description: desc,
         photos: selectedPhotos.slice(0, 4),
         createdAt: Date.now()
       };
@@ -2124,7 +2137,6 @@
       document.getElementById('detailPrice').textContent = ad.price;
       document.getElementById('detailCity').textContent = '📍 ' + ad.city;
       
-      // Отображение описания
       const descEl = document.getElementById('detailDesc');
       if (ad.description && ad.description.trim() !== '') {
         descEl.textContent = ad.description;
@@ -2140,14 +2152,13 @@
         document.getElementById('detailSellerAvatar').innerHTML = '👤';
       }
       
-      // Показываем шестеренку только если это мое объявление
       const settingsContainer = document.getElementById('detailSettingsContainer');
       if (ad.userId === currentUser.id) {
         settingsContainer.classList.add('visible');
       } else {
         settingsContainer.classList.remove('visible');
       }
-      closeSettingsMenu(); // Сброс состояния меню
+      closeSettingsMenu();
 
       const track = document.getElementById('carouselTrack');
       const dots = document.getElementById('carouselDots');
@@ -2166,7 +2177,6 @@
       });
     }
 
-    // --- SETTINGS GEAR LOGIC ---
     function toggleSettingsMenu() {
       const btn = document.getElementById('settingsGearBtn');
       btn.classList.toggle('active');
@@ -2190,13 +2200,12 @@
         const ads = loadAds();
         saveAds(ads.filter(a => a.id !== ad.id));
         closeSettingsMenu();
-        goBack(); // Возвращаемся назад
+        goBack();
         renderAds();
         renderMyAds();
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       }
     }
-    // --- END SETTINGS GEAR LOGIC ---
 
     function goToSlide(index) {
       const track = document.getElementById('carouselTrack');
@@ -2308,6 +2317,7 @@
       }
     }
 
+    // === ИСПРАВЛЕННАЯ ФУНКЦИЯ openOtherProfile ===
     function openOtherProfile() {
       const chatScreen = document.getElementById('chatScreen');
       const chatId = chatScreen.dataset.chatId;
@@ -2321,22 +2331,21 @@
 
       const modal = document.getElementById('otherProfileModal');
       
-      // Аватар
-      const avatar = document.getElementById('otherProfileAvatar');
+      const avatarImg = document.getElementById('otherProfileAvatar');
+      const placeholder = document.getElementById('otherProfileAvatarPlaceholder');
       if (chat.sellerPhoto) {
-        avatar.src = chat.sellerPhoto;
-        avatar.style.display = 'block';
+        avatarImg.src = chat.sellerPhoto;
+        avatarImg.style.display = 'block';
+        placeholder.style.display = 'none';
       } else {
-        avatar.style.display = 'none';
+        avatarImg.style.display = 'none';
+        placeholder.style.display = 'flex';
       }
 
-      // Имя
-      document.getElementById('otherProfileName').textContent = chat.sellerName;
+      document.getElementById('otherProfileName').textContent = chat.sellerName || 'Пользователь';
       
-      // Рейтинг
       renderStars('otherProfileRating', 0);
 
-      // Объявления
       const ads = loadAds();
       const userAds = ads.filter(ad => ad.userId === chat.sellerId);
       const count = userAds.length;
@@ -2348,10 +2357,12 @@
       const otherEmpty = document.getElementById('otherAdsEmpty');
       otherGrid.innerHTML = '';
       
-      if(count === 0) {
+      if (count === 0) {
         otherEmpty.style.display = 'flex';
+        otherGrid.style.display = 'none';
       } else {
         otherEmpty.style.display = 'none';
+        otherGrid.style.display = 'grid';
         userAds.forEach(ad => {
           otherGrid.appendChild(createAdCard(ad, false));
         });
@@ -2636,7 +2647,6 @@
       });
     }
 
-    // Инициализация стека
     navStack = ['home'];
     updateTelegramBackButton();
 
