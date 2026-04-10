@@ -26,6 +26,7 @@
       --chat-header-bg: rgba(249, 249, 249, 0.85);
       --star-empty: #c7c7cc;
       --star-filled: #FFD60A;
+      --header-height: 122px; /* Высота градиентной шапки */
     }
 
     .dark-theme {
@@ -87,15 +88,14 @@
       }
     }
 
-    /* --- СТИЛИ ДЛЯ ШАПКИ С АНИМАЦИЕЙ --- */
-    .header {
+    /* --- HEADER --- */
+    .app-header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 100;
-      height: 122px;
-      
+      height: var(--header-height);
       background: linear-gradient(90deg, 
         #8A2BE2 0%, 
         #FFD60A 25%, 
@@ -106,7 +106,6 @@
       );
       background-size: 400% 100%;
       animation: gradientFlow 15s ease infinite;
-      
       display: flex;
       justify-content: center;
       align-items: center; 
@@ -115,6 +114,8 @@
       max-width: 430px;
       margin: 0 auto;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      /* Важно: отступ сверху для безопасной зоны iOS, если нужно, но TWA обычно сам рулит */
+      padding-top: env(safe-area-inset-top); 
     }
 
     @keyframes gradientFlow {
@@ -129,12 +130,12 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
       z-index: 2;
       pointer-events: auto;
-      margin-top: 63px;
+      margin-top: 20px; /* Корректировка под safe area */
     }
 
     .main-content {
       position: fixed;
-      top: 122px;
+      top: var(--header-height);
       left: 0;
       right: 0;
       bottom: 90px;
@@ -145,6 +146,8 @@
       will-change: scroll-position;
       max-width: 430px;
       margin: 0 auto;
+      background: var(--bg-primary);
+      /* Учитываем safe area сверху для контента, если хедер прозрачный, но у нас он цветной */
     }
 
     .page {
@@ -166,6 +169,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* --- SEARCH & ADS --- */
     .search-container {
       padding: 12px 16px;
       background: var(--bg-primary);
@@ -321,6 +325,7 @@
       color: var(--text-secondary);
     }
 
+    /* --- MESSAGES --- */
     .messages-list { padding: 16px; }
     
     .message-item-wrapper {
@@ -468,7 +473,8 @@
       line-height: 1;
     }
 
-    .chat-modal {
+    /* --- CHAT SCREEN --- */
+    .chat-screen {
       position: fixed;
       top: 0;
       left: 0;
@@ -481,15 +487,15 @@
       max-width: 430px;
       margin: 0 auto;
     }
-    .chat-modal.active { display: flex; }
+    .chat-screen.active { display: flex; }
 
-    .chat-modal.active ~ .bottom-nav {
+    .chat-screen.active ~ .bottom-nav {
       display: none !important;
     }
     
     .chat-header-pill-container {
       position: absolute;
-      top: 90px;
+      top: 90px; /* Отступ под нативной кнопкой Telegram */
       left: 0;
       right: 0;
       z-index: 10;
@@ -497,32 +503,6 @@
       align-items: center;
       padding: 0 10px;
       pointer-events: none;
-    }
-
-    .chat-back-btn {
-      pointer-events: auto;
-      background: rgba(120, 120, 128, 0.12);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      margin-right: 8px;
-      flex-shrink: 0;
-      transition: transform 0.1s;
-    }
-    .chat-back-btn:active { transform: scale(0.9); }
-    .chat-back-btn svg {
-      width: 20px;
-      height: 20px;
-      stroke: var(--icon-active);
-      stroke-width: 2.5;
-      fill: none;
     }
 
     .chat-profile-pill {
@@ -539,6 +519,7 @@
       cursor: pointer;
       transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
       max-width: 85%;
+      margin-left: 50px; /* Отступ чтобы не перекрывать область кнопки Назад */
     }
     .chat-profile-pill:active {
       transform: scale(0.98);
@@ -596,7 +577,7 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 50px 16px calc(20px + env(safe-area-inset-bottom));
+      padding: 160px 16px calc(20px + env(safe-area-inset-bottom)); /* Увеличен padding сверху */
       display: flex;
       flex-direction: column-reverse;
       gap: 8px;
@@ -788,6 +769,7 @@
       font-weight: 500;
     }
 
+    /* --- PROFILE --- */
     .profile-moon-wrapper {
       position: relative; height: 50px; display: flex;
       justify-content: flex-end; align-items: center; padding: 0 16px; z-index: 10;
@@ -878,6 +860,7 @@
     .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
     .my-ads-grid-wrapper { transform: translateY(30px); }
 
+    /* --- BOTTOM NAV --- */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -1018,6 +1001,7 @@
       opacity: 0;
     }
 
+    /* --- MODALS --- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5); z-index: 200; display: none;
@@ -1063,6 +1047,7 @@
     }
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    /* --- DETAIL MODAL (FULL SCREEN) --- */
     .detail-modal {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary);
       z-index: 200; display: none; overflow-y: auto;
@@ -1076,24 +1061,11 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    .detail-header {
-      position: sticky; top: 0; background: var(--bg-primary); padding: 12px 16px;
-      padding-top: max(12px, env(safe-area-inset-top)); display: flex; justify-content: space-between; align-items: center; z-index: 10;
-      border-bottom: 1px solid var(--border-color);
+    .detail-header-spacer {
+       height: var(--header-height);
+       width: 100%;
     }
-    .detail-back {
-      background: var(--bg-secondary); border: none; border-radius: 50%; width: 36px; height: 36px;
-      font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
-    }
-    .detail-back svg {
-      width: 18px;
-      height: 18px;
-      stroke: var(--text-secondary);
-      stroke-width: 2.5;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
+
     .image-carousel { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: var(--bg-secondary); }
     .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
     .carousel-slide { min-width: 100%; height: 100%; }
@@ -1116,7 +1088,7 @@
     }
     .main-content::-webkit-scrollbar { width: 0; }
 
-    /* --- OTHER PROFILE STYLES (UPDATED) --- */
+    /* --- OTHER PROFILE STYLES --- */
     .other-profile-modal {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary);
       z-index: 160; display: none; overflow-y: auto;
@@ -1125,74 +1097,16 @@
     }
     .other-profile-modal.active { display: block; animation: slideUp 0.3s ease; }
     
-    /* Шапка для чужого профиля */
     .other-profile-header-fixed {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 170; /* Выше чем контент, но ниже модалок если нужно */
-      height: 122px;
-      
-      background: linear-gradient(90deg, 
-        #8A2BE2 0%, 
-        #FFD60A 25%, 
-        #007AFF 50%, 
-        #FFFFFF 75%, 
-        #FF00FF 100%,
-        #8A2BE2 100% 
-      );
-      background-size: 400% 100%;
-      animation: gradientFlow 15s ease infinite;
-      
-      display: flex;
-      justify-content: center;
-      align-items: center; 
+      top: 0; left: 0; right: 0;
+      height: var(--header-height);
       pointer-events: none;
-      overflow: hidden;
-      max-width: 430px;
-      margin: 0 auto;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .other-profile-header-fixed .header-logo {
-      width: 160px;
-      height: auto;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
-      z-index: 2;
-      pointer-events: auto;
-      margin-top: 63px;
+      z-index: 155;
     }
     
-    .other-profile-back-fixed {
-      position: absolute;
-      top: max(12px, env(safe-area-inset-top));
-      left: 16px;
-      z-index: 180;
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      pointer-events: auto;
-    }
-    
-    .other-profile-back-fixed svg {
-      width: 18px; height: 18px; stroke: #000; stroke-width: 2.5; fill: none;
-    }
-    
-    .dark-theme .other-profile-back-fixed svg {
-      stroke: #fff;
-    }
-
     .other-profile-content {
-      padding-top: 172px; /* ИЗМЕНЕНО: Было 122px, увеличено на 50px для выравнивания с личным профилем */
+      padding-top: 172px; 
       min-height: 100vh;
     }
 
@@ -1206,7 +1120,7 @@
       display: flex; justify-content: center; gap: 4px; 
       margin-top: 8px; 
       font-size: 20px; 
-      transform: translateY(-10px); /* Выравнивание с основным профилем */
+      transform: translateY(-10px); 
     }
     
     .other-profile-rating svg {
@@ -1235,15 +1149,15 @@
 </head>
 <body>
 
-  <!-- HEADER -->
-  <div class="header">
+  <!-- ГЛОБАЛЬНАЯ ШАПКА (Только логотип, кнопка Назад управляется Telegram API) -->
+  <div class="app-header">
     <img src="logos.png" alt="Swapka Logo" class="header-logo">
   </div>
 
   <div class="main-content" id="mainContent">
 
     <!-- HOME PAGE -->
-    <div class="page active" id="pageHome">
+    <div class="page active" id="pageHome" data-screen-id="home">
       <div class="search-container">
         <div class="search-bar">
           <div class="search-icon">
@@ -1262,7 +1176,7 @@
     </div>
 
     <!-- MESSAGES PAGE -->
-    <div class="page" id="pageMessages">
+    <div class="page" id="pageMessages" data-screen-id="messages">
       <div class="messages-list" id="messagesList">
         <div class="empty-state">
           <div class="empty-state-text">У вас пока нет чатов</div>
@@ -1271,7 +1185,7 @@
     </div>
 
     <!-- PROFILE PAGE -->
-    <div class="page" id="pageProfile">
+    <div class="page" id="pageProfile" data-screen-id="profile">
       <div class="profile-moon-wrapper">
         <button class="moon-btn" id="themeToggle">
           <svg id="iconMoon" viewBox="0 0 24 24" style="display:block">
@@ -1297,7 +1211,7 @@
           <div class="profile-name" id="profileName">Загрузка...</div>
           <div class="profile-username" id="profileUsername">@loading</div>
           
-          <!-- ИЗМЕНЕНО: SVG Звезды вместо текста -->
+          <!-- SVG Звезды -->
           <div class="profile-rating" id="profileRating">
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -1318,17 +1232,11 @@
     </div>
   </div>
 
-  <!-- CHAT MODAL -->
-  <div class="chat-modal" id="chatModal">
+  <!-- CHAT SCREEN -->
+  <div class="chat-screen" id="chatScreen" data-screen-id="chat">
     
     <div class="chat-header-pill-container">
-      <button class="chat-back-btn" onclick="closeChat()">
-        <svg viewBox="0 0 24 24">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-      
-      <div class="chat-profile-pill" onclick="openOtherProfile()">
+      <div class="chat-profile-pill" onclick="navigateTo('otherProfile')">
         <div class="chat-pill-avatar" id="chatHeaderAvatar"></div>
         <div class="chat-pill-info">
           <div class="chat-pill-name" id="chatHeaderName">Имя</div>
@@ -1369,30 +1277,22 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА (ОБНОВЛЕНО) -->
-  <div class="other-profile-modal" id="otherProfileModal">
-    <!-- Новая шапка для чужого профиля -->
+  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА -->
+  <div class="other-profile-modal" id="otherProfileModal" data-screen-id="otherProfile">
     <div class="other-profile-header-fixed">
-      <img src="logos.png" alt="Swapka Logo" class="header-logo">
-      <button class="other-profile-back-fixed" onclick="closeOtherProfile()">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-      </button>
+      <!-- Фон шапки наследуется от глобальной -->
     </div>
     
     <div class="other-profile-content">
-      <!-- Используем структуру, аналогичную личному профилю -->
       <div class="profile-shifted-content">
         <div class="profile-user-info">
           <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
           <div class="other-profile-name" id="otherProfileName">Имя</div>
           
-          <!-- Рейтинг вместо юзернейма -->
           <div class="other-profile-rating" id="otherProfileRating">
              <!-- Звезды будут добавлены через JS -->
           </div>
         </div>
-
-        <!-- Кнопка создания и луна убраны -->
 
         <div class="other-ads-title" id="otherAdsTitle">Активные объявления (0)</div>
         <div class="other-ads-grid-wrapper">
@@ -1484,18 +1384,9 @@
   </div>
 
   <!-- AD DETAIL MODAL -->
-  <div class="detail-modal" id="detailModal">
-    <div class="detail-header">
-      <button class="detail-back" onclick="closeDetailModal()">
-        <svg viewBox="0 0 24 24">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-      <div style="width:30px;height:30px;"></div>
-      <button class="detail-back" style="visibility:hidden">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-      </button>
-    </div>
+  <div class="detail-modal" id="detailModal" data-screen-id="detail">
+    <div class="detail-header-spacer"></div>
+    
     <div class="image-carousel" id="detailCarousel">
       <div class="carousel-track" id="carouselTrack"></div>
       <div class="carousel-dots" id="carouselDots"></div>
@@ -1539,6 +1430,146 @@
     const ADS_KEY = 'swapka_ads';
     const THEME_KEY = 'swapka_theme';
     const CHATS_KEY = 'swapka_chats';
+
+    // --- NAVIGATION STACK LOGIC ---
+    let navStack = []; 
+    const mainTabs = ['home', 'messages', 'profile'];
+
+    // Инициализация кнопки Назад Telegram
+    tg.BackButton.onClick(() => {
+      goBack();
+    });
+
+    function updateTelegramBackButton() {
+      // Если мы на главной вкладке или стек пуст -> скрываем кнопку
+      const currentScreen = getCurrentScreenId();
+      if (!currentScreen || mainTabs.includes(currentScreen)) {
+        tg.BackButton.hide();
+      } else {
+        // Если мы в глубине (чат, деталь, профиль) -> показываем кнопку
+        tg.BackButton.show();
+      }
+    }
+
+    function navigateTo(screenId, data = null) {
+      const currentScreen = getCurrentScreenId();
+      
+      // Логика стека: запоминаем, откуда пришли
+      if (currentScreen) {
+        navStack.push(currentScreen);
+      }
+
+      // Скрываем все экраны
+      document.querySelectorAll('.page, .chat-screen, .detail-modal, .other-profile-modal').forEach(el => {
+        el.classList.remove('active');
+      });
+
+      // Показываем целевой экран
+      let targetEl;
+      if (screenId === 'home') targetEl = document.getElementById('pageHome');
+      else if (screenId === 'messages') targetEl = document.getElementById('pageMessages');
+      else if (screenId === 'profile') targetEl = document.getElementById('pageProfile');
+      else if (screenId === 'chat') targetEl = document.getElementById('chatScreen');
+      else if (screenId === 'detail') targetEl = document.getElementById('detailModal');
+      else if (screenId === 'otherProfile') targetEl = document.getElementById('otherProfileModal');
+
+      if (targetEl) {
+        targetEl.classList.add('active');
+        
+        // Обновляем вершину стека
+        if (navStack.length > 0) {
+           navStack.pop(); 
+        }
+        navStack.push(screenId);
+      }
+
+      // Управление нижней навигацией
+      if (mainTabs.includes(screenId)) {
+        document.getElementById('bottomNav').classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const activeNav = document.querySelector(`.nav-item[data-tab="${screenId}"]`);
+        if(activeNav) activeNav.classList.add('active');
+        
+        const index = mainTabs.indexOf(screenId);
+        updateIndicatorPosition(index, false);
+        indicatorPhysics.currentIndex = index;
+      } else {
+        document.getElementById('bottomNav').classList.add('hidden');
+      }
+
+      // Обновляем кнопку Telegram
+      updateTelegramBackButton();
+
+      // Данные для экранов
+      if (screenId === 'messages') renderMessages();
+      if (screenId === 'profile') renderMyAds();
+      if (screenId === 'home') renderAds();
+      
+      const mainContent = document.getElementById('mainContent');
+      if(mainContent) mainContent.scrollTop = 0;
+    }
+
+    function getCurrentScreenId() {
+      const activePage = document.querySelector('.page.active');
+      if (activePage) return activePage.dataset.screenId;
+      
+      const activeChat = document.querySelector('.chat-screen.active');
+      if (activeChat) return activeChat.dataset.screenId;
+      
+      const activeDetail = document.querySelector('.detail-modal.active');
+      if (activeDetail) return activeDetail.dataset.screenId;
+      
+      const activeOther = document.querySelector('.other-profile-modal.active');
+      if (activeOther) return activeOther.dataset.screenId;
+      
+      return null;
+    }
+
+    function goBack() {
+      if (navStack.length <= 1) {
+        // Если стек почти пуст, возвращаемся на домашнюю
+        navigateTo('home');
+        navStack = ['home'];
+        return;
+      }
+
+      navStack.pop();
+      const previousScreen = navStack[navStack.length - 1];
+      
+      document.querySelectorAll('.page, .chat-screen, .detail-modal, .other-profile-modal').forEach(el => {
+        el.classList.remove('active');
+      });
+
+      let targetEl;
+      if (previousScreen === 'home') targetEl = document.getElementById('pageHome');
+      else if (previousScreen === 'messages') targetEl = document.getElementById('pageMessages');
+      else if (previousScreen === 'profile') targetEl = document.getElementById('pageProfile');
+      else if (previousScreen === 'chat') targetEl = document.getElementById('chatScreen');
+      else if (previousScreen === 'detail') targetEl = document.getElementById('detailModal');
+      else if (previousScreen === 'otherProfile') targetEl = document.getElementById('otherProfileModal');
+
+      if (targetEl) targetEl.classList.add('active');
+
+      if (mainTabs.includes(previousScreen)) {
+        document.getElementById('bottomNav').classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const activeNav = document.querySelector(`.nav-item[data-tab="${previousScreen}"]`);
+        if(activeNav) activeNav.classList.add('active');
+        const index = mainTabs.indexOf(previousScreen);
+        updateIndicatorPosition(index, false);
+        indicatorPhysics.currentIndex = index;
+      } else {
+        document.getElementById('bottomNav').classList.add('hidden');
+      }
+
+      updateTelegramBackButton();
+      
+      const mainContent = document.getElementById('mainContent');
+      if(mainContent) mainContent.scrollTop = 0;
+    }
+
+    // --- END NAVIGATION STACK LOGIC ---
+
 
     function loadAds() {
       try { const data = localStorage.getItem(ADS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
@@ -1651,20 +1682,7 @@
     }
 
     function switchTab(tab, index) {
-      navItems.forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      const activeBtn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
-      if(activeBtn) activeBtn.classList.add('active');
-      const pageMap = { 'home': 'pageHome', 'messages': 'pageMessages', 'profile': 'pageProfile' };
-      const activePage = document.getElementById(pageMap[tab]);
-      if(activePage) activePage.classList.add('active');
-      updateIndicatorPosition(index, false);
-      indicatorPhysics.currentIndex = index;
-      const mainContent = document.getElementById('mainContent');
-      if(mainContent) mainContent.scrollTop = 0;
-      if (tab === 'messages') renderMessages();
-      if (tab === 'profile') renderMyAds();
-      if (tab === 'home') renderAds();
+      navigateTo(tab);
     }
 
     navPill.addEventListener('touchstart', (e) => {
@@ -1753,7 +1771,12 @@
     function createAdCard(ad, isMyAd = false) {
       const card = document.createElement('div');
       card.className = 'ad-card';
-      card.onclick = () => openDetailModal(ad);
+      card.onclick = () => {
+        window.currentAdData = ad;
+        renderDetailModalContent(ad);
+        navigateTo('detail');
+      };
+      
       const imgHtml = ad.photos && ad.photos.length > 0
         ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
@@ -1936,8 +1959,7 @@
     let currentCarouselIndex = 0;
     let currentAdForChat = null;
 
-    function openDetailModal(ad) {
-      const modal = document.getElementById('detailModal');
+    function renderDetailModalContent(ad) {
       document.getElementById('detailTitle').textContent = ad.title;
       document.getElementById('detailPrice').textContent = ad.price;
       document.getElementById('detailCity').textContent = '📍 ' + ad.city;
@@ -1962,10 +1984,6 @@
         dot.onclick = () => goToSlide(i);
         dots.appendChild(dot);
       });
-      modal.dataset.adId = ad.id;
-      modal.classList.add('active');
-      hideBottomNav();
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
     function goToSlide(index) {
@@ -1974,21 +1992,18 @@
       currentCarouselIndex = index;
       document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === index));
     }
-    function closeDetailModal() { document.getElementById('detailModal').classList.remove('active'); showBottomNav(); }
 
     function contactSeller() {
-      const modal = document.getElementById('detailModal');
-      const adId = modal.dataset.adId;
-      const ads = loadAds();
-      const ad = ads.find(a => a.id === adId);
+      const ad = window.currentAdData;
       if (!ad) return;
+      
       currentAdForChat = ad;
       const chats = loadChats();
-      let chat = chats.find(c => c.adId === adId && c.sellerId === ad.userId);
+      let chat = chats.find(c => c.adId === ad.id && c.sellerId === ad.userId);
       if (!chat) {
         chat = {
           id: 'chat_' + Date.now(),
-          adId, adTitle: ad.title,
+          adId: ad.id, adTitle: ad.title,
           sellerId: ad.userId, sellerName: ad.userName, sellerPhoto: ad.userPhoto, sellerUsername: ad.userUsername,
           buyerId: currentUser.id,
           messages: [],
@@ -1999,7 +2014,7 @@
         chats.push(chat);
         saveChats(chats);
       }
-      closeDetailModal();
+      
       openChat(chat);
     }
 
@@ -2034,7 +2049,7 @@
     }
 
     function openChat(chat) {
-      const chatModal = document.getElementById('chatModal');
+      const chatScreen = document.getElementById('chatScreen');
       document.getElementById('chatHeaderName').textContent = chat.sellerName;
       const avatarEl = document.getElementById('chatHeaderAvatar');
       if (chat.sellerPhoto) {
@@ -2042,8 +2057,10 @@
       } else {
         avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
       }
-      chatModal.dataset.chatId = chat.id;
-      chatModal.classList.add('active');
+      chatScreen.dataset.chatId = chat.id;
+      
+      navigateTo('chat');
+      
       updateChatHeaderStatus(chat);
       const chats = loadChats();
       const chatIdx = chats.findIndex(c => c.id === chat.id);
@@ -2059,23 +2076,11 @@
       }, 100);
     }
 
-    function closeChat() {
-      document.getElementById('chatModal').classList.remove('active');
-      currentAdForChat = null;
-      removeAttachedPhoto();
-      setTimeout(() => {
-        switchTab('messages', 1);
-      }, 50);
-      showBottomNav();
-    }
-
-    // Функция рендеринга звезд рейтинга
     function renderStars(containerId, ratingValue) {
       const container = document.getElementById(containerId);
       if(!container) return;
       container.innerHTML = '';
       const maxStars = 3;
-      // Пока рейтинг всегда 0, но логика готова
       const filledCount = 0; 
 
       for(let i=0; i<maxStars; i++) {
@@ -2092,32 +2097,25 @@
     }
 
     function openOtherProfile() {
-      const chatModal = document.getElementById('chatModal');
-      const chatId = chatModal.dataset.chatId;
+      const chatScreen = document.getElementById('chatScreen');
+      const chatId = chatScreen.dataset.chatId;
       const chats = loadChats();
       const chat = chats.find(c => c.id === chatId);
       if (!chat) return;
 
       const modal = document.getElementById('otherProfileModal');
       
-      // Аватар
       const avatar = document.getElementById('otherProfileAvatar');
       if (chat.sellerPhoto) {
         avatar.src = chat.sellerPhoto;
         avatar.style.display = 'block';
       } else {
-        // Если фото нет, показываем плейсхолдер или скрываем
         avatar.style.display = 'none';
-        // Можно добавить fallback на div с иконкой, если нужно, но по ТЗ "с установленной аватаркой"
       }
 
-      // Имя
       document.getElementById('otherProfileName').textContent = chat.sellerName;
-      
-      // Рейтинг (3 звезды, изначально 0)
       renderStars('otherProfileRating', 0);
 
-      // Объявления
       const ads = loadAds();
       const userAds = ads.filter(ad => ad.userId === chat.sellerId);
       const count = userAds.length;
@@ -2134,16 +2132,11 @@
       } else {
         otherEmpty.style.display = 'none';
         userAds.forEach(ad => {
-          // Создаем обычную карточку (не мою, без кнопки удаления)
           otherGrid.appendChild(createAdCard(ad, false));
         });
       }
 
-      modal.classList.add('active');
-    }
-
-    function closeOtherProfile() {
-      document.getElementById('otherProfileModal').classList.remove('active');
+      navigateTo('otherProfile');
     }
 
     function renderChatMessages(chat) {
@@ -2200,8 +2193,8 @@
       
       if (!text && !attachedChatPhoto) return;
       
-      const chatModal = document.getElementById('chatModal');
-      const chatId = chatModal.dataset.chatId;
+      const chatScreen = document.getElementById('chatScreen');
+      const chatId = chatScreen.dataset.chatId;
       const chats = loadChats();
       const chat = chats.find(c => c.id === chatId);
       
@@ -2422,10 +2415,13 @@
       });
     }
 
+    // Инициализация стека
+    navStack = ['home'];
+    updateTelegramBackButton();
+
     setRandomSearchPlaceholder();
     renderAds();
     renderMyAds();
   </script>
 </body>
 </html>
-
