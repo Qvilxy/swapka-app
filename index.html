@@ -811,14 +811,14 @@
     .moon-btn:active { transform: scale(0.85); }
     .moon-btn:active svg { transform: rotate(15deg); }
 
-    .profile-shifted-content { transform: translateY(-120px); }
+    /* ИЗМЕНЕНИЕ: Убран класс profile-shifted-content и его стили.
+       Теперь выравнивание происходит за счет обычного padding-top у контейнера профиля,
+       как в чужом профиле. */
     
     /* Общие стили для инфо пользователя в профиле */
     .profile-user-info { 
       padding: 20px 16px; 
       text-align: center; 
-      /* В вашем профиле есть сдвиг translateY(60px) из-за shifted-content. 
-         Здесь мы зададим базовые отступы, а сдвиг будет зависеть от родителя. */
     }
     
     .profile-avatar {
@@ -854,9 +854,10 @@
       color: #ffffff;
       border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
-      transform: translateY(38px); box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+      /* Убран transform: translateY(38px), так как контент больше не сдвинут вверх */
+      box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
     }
-    .create-ad-btn:active { transform: translateY(38px) scale(0.97); opacity: 0.9; }
+    .create-ad-btn:active { transform: scale(0.97); opacity: 0.9; }
 
     .dark-theme .create-ad-btn {
       background: #0A84FF;
@@ -864,8 +865,8 @@
       box-shadow: 0 4px 20px rgba(10, 132, 255, 0.4);
     }
 
-    .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
-    .my-ads-grid-wrapper { transform: translateY(30px); }
+    .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); }
+    .my-ads-grid-wrapper { }
 
     /* --- BOTTOM NAV --- */
     .bottom-nav {
@@ -1265,7 +1266,8 @@
         </button>
       </div>
       
-      <div class="profile-shifted-content">
+      <!-- ИЗМЕНЕНИЕ: Заменили profile-shifted-content на div с обычным отступом, чтобы выровнять с чужим профилем -->
+      <div style="padding-top: 20px;">
         <div class="profile-user-info">
           <div id="profileAvatarContainer"></div>
           <div class="profile-name" id="profileName">Загрузка...</div>
