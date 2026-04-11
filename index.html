@@ -515,7 +515,7 @@
       border-radius: 100px;
       padding: 10px 24px 10px 10px; 
       box-shadow: 0 6px 20px rgba(0,0,0,0.15), 0 2px 5px rgba(0,0,0,0.05);
-      cursor: default; /* Изменено с pointer, так как переход убран */
+      cursor: pointer;
       transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
       margin: 0 auto; 
       max-width: 90%; 
@@ -1186,7 +1186,8 @@
       margin-bottom: 20px; 
       white-space: pre-wrap;
     }
-    .detail-seller { display: flex; align-items: center; padding: 14px; background: var(--bg-secondary); border-radius: 14px; margin-bottom: 16px; }
+    .detail-seller { display: flex; align-items: center; padding: 14px; background: var(--bg-secondary); border-radius: 14px; margin-bottom: 16px; cursor: pointer; transition: background 0.2s; }
+    .detail-seller:active { background: var(--border-color); }
     .detail-seller-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--border-color); margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
     .detail-seller-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .detail-seller-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
@@ -1282,14 +1283,38 @@
         </div>
       </div>
     </div>
+
+    <!-- OTHER USER PROFILE PAGE -->
+    <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
+      <div class="profile-shifted-content">
+        <div class="profile-user-info">
+          <div id="otherProfileAvatarContainer"></div>
+          <div class="profile-name" id="otherProfileName">Имя пользователя</div>
+          
+          <!-- SVG Звезды -->
+          <div class="profile-rating" id="otherProfileRating">
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+          </div>
+        </div>
+
+        <div class="my-ads-title">Активные объявления (<span id="otherAdsCount">0</span>)</div>
+        <div class="my-ads-grid-wrapper">
+          <div class="ads-grid" id="otherAdsGrid"></div>
+          <div class="empty-state" id="otherAdsEmpty">
+            <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- CHAT SCREEN -->
   <div class="chat-screen" id="chatScreen" data-screen-id="chat">
     
     <div class="chat-header-pill-container">
-      <!-- Убран onclick="navigateTo('otherProfile')" -->
-      <div class="chat-profile-pill">
+      <div class="chat-profile-pill" onclick="openOtherProfileFromChat()">
         <div class="chat-pill-avatar" id="chatHeaderAvatar"></div>
         <div class="chat-pill-info">
           <div class="chat-pill-name" id="chatHeaderName">Имя</div>
@@ -1457,7 +1482,7 @@
       <div class="detail-price" id="detailPrice"></div>
       <div class="detail-city" id="detailCity"></div>
       <div class="detail-desc" id="detailDesc"></div> <!-- Блок описания -->
-      <div class="detail-seller">
+      <div class="detail-seller" onclick="openOtherProfileFromDetail()">
         <div class="detail-seller-avatar" id="detailSellerAvatar">👤</div>
         <div>
           <div class="detail-seller-name" id="detailSellerName"></div>
@@ -1526,6 +1551,7 @@
       if (screenId === 'home') targetEl = document.getElementById('pageHome');
       else if (screenId === 'messages') targetEl = document.getElementById('pageMessages');
       else if (screenId === 'profile') targetEl = document.getElementById('pageProfile');
+      else if (screenId === 'otherProfile') targetEl = document.getElementById('pageOtherProfile');
       else if (screenId === 'chat') targetEl = document.getElementById('chatScreen');
       else if (screenId === 'detail') targetEl = document.getElementById('detailModal');
 
@@ -1556,6 +1582,7 @@
       if (screenId === 'messages') renderMessages();
       if (screenId === 'profile') renderMyAds();
       if (screenId === 'home') renderAds();
+      if (screenId === 'otherProfile' && data) renderOtherProfile(data);
       
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
@@ -1595,6 +1622,7 @@
       if (previousScreen === 'home') targetEl = document.getElementById('pageHome');
       else if (previousScreen === 'messages') targetEl = document.getElementById('pageMessages');
       else if (previousScreen === 'profile') targetEl = document.getElementById('pageProfile');
+      else if (previousScreen === 'otherProfile') targetEl = document.getElementById('pageOtherProfile');
       else if (previousScreen === 'chat') targetEl = document.getElementById('chatScreen');
       else if (previousScreen === 'detail') targetEl = document.getElementById('detailModal');
 
@@ -1857,6 +1885,69 @@
       const myAds = ads.filter(ad => ad.userId === currentUser.id);
       if (myAds.length === 0) { empty.style.display = 'flex'; }
       else { empty.style.display = 'none'; myAds.forEach(ad => grid.appendChild(createAdCard(ad, true))); }
+    }
+
+    // --- RENDER OTHER USER PROFILE ---
+    function renderOtherProfile(userData) {
+      const ads = loadAds();
+      const grid = document.getElementById('otherAdsGrid');
+      const empty = document.getElementById('otherAdsEmpty');
+      const countSpan = document.getElementById('otherAdsCount');
+      
+      // Заполняем данные пользователя
+      const avatarContainer = document.getElementById('otherProfileAvatarContainer');
+      if (userData.photoUrl) {
+        avatarContainer.innerHTML = `<img src="${userData.photoUrl}" class="profile-avatar" alt="Avatar">`;
+      } else {
+        avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
+      }
+      document.getElementById('otherProfileName').textContent = userData.name || 'Пользователь';
+      
+      // Получаем активные объявления пользователя
+      const userAds = ads.filter(ad => ad.userId === userData.id);
+      countSpan.textContent = userAds.length;
+      
+      grid.innerHTML = '';
+      if (userAds.length === 0) { 
+        empty.style.display = 'flex'; 
+      } else { 
+        empty.style.display = 'none'; 
+        userAds.forEach(ad => grid.appendChild(createAdCard(ad, false))); 
+      }
+    }
+
+    function openOtherProfileFromChat() {
+      const chatScreen = document.getElementById('chatScreen');
+      const chatId = chatScreen.dataset.chatId;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      
+      if (chat) {
+        const userData = {
+          id: chat.sellerId,
+          name: chat.sellerName,
+          photoUrl: chat.sellerPhoto
+        };
+        navigateTo('otherProfile', userData);
+      }
+    }
+
+    function openOtherProfileFromDetail() {
+      const ad = window.currentAdData;
+      if (!ad) return;
+      
+      // Если это мой профиль, ничего не делаем или переходим на свой профиль
+      if (ad.userId === currentUser.id) {
+        navigateTo('profile');
+        return;
+      }
+
+      const userData = {
+        id: ad.userId,
+        name: ad.userName,
+        photoUrl: ad.userPhoto
+      };
+      navigateTo('otherProfile', userData);
     }
 
     let searchTimeout;
