@@ -26,8 +26,7 @@
       --chat-header-bg: rgba(249, 249, 249, 0.85);
       --star-empty: #c7c7cc;
       --star-filled: #FFD60A;
-      /* Высота хедера (логотип + градиент) */
-      --header-height: 122px; 
+      --header-height: 122px;
       --danger-color: #FF3B30;
     }
 
@@ -812,15 +811,14 @@
     .moon-btn:active { transform: scale(0.85); }
     .moon-btn:active svg { transform: rotate(15deg); }
 
-    /* ИЗМЕНЕНИЕ: Полностью убираем трансформацию сдвига, чтобы контент был наверху */
-    .profile-shifted-content { 
-      transform: none !important; 
-    }
+    .profile-shifted-content { transform: translateY(-120px); }
     
     /* Общие стили для инфо пользователя в профиле */
     .profile-user-info { 
-      padding: 10px 16px 20px 16px; /* Уменьшил верхний отступ до 10px */
+      padding: 20px 16px; 
       text-align: center; 
+      /* В вашем профиле есть сдвиг translateY(60px) из-за shifted-content. 
+         Здесь мы зададим базовые отступы, а сдвиг будет зависеть от родителя. */
     }
     
     .profile-avatar {
@@ -856,9 +854,9 @@
       color: #ffffff;
       border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
-      box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+      transform: translateY(38px); box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
     }
-    .create-ad-btn:active { transform: scale(0.97); opacity: 0.9; }
+    .create-ad-btn:active { transform: translateY(38px) scale(0.97); opacity: 0.9; }
 
     .dark-theme .create-ad-btn {
       background: #0A84FF;
@@ -866,8 +864,8 @@
       box-shadow: 0 4px 20px rgba(10, 132, 255, 0.4);
     }
 
-    .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); }
-    .my-ads-grid-wrapper { }
+    .my-ads-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px; color: var(--text-primary); transform: translateY(30px); }
+    .my-ads-grid-wrapper { transform: translateY(30px); }
 
     /* --- BOTTOM NAV --- */
     .bottom-nav {
@@ -1267,7 +1265,6 @@
         </button>
       </div>
       
-      <!-- Контент профиля теперь без сдвига -->
       <div class="profile-shifted-content">
         <div class="profile-user-info">
           <div id="profileAvatarContainer"></div>
@@ -1296,8 +1293,8 @@
 
     <!-- OTHER USER PROFILE PAGE -->
     <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
-      
-      <div class="profile-user-info" style="padding-top: 10px;">
+      <!-- Убрали profile-shifted-content, так как он тянет контент вниз из-за отсутствия кнопки темы -->
+      <div class="profile-user-info" style="padding-top: 20px;">
         <div id="otherProfileAvatarContainer"></div>
         <div class="profile-name" id="otherProfileName">Имя пользователя</div>
         
@@ -1309,8 +1306,8 @@
         </div>
       </div>
 
-      <div class="my-ads-title" style="transform: translateY(0);">Активные объявления (<span id="otherAdsCount">0</span>)</div>
-      <div class="my-ads-grid-wrapper" style="transform: translateY(0);">
+      <div class="my-ads-title">Активные объявления (<span id="otherAdsCount">0</span>)</div>
+      <div class="my-ads-grid-wrapper">
         <div class="ads-grid" id="otherAdsGrid"></div>
         <div class="empty-state" id="otherAdsEmpty">
           <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
