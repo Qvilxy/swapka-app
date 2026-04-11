@@ -1267,8 +1267,9 @@
       </div>
       
       <!-- ИЗМЕНЕНИЕ: Заменили profile-shifted-content на div с обычным отступом, чтобы выровнять с чужим профилем -->
-      <div style="padding-top: 20px;">
-        <div class="profile-user-info">
+      <div style="padding-top: 0;">
+        <!-- ИЗМЕНЕНИЕ: Добавлен margin-top: -50px для поднятия интерфейса профиля вверх -->
+        <div class="profile-user-info" style="margin-top: -50px;">
           <div id="profileAvatarContainer"></div>
           <div class="profile-name" id="profileName">Загрузка...</div>
           <div class="profile-username" id="profileUsername">@loading</div>
