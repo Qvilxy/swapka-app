@@ -26,7 +26,8 @@
       --chat-header-bg: rgba(249, 249, 249, 0.85);
       --star-empty: #c7c7cc;
       --star-filled: #FFD60A;
-      --header-height: 122px;
+      /* ИЗМЕНЕНИЕ: Высота шапки уменьшена на 20px (было 122px) */
+      --header-height: 102px;
       --danger-color: #FF3B30;
     }
 
@@ -130,7 +131,8 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
       z-index: 2;
       pointer-events: auto;
-      margin-top: 20px;
+      /* ИЗМЕНЕНИЕ: Отступ сверху убран (было 20px), чтобы логотип поднялся выше внутри уменьшенной шапки */
+      margin-top: 0;
     }
 
     .main-content {
