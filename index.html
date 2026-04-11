@@ -811,7 +811,10 @@
     .moon-btn:active { transform: scale(0.85); }
     .moon-btn:active svg { transform: rotate(15deg); }
 
-    .profile-shifted-content { transform: translateY(-120px); }
+    /* ИЗМЕНЕНИЕ: Убрали translateY(-120px), чтобы опустить контент вниз и выровнять с чужим профилем */
+    .profile-shifted-content { 
+      /* transform: translateY(-120px);  <-- УДАЛЕНО */
+    }
     
     /* Общие стили для инфо пользователя в профиле */
     .profile-user-info { 
@@ -852,9 +855,10 @@
       color: #ffffff;
       border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
-      transform: translateY(38px); box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+      /* transform: translateY(38px); <-- Можно тоже убрать, если нужно еще ниже, но пока оставим как было относительно контента */
+      box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
     }
-    .create-ad-btn:active { transform: translateY(38px) scale(0.97); opacity: 0.9; }
+    .create-ad-btn:active { transform: scale(0.97); opacity: 0.9; }
 
     .dark-theme .create-ad-btn {
       background: #0A84FF;
@@ -1263,7 +1267,7 @@
         </button>
       </div>
       
-      <!-- Вернули shifted-content для своего профиля -->
+      <!-- Убрали класс profile-shifted-content или его трансформацию, чтобы контент опустился вниз -->
       <div class="profile-shifted-content">
         <div class="profile-user-info">
           <div id="profileAvatarContainer"></div>
