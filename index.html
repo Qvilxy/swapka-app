@@ -817,8 +817,6 @@
     .profile-user-info { 
       padding: 20px 16px; 
       text-align: center; 
-      /* В вашем профиле есть сдвиг translateY(60px) из-за shifted-content. 
-         Здесь мы зададим базовые отступы, а сдвиг будет зависеть от родителя. */
     }
     
     .profile-avatar {
@@ -1265,6 +1263,7 @@
         </button>
       </div>
       
+      <!-- Вернули shifted-content для своего профиля -->
       <div class="profile-shifted-content">
         <div class="profile-user-info">
           <div id="profileAvatarContainer"></div>
@@ -1293,7 +1292,8 @@
 
     <!-- OTHER USER PROFILE PAGE -->
     <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
-      <!-- Убрали profile-shifted-content, так как он тянет контент вниз из-за отсутствия кнопки темы -->
+      <!-- Убрали shifted-content, так как здесь нет кнопки темы -->
+      
       <div class="profile-user-info" style="padding-top: 20px;">
         <div id="otherProfileAvatarContainer"></div>
         <div class="profile-name" id="otherProfileName">Имя пользователя</div>
@@ -1306,8 +1306,9 @@
         </div>
       </div>
 
-      <div class="my-ads-title">Активные объявления (<span id="otherAdsCount">0</span>)</div>
-      <div class="my-ads-grid-wrapper">
+      <!-- Убрали transform: translateY(30px) у заголовка и сетки, чтобы поднять их выше -->
+      <div class="my-ads-title" style="transform: translateY(0);">Активные объявления (<span id="otherAdsCount">0</span>)</div>
+      <div class="my-ads-grid-wrapper" style="transform: translateY(0);">
         <div class="ads-grid" id="otherAdsGrid"></div>
         <div class="empty-state" id="otherAdsEmpty">
           <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
