@@ -2169,7 +2169,7 @@
       const newAd = {
         id: 'ad_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         userId: currentUser.id,
-        userName: currentUser.firstName,
+        userName: currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : ''),
         userUsername: currentUser.username,
         userPhoto: currentUser.photoUrl,
         title, price, city,
@@ -2294,12 +2294,20 @@
       
       currentAdForChat = ad;
       const chats = loadChats();
+      
+      // Ищем существующий чат
       let chat = chats.find(c => c.adId === ad.id && c.sellerId === ad.userId);
+      
       if (!chat) {
+        // Создаем новый чат, используя ТОЧНЫЕ данные из объявления
         chat = {
           id: 'chat_' + Date.now(),
-          adId: ad.id, adTitle: ad.title,
-          sellerId: ad.userId, sellerName: ad.userName, sellerPhoto: ad.userPhoto, sellerUsername: ad.userUsername,
+          adId: ad.id, 
+          adTitle: ad.title,
+          sellerId: ad.userId, 
+          sellerName: ad.userName || 'Пользователь', // Фоллбэк если имя пустое
+          sellerPhoto: ad.userPhoto || '',           // Фото может быть пустым, это нормально
+          sellerUsername: ad.userUsername || '',
           buyerId: currentUser.id,
           messages: [],
           createdAt: Date.now(),
@@ -2308,6 +2316,16 @@
         };
         chats.push(chat);
         saveChats(chats);
+      } else {
+        // ВАЖНОЕ ИСПРАВЛЕНИЕ:
+        // Если чат уже есть, но в нем нет фото или имени (например, старые данные),
+        // обновляем их данными из текущего просматриваемого объявления.
+        if ((!chat.sellerPhoto && ad.userPhoto) || chat.sellerName !== ad.userName) {
+             chat.sellerPhoto = ad.userPhoto || chat.sellerPhoto;
+             chat.sellerName = ad.userName || chat.sellerName;
+             chat.sellerUsername = ad.userUsername || chat.sellerUsername;
+             saveChats(chats);
+        }
       }
       
       openChat(chat);
@@ -2427,41 +2445,77 @@
     }
 
     function openOtherProfile() {
+      // Сначала пытаемся получить ID из активного чата (если мы пришли оттуда)
       const chatScreen = document.getElementById('chatScreen');
-      const chatId = chatScreen.dataset.chatId;
-      const chats = loadChats();
-      const chat = chats.find(c => c.id === chatId);
+      const activeChatId = chatScreen ? chatScreen.dataset.chatId : null;
       
-      if (!chat) {
-        console.error("Chat not found for ID:", chatId);
-        return;
+      let targetUserId = currentOtherProfileUserId; // Глобальная переменная, если установлена
+      
+      // Если мы не знаем ID, но есть активный чат, берем ID продавца из него
+      if (!targetUserId && activeChatId) {
+         const chats = loadChats();
+         const activeChat = chats.find(c => c.id === activeChatId);
+         if (activeChat) {
+             targetUserId = activeChat.sellerId;
+         }
       }
 
-      // Сохраняем ID продавца для поиска
-      currentOtherProfileUserId = chat.sellerId;
+      // Если до сих пор нет ID (крайний случай), выходим
+      if (!targetUserId) {
+          console.error("Не удалось определить пользователя");
+          return;
+      }
+
+      currentOtherProfileUserId = targetUserId;
+
+      // Ищем ЛЮБОЙ чат с этим пользователем, чтобы достать его имя и фото
+      // Это надежнее, чем полагаться только на текущий экран
+      const allChats = loadChats();
+      // Ищем чат, где этот пользователь является продавцом (так как мы смотрим его профиль)
+      const userChat = allChats.find(c => c.sellerId === targetUserId);
 
       const modal = document.getElementById('otherProfileModal');
-      
-      // Аватар
       const avatar = document.getElementById('otherProfileAvatar');
-      if (chat.sellerPhoto) {
-        avatar.src = chat.sellerPhoto;
-        avatar.style.display = 'block';
-      } else {
-        avatar.style.display = 'none';
-      }
+      const nameEl = document.getElementById('otherProfileName');
 
-      // Имя
-      document.getElementById('otherProfileName').textContent = chat.sellerName;
+      // Заполняем данные
+      if (userChat) {
+          // Данные есть в истории чатов
+          if (userChat.sellerPhoto) {
+              avatar.src = userChat.sellerPhoto;
+              avatar.style.display = 'block';
+          } else {
+              avatar.style.display = 'none';
+          }
+          nameEl.textContent = userChat.sellerName;
+      } else {
+          // Чатов нет или данных нет. Пробуем найти в объявлениях.
+          const ads = loadAds();
+          const userAd = ads.find(a => a.userId === targetUserId);
+          
+          if (userAd) {
+              if (userAd.userPhoto) {
+                  avatar.src = userAd.userPhoto;
+                  avatar.style.display = 'block';
+              } else {
+                  avatar.style.display = 'none';
+              }
+              nameEl.textContent = userAd.userName || 'Пользователь';
+          } else {
+              // Совсем нет данных
+              avatar.style.display = 'none';
+              nameEl.textContent = 'Пользователь';
+          }
+      }
       
-      // Рейтинг (пока пустой, можно добавить логику позже)
+      // Рейтинг (пока статика)
       renderStars('otherProfileRating', 0);
 
-      // Очищаем поиск при открытии
+      // Очищаем поиск
       const searchInput = document.getElementById('otherProfileSearchInput');
       if(searchInput) searchInput.value = '';
 
-      // Рендерим объявления
+      // Рендерим объявления этого пользователя
       renderOtherProfileAds();
 
       navigateTo('otherProfile');
@@ -2758,3 +2812,4 @@
   </script>
 </body>
 </html>
+
