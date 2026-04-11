@@ -26,7 +26,6 @@
       --chat-header-bg: rgba(249, 249, 249, 0.85);
       --star-empty: #c7c7cc;
       --star-filled: #FFD60A;
-      /* ИЗМЕНЕНИЕ: Высота шапки уменьшена на 20px (было 122px) */
       --header-height: 102px;
       --danger-color: #FF3B30;
     }
@@ -131,7 +130,6 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
       z-index: 2;
       pointer-events: auto;
-      /* ИЗМЕНЕНИЕ: Отступ сверху убран (было 20px), чтобы логотип поднялся выше внутри уменьшенной шапки */
       margin-top: 0;
     }
 
@@ -585,6 +583,7 @@
       gap: 8px;
       background: var(--bg-primary);
       scroll-behavior: smooth;
+      position: relative;
     }
 
     .chat-message {
@@ -596,6 +595,8 @@
       word-wrap: break-word;
       position: relative;
       animation: messagePopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      user-select: text;
+      -webkit-user-select: text;
     }
 
     @keyframes messagePopIn {
@@ -812,10 +813,6 @@
 
     .moon-btn:active { transform: scale(0.85); }
     .moon-btn:active svg { transform: rotate(15deg); }
-
-    /* ИЗМЕНЕНИЕ: Убран класс profile-shifted-content и его стили.
-       Теперь выравнивание происходит за счет обычного padding-top у контейнера профиля,
-       как в чужом профиле. */
     
     /* Общие стили для инфо пользователя в профиле */
     .profile-user-info { 
@@ -856,7 +853,6 @@
       color: #ffffff;
       border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
-      /* Убран transform: translateY(38px), так как контент больше не сдвинут вверх */
       box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
     }
     .create-ad-btn:active { transform: scale(0.97); opacity: 0.9; }
@@ -1152,14 +1148,12 @@
     .action-btn.edit {
       background: #007AFF;
       color: white;
-      /* Позиция слева от шестеренки */
       right: 55px; 
     }
 
     .action-btn.delete {
       background: var(--danger-color);
       color: white;
-      /* Позиция ниже шестеренки */
       top: 55px;
     }
 
@@ -1207,6 +1201,101 @@
       font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 20px;
     }
     .main-content::-webkit-scrollbar { width: 0; }
+
+    /* --- MESSAGE ACTION WIDGET STYLES --- */
+    .chat-message-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 50;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .chat-message-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .message-action-widget {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 8px;
+      display: flex;
+      gap: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 51;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+    .message-action-widget.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    .msg-action-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .msg-action-btn.edit-btn {
+      color: var(--icon-active);
+      background: rgba(0, 122, 255, 0.1);
+    }
+    .msg-action-btn.edit-btn:active {
+      background: rgba(0, 122, 255, 0.2);
+    }
+    .msg-action-btn.delete-btn {
+      color: var(--danger-color);
+      background: rgba(255, 59, 48, 0.1);
+    }
+    .msg-action-btn.delete-btn:active {
+      background: rgba(255, 59, 48, 0.2);
+    }
+    
+    .edit-textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      resize: none;
+      outline: none;
+      padding: 0;
+      margin: 0;
+      line-height: 1.4;
+    }
+    .edit-confirm-btn {
+      margin-top: 5px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      color: inherit;
+      cursor: pointer;
+      float: right;
+    }
 
   </style>
 </head>
@@ -1268,9 +1357,7 @@
         </button>
       </div>
       
-      <!-- ИЗМЕНЕНИЕ: Заменили profile-shifted-content на div с обычным отступом, чтобы выровнять с чужим профилем -->
       <div style="padding-top: 0;">
-        <!-- ИЗМЕНЕНИЕ: Добавлен margin-top: -50px для поднятия интерфейса профиля вверх -->
         <div class="profile-user-info" style="margin-top: -50px;">
           <div id="profileAvatarContainer"></div>
           <div class="profile-name" id="profileName">Загрузка...</div>
@@ -1298,7 +1385,6 @@
 
     <!-- OTHER USER PROFILE PAGE -->
     <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
-      <!-- Убрали profile-shifted-content, так как он тянет контент вниз из-за отсутствия кнопки темы -->
       <div class="profile-user-info" style="padding-top: 20px;">
         <div id="otherProfileAvatarContainer"></div>
         <div class="profile-name" id="otherProfileName">Имя пользователя</div>
@@ -1334,7 +1420,22 @@
       </div>
     </div>
 
-    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-messages" id="chatMessages">
+      <!-- Оверлей для размытия -->
+      <div class="chat-message-overlay" id="msgOverlay" onclick="closeMessageActions()"></div>
+      
+      <!-- Виджет действий -->
+      <div class="message-action-widget" id="msgActionWidget">
+        <button class="msg-action-btn edit-btn" onclick="startEditMessage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Редактировать
+        </button>
+        <button class="msg-action-btn delete-btn" onclick="deleteSelectedMessage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          Удалить
+        </button>
+      </div>
+    </div>
     
     <div class="attached-photo-preview" id="attachedPhotoPreview">
       <div class="attached-photo-thumb">
@@ -1548,6 +1649,8 @@
     }
 
     function navigateTo(screenId, data = null) {
+      closeMessageActions(); // Закрываем меню сообщений при переходе
+      
       const currentScreen = getCurrentScreenId();
       
       if (currentScreen) {
@@ -1615,6 +1718,7 @@
     function goBack() {
       // Закрываем меню настроек если открыто
       closeSettingsMenu();
+      closeMessageActions();
 
       if (navStack.length <= 1) {
         navigateTo('home');
@@ -2338,12 +2442,156 @@
       }
     }
 
+    // --- MESSAGE ACTIONS LOGIC ---
+    let selectedMessageId = null;
+    let longPressTimer = null;
+
+    function initMessageLongPress(msgElement, msgId) {
+      // Prevent default context menu
+      msgElement.addEventListener('contextmenu', e => e.preventDefault());
+
+      const startHandler = (e) => {
+        // Don't trigger if already editing or if it's an image click that might be zooming
+        if(document.querySelector('.edit-textarea')) return;
+        
+        longPressTimer = setTimeout(() => {
+          if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+          showMessageActions(msgId);
+        }, 500); // 500ms hold
+      };
+
+      const endHandler = () => {
+        if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          longPressTimer = null;
+        }
+      };
+
+      msgElement.addEventListener('touchstart', startHandler, {passive: true});
+      msgElement.addEventListener('mousedown', startHandler);
+      
+      msgElement.addEventListener('touchend', endHandler);
+      msgElement.addEventListener('mouseup', endHandler);
+      msgElement.addEventListener('touchmove', endHandler); // Cancel if scrolling
+    }
+
+    function showMessageActions(msgId) {
+      selectedMessageId = msgId;
+      const overlay = document.getElementById('msgOverlay');
+      const widget = document.getElementById('msgActionWidget');
+      
+      overlay.classList.add('active');
+      widget.classList.add('active');
+    }
+
+    function closeMessageActions() {
+      selectedMessageId = null;
+      const overlay = document.getElementById('msgOverlay');
+      const widget = document.getElementById('msgActionWidget');
+      
+      overlay.classList.remove('active');
+      widget.classList.remove('active');
+    }
+
+    function deleteSelectedMessage() {
+      if (!selectedMessageId) return;
+      
+      const chatScreen = document.getElementById('chatScreen');
+      const chatId = chatScreen.dataset.chatId;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      
+      if (chat) {
+        chat.messages = chat.messages.filter(m => m.id !== selectedMessageId);
+        saveChats(chats);
+        renderChatMessages(chat);
+        closeMessageActions();
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      }
+    }
+
+    function startEditMessage() {
+      if (!selectedMessageId) return;
+      
+      const chatScreen = document.getElementById('chatScreen');
+      const chatId = chatScreen.dataset.chatId;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      const msg = chat ? chat.messages.find(m => m.id === selectedMessageId) : null;
+      
+      if (!msg) return;
+
+      // Find the DOM element for this message
+      // Since we use reverse order, finding by ID is safest after re-render or direct DOM query if we added IDs
+      // But easier: replace content of the specific bubble.
+      // However, since we render via JS loop, let's just modify the DOM directly then save on confirm.
+      
+      // We need to find the element in the DOM. Let's assume the structure rendered in renderChatMessages
+      // It doesn't have ID. Let's re-render with ID or just find by text/time match (risky).
+      // Better: Add ID to message div in renderChatMessages.
+      
+      const msgDiv = document.querySelector(`.chat-message[data-msg-id="${selectedMessageId}"]`);
+      if (!msgDiv) {
+         closeMessageActions();
+         return;
+      }
+
+      const contentDiv = msgDiv.querySelector('div:not(.chat-message-time)'); // The text/image container
+      if (!contentDiv) return;
+
+      // Replace text with textarea
+      const currentText = msg.text || '';
+      contentDiv.innerHTML = `
+        <textarea class="edit-textarea" id="editArea">${escapeHtml(currentText)}</textarea>
+        <button class="edit-confirm-btn" onclick="confirmEdit('${chatId}', '${selectedMessageId}')">Сохранить</button>
+      `;
+      
+      const textarea = document.getElementById('editArea');
+      textarea.focus();
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      
+      // Hide widget but keep overlay so they can click away to cancel? 
+      // Or just keep widget open? Let's hide widget to give space.
+      document.getElementById('msgActionWidget').classList.remove('active');
+    }
+
+    function confirmEdit(chatId, msgId) {
+      const newText = document.getElementById('editArea').value.trim();
+      if (!newText) return; // Don't allow empty
+
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      const msg = chat ? chat.messages.find(m => m.id === msgId) : null;
+      
+      if (msg) {
+        msg.text = newText;
+        msg.edited = true; // Flag for (ред)
+        saveChats(chats);
+        renderChatMessages(chat);
+        closeMessageActions();
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      }
+    }
+    
+    // Make functions global for onclick handlers
+    window.closeMessageActions = closeMessageActions;
+    window.startEditMessage = startEditMessage;
+    window.deleteSelectedMessage = deleteSelectedMessage;
+    window.confirmEdit = confirmEdit;
+
+    // --- END MESSAGE ACTIONS LOGIC ---
+
     function renderChatMessages(chat) {
       const container = document.getElementById('chatMessages');
+      // Keep overlay and widget if they exist, clear rest
+      const overlay = document.getElementById('msgOverlay');
+      const widget = document.getElementById('msgActionWidget');
       container.innerHTML = '';
+      container.appendChild(overlay);
+      container.appendChild(widget);
       
       if (chat.messages.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Напишите свое первое сообщение</div></div>';
+        container.innerHTML += '<div class="empty-state"><div class="empty-state-text">Напишите свое первое сообщение</div></div>';
         return;
       }
       
@@ -2351,6 +2599,7 @@
         const isSent = msg.senderId === currentUser.id;
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
+        messageDiv.dataset.msgId = msg.id; // Add ID for editing
         
         let contentHtml = '';
         if (msg.image) {
@@ -2361,8 +2610,15 @@
         }
         
         const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-        messageDiv.innerHTML = `${contentHtml}<div class="chat-message-time">${time}</div>`;
+        const editedMark = msg.edited ? ' <span style="opacity:0.6">(ред)</span>' : '';
+        
+        messageDiv.innerHTML = `${contentHtml}<div class="chat-message-time">${time}${editedMark}</div>`;
         container.appendChild(messageDiv);
+        
+        // Init long press only for MY messages
+        if (isSent) {
+          initMessageLongPress(messageDiv, msg.id);
+        }
       });
     }
 
@@ -2438,6 +2694,9 @@
       const deleteWidth = 120;
       
       item.addEventListener('touchstart', (e) => {
+        // If we are in message edit mode, don't swipe list
+        if(selectedMessageId) return;
+
         document.querySelectorAll('.message-item').forEach(el => {
           if (el !== item) {
             el.style.transform = 'translateX(0)';
