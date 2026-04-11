@@ -26,7 +26,6 @@
       --chat-header-bg: rgba(249, 249, 249, 0.85);
       --star-empty: #c7c7cc;
       --star-filled: #FFD60A;
-      /* ИЗМЕНЕНИЕ: Высота шапки уменьшена на 20px (было 122px) */
       --header-height: 102px;
       --danger-color: #FF3B30;
     }
@@ -131,7 +130,6 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
       z-index: 2;
       pointer-events: auto;
-      /* ИЗМЕНЕНИЕ: Отступ сверху убран (было 20px), чтобы логотип поднялся выше внутри уменьшенной шапки */
       margin-top: 0;
     }
 
@@ -579,20 +577,30 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      /* ИЗМЕНЕНИЕ: Увеличен верхний отступ с 180px до 240px, чтобы сообщения вылезали из-под таблетки */
-      padding: 240px 16px calc(20px + env(safe-area-inset-bottom));
+      /* ИЗМЕНЕНИЕ: Вернули нормальный паддинг. Распорка будет в JS */
+      padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column-reverse;
       gap: 8px;
       background: var(--bg-primary);
       scroll-behavior: smooth;
+      /* Разрешаем прокрутку за пределы контента для эффекта вылезания */
+      overscroll-behavior-y: contain; 
     }
 
-    /* ИЗМЕНЕНИЕ: Добавлен стиль для прозрачного блока-распорки */
+    /* Прозрачный блок-распорка для пустого чата */
     .chat-spacer {
       height: 150px;
       width: 100%;
       flex-shrink: 0;
+    }
+
+    /* ИЗМЕНЕНИЕ: Невидимый блок, который позволяет сообщениям уходить под шапку */
+    .chat-top-spacer {
+      height: 220px; /* Высота таблетки (около 100-120px) + запас */
+      width: 100%;
+      flex-shrink: 0;
+      pointer-events: none;
     }
 
     .chat-message {
@@ -821,11 +829,6 @@
     .moon-btn:active { transform: scale(0.85); }
     .moon-btn:active svg { transform: rotate(15deg); }
 
-    /* ИЗМЕНЕНИЕ: Убран класс profile-shifted-content и его стили.
-       Теперь выравнивание происходит за счет обычного padding-top у контейнера профиля,
-       как в чужом профиле. */
-    
-    /* Общие стили для инфо пользователя в профиле */
     .profile-user-info { 
       padding: 20px 16px; 
       text-align: center; 
@@ -864,7 +867,6 @@
       color: #ffffff;
       border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
-      /* Убран transform: translateY(38px), так как контент больше не сдвинут вверх */
       box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
     }
     .create-ad-btn:active { transform: scale(0.97); opacity: 0.9; }
@@ -1160,14 +1162,12 @@
     .action-btn.edit {
       background: #007AFF;
       color: white;
-      /* Позиция слева от шестеренки */
       right: 55px; 
     }
 
     .action-btn.delete {
       background: var(--danger-color);
       color: white;
-      /* Позиция ниже шестеренки */
       top: 55px;
     }
 
@@ -1276,15 +1276,12 @@
         </button>
       </div>
       
-      <!-- ИЗМЕНЕНИЕ: Заменили profile-shifted-content на div с обычным отступом, чтобы выровнять с чужим профилем -->
       <div style="padding-top: 0;">
-        <!-- ИЗМЕНЕНИЕ: Добавлен margin-top: -50px для поднятия интерфейса профиля вверх -->
         <div class="profile-user-info" style="margin-top: -50px;">
           <div id="profileAvatarContainer"></div>
           <div class="profile-name" id="profileName">Загрузка...</div>
           <div class="profile-username" id="profileUsername">@loading</div>
           
-          <!-- SVG Звезды -->
           <div class="profile-rating" id="profileRating">
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -1306,12 +1303,10 @@
 
     <!-- OTHER USER PROFILE PAGE -->
     <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
-      <!-- Убрали profile-shifted-content, так как он тянет контент вниз из-за отсутствия кнопки темы -->
       <div class="profile-user-info" style="padding-top: 20px;">
         <div id="otherProfileAvatarContainer"></div>
         <div class="profile-name" id="otherProfileName">Имя пользователя</div>
         
-        <!-- SVG Звезды -->
         <div class="profile-rating" id="otherProfileRating">
            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -1448,7 +1443,6 @@
         <input type="text" class="form-input" id="adCity" placeholder="Введите город">
       </div>
 
-      <!-- НОВОЕ ПОЛЕ ОПИСАНИЯ -->
       <div class="form-group">
         <label class="form-label">Описание (макс. 250 симв.)</label>
         <textarea class="form-input" id="adDesc" rows="3" maxlength="250" placeholder="Опишите товар..." style="resize: none;"></textarea>
@@ -1464,7 +1458,6 @@
   <!-- AD DETAIL MODAL -->
   <div class="detail-modal" id="detailModal" data-screen-id="detail">
     
-    <!-- КНОПКА НАСТРОЕК (ШЕСТЕРЕНКА) -->
     <div class="detail-settings-container" id="detailSettingsContainer">
       <button class="settings-gear-btn" id="settingsGearBtn" onclick="toggleSettingsMenu()">
         <svg viewBox="0 0 24 24">
@@ -1500,7 +1493,7 @@
       <div class="detail-title" id="detailTitle"></div>
       <div class="detail-price" id="detailPrice"></div>
       <div class="detail-city" id="detailCity"></div>
-      <div class="detail-desc" id="detailDesc"></div> <!-- Блок описания -->
+      <div class="detail-desc" id="detailDesc"></div>
       <div class="detail-seller" onclick="openOtherProfileFromDetail()">
         <div class="detail-seller-avatar" id="detailSellerAvatar">👤</div>
         <div>
@@ -1537,14 +1530,10 @@
     const THEME_KEY = 'swapka_theme';
     const CHATS_KEY = 'swapka_chats';
 
-    // --- NAVIGATION STACK LOGIC ---
     let navStack = []; 
     const mainTabs = ['home', 'messages', 'profile'];
 
-    // Инициализация кнопки Назад Telegram
-    tg.BackButton.onClick(() => {
-      goBack();
-    });
+    tg.BackButton.onClick(() => { goBack(); });
 
     function updateTelegramBackButton() {
       const currentScreen = getCurrentScreenId();
@@ -1557,14 +1546,9 @@
 
     function navigateTo(screenId, data = null) {
       const currentScreen = getCurrentScreenId();
-      
-      if (currentScreen) {
-        navStack.push(currentScreen);
-      }
+      if (currentScreen) navStack.push(currentScreen);
 
-      document.querySelectorAll('.page, .chat-screen, .detail-modal').forEach(el => {
-        el.classList.remove('active');
-      });
+      document.querySelectorAll('.page, .chat-screen, .detail-modal').forEach(el => el.classList.remove('active'));
 
       let targetEl;
       if (screenId === 'home') targetEl = document.getElementById('pageHome');
@@ -1576,10 +1560,7 @@
 
       if (targetEl) {
         targetEl.classList.add('active');
-        
-        if (navStack.length > 0) {
-           navStack.pop(); 
-        }
+        if (navStack.length > 0) navStack.pop(); 
         navStack.push(screenId);
       }
 
@@ -1588,7 +1569,6 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         const activeNav = document.querySelector(`.nav-item[data-tab="${screenId}"]`);
         if(activeNav) activeNav.classList.add('active');
-        
         const index = mainTabs.indexOf(screenId);
         updateIndicatorPosition(index, false);
         indicatorPhysics.currentIndex = index;
@@ -1610,32 +1590,24 @@
     function getCurrentScreenId() {
       const activePage = document.querySelector('.page.active');
       if (activePage) return activePage.dataset.screenId;
-      
       const activeChat = document.querySelector('.chat-screen.active');
       if (activeChat) return activeChat.dataset.screenId;
-      
       const activeDetail = document.querySelector('.detail-modal.active');
       if (activeDetail) return activeDetail.dataset.screenId;
-      
       return null;
     }
 
     function goBack() {
-      // Закрываем меню настроек если открыто
       closeSettingsMenu();
-
       if (navStack.length <= 1) {
         navigateTo('home');
         navStack = ['home'];
         return;
       }
-
       navStack.pop();
       const previousScreen = navStack[navStack.length - 1];
       
-      document.querySelectorAll('.page, .chat-screen, .detail-modal').forEach(el => {
-        el.classList.remove('active');
-      });
+      document.querySelectorAll('.page, .chat-screen, .detail-modal').forEach(el => el.classList.remove('active'));
 
       let targetEl;
       if (previousScreen === 'home') targetEl = document.getElementById('pageHome');
@@ -1660,30 +1632,14 @@
       }
 
       updateTelegramBackButton();
-      
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
     }
 
-    // --- END NAVIGATION STACK LOGIC ---
-
-
-    function loadAds() {
-      try { const data = localStorage.getItem(ADS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
-    }
-    function saveAds(ads) {
-      try { localStorage.setItem(ADS_KEY, JSON.stringify(ads)); } catch (e) {
-        console.error("Storage error:", e);
-        tg.showAlert("Ошибка памяти");
-        throw e;
-      }
-    }
-    function loadChats() {
-      try { const data = localStorage.getItem(CHATS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
-    }
-    function saveChats(chats) {
-      try { localStorage.setItem(CHATS_KEY, JSON.stringify(chats)); } catch (e) {}
-    }
+    function loadAds() { try { const data = localStorage.getItem(ADS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; } }
+    function saveAds(ads) { try { localStorage.setItem(ADS_KEY, JSON.stringify(ads)); } catch (e) {} }
+    function loadChats() { try { const data = localStorage.getItem(CHATS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; } }
+    function saveChats(chats) { try { localStorage.setItem(CHATS_KEY, JSON.stringify(chats)); } catch (e) {} }
     function loadTheme() { return localStorage.getItem(THEME_KEY); }
     function saveTheme(theme) { localStorage.setItem(THEME_KEY, theme); }
 
@@ -1703,11 +1659,8 @@
     }
 
     const savedTheme = loadTheme();
-    if (savedTheme === 'dark' || savedTheme === 'light') {
-      applyTheme(savedTheme);
-    } else {
-      applyTheme(tg.colorScheme === 'dark' ? 'dark' : 'light');
-    }
+    if (savedTheme === 'dark' || savedTheme === 'light') applyTheme(savedTheme);
+    else applyTheme(tg.colorScheme === 'dark' ? 'dark' : 'light');
 
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) {
@@ -1721,11 +1674,8 @@
 
     function setupProfile() {
       const avatarContainer = document.getElementById('profileAvatarContainer');
-      if (currentUser.photoUrl) {
-        avatarContainer.innerHTML = `<img src="${currentUser.photoUrl}" class="profile-avatar" alt="Avatar">`;
-      } else {
-        avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
-      }
+      if (currentUser.photoUrl) avatarContainer.innerHTML = `<img src="${currentUser.photoUrl}" class="profile-avatar" alt="Avatar">`;
+      else avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
       document.getElementById('profileName').textContent = currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
       document.getElementById('profileUsername').textContent = currentUser.username ? '@' + currentUser.username : '';
     }
@@ -1756,18 +1706,12 @@
     function updateIndicatorPosition(index, isDragging = false) {
       if (!indicatorPhysics.cachedItemWidth || indicatorPhysics.cachedItemWidth === 0) {
         const navItem = navItems[index] || navItems[0];
-        if (navItem) {
-          indicatorPhysics.cachedItemWidth = navItem.offsetWidth;
-        }
+        if (navItem) indicatorPhysics.cachedItemWidth = navItem.offsetWidth;
       }
-      
       if (indicatorPhysics.cachedItemWidth === 0) {
         const navItem = navItems[0];
-        if (navItem) {
-          indicatorPhysics.cachedItemWidth = navItem.offsetWidth;
-        }
+        if (navItem) indicatorPhysics.cachedItemWidth = navItem.offsetWidth;
       }
-      
       const targetX = index * indicatorPhysics.cachedItemWidth;
       indicatorPhysics.currentTransformX = targetX;
       indicatorPhysics.currentIndex = index;
@@ -1778,9 +1722,7 @@
       navIndicator.style.borderRadius = '24px';
     }
 
-    function switchTab(tab, index) {
-      navigateTo(tab);
-    }
+    function switchTab(tab, index) { navigateTo(tab); }
 
     navPill.addEventListener('touchstart', (e) => {
       indicatorPhysics.isDragging = true;
@@ -1873,7 +1815,6 @@
         renderDetailModalContent(ad);
         navigateTo('detail');
       };
-      
       const imgHtml = ad.photos && ad.photos.length > 0
         ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
@@ -1906,33 +1847,20 @@
       else { empty.style.display = 'none'; myAds.forEach(ad => grid.appendChild(createAdCard(ad, true))); }
     }
 
-    // --- RENDER OTHER USER PROFILE ---
     function renderOtherProfile(userData) {
       const ads = loadAds();
       const grid = document.getElementById('otherAdsGrid');
       const empty = document.getElementById('otherAdsEmpty');
       const countSpan = document.getElementById('otherAdsCount');
-      
-      // Заполняем данные пользователя
       const avatarContainer = document.getElementById('otherProfileAvatarContainer');
-      if (userData.photoUrl) {
-        avatarContainer.innerHTML = `<img src="${userData.photoUrl}" class="profile-avatar" alt="Avatar">`;
-      } else {
-        avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
-      }
+      if (userData.photoUrl) avatarContainer.innerHTML = `<img src="${userData.photoUrl}" class="profile-avatar" alt="Avatar">`;
+      else avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
       document.getElementById('otherProfileName').textContent = userData.name || 'Пользователь';
-      
-      // Получаем активные объявления пользователя
       const userAds = ads.filter(ad => ad.userId === userData.id);
       countSpan.textContent = userAds.length;
-      
       grid.innerHTML = '';
-      if (userAds.length === 0) { 
-        empty.style.display = 'flex'; 
-      } else { 
-        empty.style.display = 'none'; 
-        userAds.forEach(ad => grid.appendChild(createAdCard(ad, false))); 
-      }
+      if (userAds.length === 0) { empty.style.display = 'flex'; }
+      else { empty.style.display = 'none'; userAds.forEach(ad => grid.appendChild(createAdCard(ad, false))); }
     }
 
     function openOtherProfileFromChat() {
@@ -1940,13 +1868,8 @@
       const chatId = chatScreen.dataset.chatId;
       const chats = loadChats();
       const chat = chats.find(c => c.id === chatId);
-      
       if (chat) {
-        const userData = {
-          id: chat.sellerId,
-          name: chat.sellerName,
-          photoUrl: chat.sellerPhoto
-        };
+        const userData = { id: chat.sellerId, name: chat.sellerName, photoUrl: chat.sellerPhoto };
         navigateTo('otherProfile', userData);
       }
     }
@@ -1954,18 +1877,8 @@
     function openOtherProfileFromDetail() {
       const ad = window.currentAdData;
       if (!ad) return;
-      
-      // Если это мой профиль, ничего не делаем или переходим на свой профиль
-      if (ad.userId === currentUser.id) {
-        navigateTo('profile');
-        return;
-      }
-
-      const userData = {
-        id: ad.userId,
-        name: ad.userName,
-        photoUrl: ad.userPhoto
-      };
+      if (ad.userId === currentUser.id) { navigateTo('profile'); return; }
+      const userData = { id: ad.userId, name: ad.userName, photoUrl: ad.userPhoto };
       navigateTo('otherProfile', userData);
     }
 
@@ -1998,19 +1911,10 @@
     }
     document.getElementById('openCreateBtn').addEventListener('click', openCreateModal);
 
-    // Логика счетчика описания
     const descInput = document.getElementById('adDesc');
     const descCounter = document.getElementById('descCounter');
-    
-    function updateDescCounter() {
-      if(descInput && descCounter) {
-        descCounter.textContent = descInput.value.length;
-      }
-    }
-    
-    if(descInput) {
-      descInput.addEventListener('input', updateDescCounter);
-    }
+    function updateDescCounter() { if(descInput && descCounter) descCounter.textContent = descInput.value.length; }
+    if(descInput) descInput.addEventListener('input', updateDescCounter);
 
     function resetPhotoSlots() {
       for (let i = 0; i < 4; i++) {
@@ -2026,11 +1930,7 @@
       const files = event.target.files;
       if (!files || files.length === 0) return;
       const remainingSlots = 4 - selectedPhotos.length;
-      if (remainingSlots <= 0) {
-        tg.showAlert('Максимум 4 фотографии');
-        event.target.value = '';
-        return;
-      }
+      if (remainingSlots <= 0) { tg.showAlert('Максимум 4 фотографии'); event.target.value = ''; return; }
       const filesToProcess = Array.from(files).slice(0, remainingSlots);
       let processedCount = 0;
       filesToProcess.forEach(file => {
@@ -2039,9 +1939,7 @@
           processedCount++;
           const slotIndex = selectedPhotos.length - 1;
           updatePhotoSlot(slotIndex, compressedDataUrl);
-          if (processedCount === filesToProcess.length) {
-             event.target.value = '';
-          }
+          if (processedCount === filesToProcess.length) event.target.value = '';
         });
       });
     }
@@ -2060,15 +1958,9 @@
           let width = img.width;
           let height = img.height;
           if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
+            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
           } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
+            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
           }
           canvas.width = width;
           canvas.height = height;
@@ -2096,7 +1988,6 @@
       const price = document.getElementById('adPrice').value.trim();
       const city = document.getElementById('adCity').value.trim();
       const desc = document.getElementById('adDesc').value.trim();
-      
       if (!title) { tg.showAlert('Введите название товара'); return; }
       if (!price) { tg.showAlert('Введите цену'); return; }
       if (!city) { tg.showAlert('Введите город'); return; }
@@ -2110,7 +2001,7 @@
         userUsername: currentUser.username,
         userPhoto: currentUser.photoUrl,
         title, price, city,
-        description: desc, // Сохраняем описание
+        description: desc,
         photos: selectedPhotos.slice(0, 4),
         createdAt: Date.now()
       };
@@ -2130,10 +2021,7 @@
         switchTab('home', 0);
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
         tg.showAlert('Объявление создано! ✅');
-      } catch (e) {
-        ads.shift();
-        console.error(e);
-      }
+      } catch (e) { ads.shift(); console.error(e); }
     }
 
     let currentCarouselIndex = 0;
@@ -2143,31 +2031,20 @@
       document.getElementById('detailTitle').textContent = ad.title;
       document.getElementById('detailPrice').textContent = ad.price;
       document.getElementById('detailCity').textContent = '📍 ' + ad.city;
-      
-      // Отображение описания
       const descEl = document.getElementById('detailDesc');
       if (ad.description && ad.description.trim() !== '') {
         descEl.textContent = ad.description;
         descEl.style.display = 'block';
-      } else {
-        descEl.style.display = 'none';
-      }
+      } else { descEl.style.display = 'none'; }
 
       document.getElementById('detailSellerName').textContent = ad.userName || 'Продавец';
-      if (ad.userPhoto) {
-        document.getElementById('detailSellerAvatar').innerHTML = `<img src="${ad.userPhoto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`;
-      } else {
-        document.getElementById('detailSellerAvatar').innerHTML = '👤';
-      }
+      if (ad.userPhoto) document.getElementById('detailSellerAvatar').innerHTML = `<img src="${ad.userPhoto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`;
+      else document.getElementById('detailSellerAvatar').innerHTML = '👤';
       
-      // Показываем шестеренку только если это мое объявление
       const settingsContainer = document.getElementById('detailSettingsContainer');
-      if (ad.userId === currentUser.id) {
-        settingsContainer.classList.add('visible');
-      } else {
-        settingsContainer.classList.remove('visible');
-      }
-      closeSettingsMenu(); // Сброс состояния меню
+      if (ad.userId === currentUser.id) settingsContainer.classList.add('visible');
+      else settingsContainer.classList.remove('visible');
+      closeSettingsMenu();
 
       const track = document.getElementById('carouselTrack');
       const dots = document.getElementById('carouselDots');
@@ -2186,37 +2063,22 @@
       });
     }
 
-    // --- SETTINGS GEAR LOGIC ---
-    function toggleSettingsMenu() {
-      const btn = document.getElementById('settingsGearBtn');
-      btn.classList.toggle('active');
-    }
-
-    function closeSettingsMenu() {
-      const btn = document.getElementById('settingsGearBtn');
-      if(btn) btn.classList.remove('active');
-    }
-
-    function editCurrentAd() {
-      tg.showAlert('Редактирование скоро будет доступно!');
-      closeSettingsMenu();
-    }
-
+    function toggleSettingsMenu() { document.getElementById('settingsGearBtn').classList.toggle('active'); }
+    function closeSettingsMenu() { const btn = document.getElementById('settingsGearBtn'); if(btn) btn.classList.remove('active'); }
+    function editCurrentAd() { tg.showAlert('Редактирование скоро будет доступно!'); closeSettingsMenu(); }
     function deleteCurrentAdFromDetail() {
       const ad = window.currentAdData;
       if (!ad) return;
-      
       if (confirm('Удалить это объявление?')) {
         const ads = loadAds();
         saveAds(ads.filter(a => a.id !== ad.id));
         closeSettingsMenu();
-        goBack(); // Возвращаемся назад
+        goBack();
         renderAds();
         renderMyAds();
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       }
     }
-    // --- END SETTINGS GEAR LOGIC ---
 
     function goToSlide(index) {
       const track = document.getElementById('carouselTrack');
@@ -2228,22 +2090,18 @@
     function contactSeller() {
       const ad = window.currentAdData;
       if (!ad) return;
-      
       currentAdForChat = ad;
       const chats = loadChats();
-      
-      // Ищем существующий чат
       let chat = chats.find(c => c.adId === ad.id && c.sellerId === ad.userId);
       
       if (!chat) {
-        // Создаем новый чат, используя ТОЧНЫЕ данные из объявления
         chat = {
           id: 'chat_' + Date.now(),
           adId: ad.id, 
           adTitle: ad.title,
           sellerId: ad.userId, 
-          sellerName: ad.userName || 'Пользователь', // Фоллбэк если имя пустое
-          sellerPhoto: ad.userPhoto || '',           // Фото может быть пустым, это нормально
+          sellerName: ad.userName || 'Пользователь',
+          sellerPhoto: ad.userPhoto || '',
           sellerUsername: ad.userUsername || '',
           buyerId: currentUser.id,
           messages: [],
@@ -2254,9 +2112,6 @@
         chats.push(chat);
         saveChats(chats);
       } else {
-        // ВАЖНОЕ ИСПРАВЛЕНИЕ:
-        // Если чат уже есть, но в нем нет фото или имени (например, старые данные),
-        // обновляем их данными из текущего просматриваемого объявления.
         if ((!chat.sellerPhoto && ad.userPhoto) || chat.sellerName !== ad.userName) {
              chat.sellerPhoto = ad.userPhoto || chat.sellerPhoto;
              chat.sellerName = ad.userName || chat.sellerName;
@@ -2264,7 +2119,6 @@
              saveChats(chats);
         }
       }
-      
       openChat(chat);
     }
 
@@ -2272,45 +2126,31 @@
       if (!lastActiveTimestamp) return 'Был(а) недавно';
       const now = Date.now();
       const diff = now - lastActiveTimestamp;
-      if (diff < 5 * 60 * 1000) {
-        return 'В сети';
-      }
+      if (diff < 5 * 60 * 1000) return 'В сети';
       const minutes = Math.floor(diff / (60 * 1000));
       const hours = Math.floor(diff / (60 * 60 * 1000));
       const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-      if (minutes < 60) {
-        return `Был(а) ${minutes} мин. назад`;
-      } else if (hours < 24) {
-        return `Был(а) ${hours} ч. назад`;
-      } else {
-        return `Был(а) ${days} дн. назад`;
-      }
+      if (minutes < 60) return `Был(а) ${minutes} мин. назад`;
+      else if (hours < 24) return `Был(а) ${hours} ч. назад`;
+      else return `Был(а) ${days} дн. назад`;
     }
 
     function updateChatHeaderStatus(chat) {
       const statusEl = document.getElementById('chatHeaderStatus');
       const statusText = formatLastSeen(chat.lastActive);
       statusEl.textContent = statusText;
-      if (statusText === 'В сети') {
-        statusEl.classList.add('online');
-      } else {
-        statusEl.classList.remove('online');
-      }
+      if (statusText === 'В сети') statusEl.classList.add('online');
+      else statusEl.classList.remove('online');
     }
 
     function openChat(chat) {
       const chatScreen = document.getElementById('chatScreen');
       document.getElementById('chatHeaderName').textContent = chat.sellerName;
       const avatarEl = document.getElementById('chatHeaderAvatar');
-      if (chat.sellerPhoto) {
-        avatarEl.innerHTML = `<img src="${chat.sellerPhoto}" alt="">`;
-      } else {
-        avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
-      }
+      if (chat.sellerPhoto) avatarEl.innerHTML = `<img src="${chat.sellerPhoto}" alt="">`;
+      else avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
       chatScreen.dataset.chatId = chat.id;
-      
       navigateTo('chat');
-      
       updateChatHeaderStatus(chat);
       const chats = loadChats();
       const chatIdx = chats.findIndex(c => c.id === chat.id);
@@ -2332,42 +2172,43 @@
       container.innerHTML = '';
       const maxStars = 3;
       const filledCount = 0; 
-
       for(let i=0; i<maxStars; i++) {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("viewBox", "0 0 24 24");
         if(i < filledCount) svg.classList.add('filled');
-        
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z");
-        
         svg.appendChild(path);
         container.appendChild(svg);
       }
     }
 
+    // --- ИЗМЕНЕНИЕ: Логика рендеринга чата с распоркой ---
     function renderChatMessages(chat) {
       const container = document.getElementById('chatMessages');
       container.innerHTML = '';
       
-      // ИЗМЕНЕНИЕ: Вместо текста "Нет сообщений" добавляем прозрачный блок-распорку
+      // Если сообщений нет, показываем нижнюю распорку (чтобы поле ввода было внизу, а пустота сверху)
       if (chat.messages.length === 0) {
         container.innerHTML = '<div class="chat-spacer"></div>';
         return;
       }
       
+      // ИЗМЕНЕНИЕ: Добавляем верхнюю распорку ПЕРВОЙ в DOM.
+      // Из-за flex-direction: column-reverse она окажется ВИЗУАЛЬНО ВВЕРХУ.
+      // Это позволит прокрутить контент так, чтобы сообщения уходили под шапку.
+      const topSpacer = document.createElement('div');
+      topSpacer.className = 'chat-top-spacer';
+      container.appendChild(topSpacer);
+
       [...chat.messages].reverse().forEach(msg => {
         const isSent = msg.senderId === currentUser.id;
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
         
         let contentHtml = '';
-        if (msg.image) {
-          contentHtml += `<img src="${msg.image}" alt="Photo">`;
-        }
-        if (msg.text) {
-          contentHtml += `<div>${escapeHtml(msg.text)}</div>`;
-        }
+        if (msg.image) contentHtml += `<img src="${msg.image}" alt="Photo">`;
+        if (msg.text) contentHtml += `<div>${escapeHtml(msg.text)}</div>`;
         
         const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         messageDiv.innerHTML = `${contentHtml}<div class="chat-message-time">${time}</div>`;
@@ -2376,11 +2217,9 @@
     }
 
     let attachedChatPhoto = null;
-
     function handleChatPhotoSelect(event) {
       const file = event.target.files[0];
       if (!file) return;
-      
       compressImage(file, (dataUrl) => {
         attachedChatPhoto = dataUrl;
         document.getElementById('attachedPhotoImg').src = dataUrl;
@@ -2389,7 +2228,6 @@
       });
       event.target.value = '';
     }
-
     function removeAttachedPhoto() {
       attachedChatPhoto = null;
       document.getElementById('attachedPhotoPreview').classList.remove('active');
@@ -2398,7 +2236,6 @@
     function sendMessage() {
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
-      
       if (!text && !attachedChatPhoto) return;
       
       const chatScreen = document.getElementById('chatScreen');
@@ -2414,38 +2251,29 @@
           image: attachedChatPhoto,
           timestamp: Date.now()
         };
-        
         chat.messages.push(newMessage);
         chat.updatedAt = Date.now();
         chat.lastActive = Date.now();
-        
         saveChats(chats);
-        
         input.value = '';
         removeAttachedPhoto();
-        
         renderChatMessages(chat);
         updateChatHeaderStatus(chat);
-        
         setTimeout(() => {
           const messagesContainer = document.getElementById('chatMessages');
           messagesContainer.scrollTop = 0;
         }, 50);
-        
         renderMessages();
       }
     }
 
-    document.getElementById('chatInput')?.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') sendMessage();
-    });
+    document.getElementById('chatInput')?.addEventListener('keypress', function(e) { if (e.key === 'Enter') sendMessage(); });
 
     function initChatSwipe(item, chatId) {
       let startX = 0;
       let currentX = 0;
       let isSwiping = false;
       const deleteWidth = 120;
-      
       item.addEventListener('touchstart', (e) => {
         document.querySelectorAll('.message-item').forEach(el => {
           if (el !== item) {
@@ -2459,13 +2287,11 @@
             }
           }
         });
-
         startX = e.touches[0].clientX;
         currentX = startX;
         isSwiping = true;
         item.classList.add('swiping');
       }, { passive: true });
-      
       item.addEventListener('touchmove', (e) => {
         if (!isSwiping) return;
         const touchX = e.touches[0].clientX;
@@ -2476,17 +2302,14 @@
           item.style.transform = `translateX(-${translateX}px)`;
         }
       }, { passive: true });
-      
       item.addEventListener('touchend', (e) => {
         if (!isSwiping) return;
         isSwiping = false;
         item.classList.remove('swiping');
-        
         const diff = startX - currentX;
         const wrapper = item.closest('.message-item-wrapper');
         const deleteBg = wrapper.querySelector('.message-delete-bg');
         const deleteBtn = wrapper.querySelector('.message-delete-btn');
-        
         if (diff > deleteWidth / 2) {
           item.style.transform = `translateX(-${deleteWidth}px)`;
           if (deleteBg) deleteBg.classList.add('visible');
@@ -2512,15 +2335,12 @@
       const chats = loadChats();
       const container = document.getElementById('messagesList');
       const userChats = chats.filter(c => c.buyerId === currentUser.id);
-      
       if (userChats.length === 0) {
         container.innerHTML = `<div class="empty-state"><div class="empty-state-text">У вас пока нет чатов</div></div>`;
         return;
       }
-      
       userChats.sort((a, b) => b.updatedAt - a.updatedAt);
       container.innerHTML = '';
-      
       userChats.forEach(chat => {
         const lastMessage = chat.messages[chat.messages.length - 1];
         let preview = 'Нет сообщений';
@@ -2528,22 +2348,11 @@
           if (lastMessage.image) preview = '📷 Фотография';
           else preview = lastMessage.text;
         }
-        
         const wrapper = document.createElement('div');
         wrapper.className = 'message-item-wrapper';
-        
         const deleteBg = document.createElement('div');
         deleteBg.className = 'message-delete-bg';
-        deleteBg.innerHTML = `
-          <svg viewBox="0 0 24 24">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            <line x1="10" y1="11" x2="10" y2="17"></line>
-            <line x1="14" y1="11" x2="14" y2="17"></line>
-          </svg>
-          <span>Удалить</span>
-        `;
-        
+        deleteBg.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg><span>Удалить</span>`;
         const messageItem = document.createElement('div');
         messageItem.className = 'message-item';
         messageItem.onclick = function() {
@@ -2562,41 +2371,21 @@
           }
           openChat(chat);
         };
-        
-        const avatarHtml = chat.sellerPhoto
-          ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>`
-          : '<div class="message-avatar">👤</div>';
-        
+        const avatarHtml = chat.sellerPhoto ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>` : '<div class="message-avatar">👤</div>';
         const unreadBadge = chat.unreadCount > 0 ? `<div class="unread-badge">${chat.unreadCount}</div>` : '';
-        
-        messageItem.innerHTML = `
-          ${avatarHtml}
-          <div class="message-content">
-            <div class="message-name">${escapeHtml(chat.sellerName)}</div>
-            <div class="message-preview">${escapeHtml(preview)}</div>
-          </div>
-          ${unreadBadge}
-        `;
-        
+        messageItem.innerHTML = `${avatarHtml}<div class="message-content"><div class="message-name">${escapeHtml(chat.sellerName)}</div><div class="message-preview">${escapeHtml(preview)}</div></div>${unreadBadge}`;
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'message-delete-btn';
-        deleteBtn.onclick = (e) => {
-          e.stopPropagation();
-          deleteChat(chat.id);
-        };
-        
+        deleteBtn.onclick = (e) => { e.stopPropagation(); deleteChat(chat.id); };
         wrapper.appendChild(deleteBg);
         wrapper.appendChild(messageItem);
         wrapper.appendChild(deleteBtn);
         container.appendChild(wrapper);
-        
         initChatSwipe(messageItem, chat.id);
       });
     }
 
-    document.getElementById('createModal').addEventListener('click', function (e) {
-      if (e.target === this) closeCreateModal();
-    });
+    document.getElementById('createModal').addEventListener('click', function (e) { if (e.target === this) closeCreateModal(); });
 
     let touchStartX = 0;
     let touchEndX = 0;
@@ -2613,20 +2402,13 @@
 
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', () => {
-        if (window.innerHeight - window.visualViewport.height > 150) {
-           hideBottomNav();
-        } else {
-           if (!document.getElementById('createModal').classList.contains('active')) {
-             showBottomNav();
-           }
-        }
+        if (window.innerHeight - window.visualViewport.height > 150) hideBottomNav();
+        else if (!document.getElementById('createModal').classList.contains('active')) showBottomNav();
       });
     }
 
-    // Инициализация стека
     navStack = ['home'];
     updateTelegramBackButton();
-
     setRandomSearchPlaceholder();
     renderAds();
     renderMyAds();
