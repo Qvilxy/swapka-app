@@ -515,7 +515,7 @@
       border-radius: 100px;
       padding: 10px 24px 10px 10px; 
       box-shadow: 0 6px 20px rgba(0,0,0,0.15), 0 2px 5px rgba(0,0,0,0.05);
-      cursor: pointer;
+      cursor: default; /* Изменено с pointer, так как переход убран */
       transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
       margin: 0 auto; 
       max-width: 90%; 
@@ -904,6 +904,46 @@
       transition: all 0.3s ease;
     }
 
+    .nav-indicator {
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 8px;
+      width: calc(33.33% - 8px);
+      
+      background: var(--indicator-bg);
+      border-radius: 24px;
+      z-index: 1;
+      
+      will-change: transform, width, border-radius, scale;
+      transform: translateZ(0) scale(1);
+      transform-origin: center center;
+      
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.3s ease;
+      
+      box-shadow: 0 4px 20px var(--indicator-glow);
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .nav-indicator::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .dark-theme .nav-indicator::after {
+      background: transparent;
+      opacity: 0;
+    }
+
     .nav-item {
       flex: 1;
       display: flex;
@@ -959,46 +999,6 @@
       color: var(--icon-active);
       font-weight: 700;
       opacity: 1;
-    }
-
-    .nav-indicator {
-      position: absolute;
-      top: 8px;
-      bottom: 8px;
-      left: 8px;
-      width: calc(33.33% - 8px);
-      
-      background: var(--indicator-bg);
-      border-radius: 24px;
-      z-index: 1;
-      
-      will-change: transform, width, border-radius, scale;
-      transform: translateZ(0) scale(1);
-      transform-origin: center center;
-      
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  box-shadow 0.3s ease;
-      
-      box-shadow: 0 4px 20px var(--indicator-glow);
-      pointer-events: none;
-      overflow: visible;
-    }
-
-    .nav-indicator::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      border-radius: 24px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%);
-      opacity: 0.4;
-      pointer-events: none;
-    }
-
-    .dark-theme .nav-indicator::after {
-      background: transparent;
-      opacity: 0;
     }
 
     /* --- MODALS --- */
@@ -1197,123 +1197,6 @@
     }
     .main-content::-webkit-scrollbar { width: 0; }
 
-    /* --- OTHER PROFILE STYLES (REDESIGNED) --- */
-    .other-profile-modal {
-      position: fixed; 
-      top: 0; 
-      left: 0; 
-      right: 0; 
-      bottom: 0; 
-      background: var(--bg-primary); 
-      z-index: 160; 
-      display: none; 
-      overflow-y: auto;
-      max-width: 430px;
-      margin: 0 auto;
-    }
-    
-    .other-profile-modal.active { 
-      display: block; 
-      animation: fadeInUp 0.3s ease; 
-    }
-
-    /* Копия шапки для чужого профиля */
-    .other-profile-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--header-height);
-      background: linear-gradient(90deg, 
-        #8A2BE2 0%, 
-        #FFD60A 25%, 
-        #007AFF 50%, 
-        #FFFFFF 75%, 
-        #FF00FF 100%,
-        #8A2BE2 100% 
-      );
-      background-size: 400% 100%;
-      animation: gradientFlow 15s ease infinite;
-      display: flex;
-      justify-content: center;
-      align-items: center; 
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 155;
-      padding-top: env(safe-area-inset-top);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .other-profile-content {
-      padding-top: var(--header-height);
-      min-height: 100vh;
-      background: var(--bg-primary);
-      width: 100%;
-      padding-bottom: 40px;
-    }
-
-    .other-profile-user-section {
-      padding: 20px 16px;
-      text-align: center;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .other-profile-avatar {
-      width: 80px; 
-      height: 80px; 
-      border-radius: 50%; 
-      object-fit: cover; 
-      margin: 0 auto 12px;
-      display: block; 
-      background: var(--bg-secondary);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    
-    .other-profile-name { 
-      font-size: 22px; 
-      font-weight: 700; 
-      color: var(--text-primary); 
-      margin-bottom: 4px; 
-    }
-    
-    .other-profile-rating { 
-      display: flex; 
-      justify-content: center; 
-      gap: 4px; 
-      margin-top: 8px; 
-    }
-    
-    .other-profile-rating svg {
-      width: 24px;
-      height: 24px;
-      fill: var(--star-empty);
-    }
-    .other-profile-rating svg.filled {
-      fill: var(--star-filled);
-    }
-
-    .other-ads-section {
-      padding: 16px;
-    }
-
-    .other-ads-title { 
-      font-size: 18px; 
-      font-weight: 700; 
-      color: var(--text-primary); 
-      margin-bottom: 12px;
-      text-align: left;
-    }
-
-    .other-search-container {
-      margin-bottom: 16px;
-    }
-
-    .other-ads-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
   </style>
 </head>
 <body>
@@ -1405,7 +1288,8 @@
   <div class="chat-screen" id="chatScreen" data-screen-id="chat">
     
     <div class="chat-header-pill-container">
-      <div class="chat-profile-pill" onclick="navigateTo('otherProfile')">
+      <!-- Убран onclick="navigateTo('otherProfile')" -->
+      <div class="chat-profile-pill">
         <div class="chat-pill-avatar" id="chatHeaderAvatar"></div>
         <div class="chat-pill-info">
           <div class="chat-pill-name" id="chatHeaderName">Имя</div>
@@ -1443,58 +1327,6 @@
           </svg>
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ СОБЕСЕДНИКА (НОВЫЙ ДИЗАЙН) -->
-  <div class="other-profile-modal" id="otherProfileModal" data-screen-id="otherProfile">
-    
-    <!-- Шапка с логотипом (копия главной) -->
-    <div class="other-profile-header">
-      <img src="logos.png" alt="Swapka Logo" class="header-logo">
-    </div>
-    
-    <div class="other-profile-content">
-      
-      <!-- Секция пользователя -->
-      <div class="other-profile-user-section">
-        <img src="" alt="" class="other-profile-avatar" id="otherProfileAvatar">
-        <div class="other-profile-name" id="otherProfileName">Имя</div>
-        
-        <!-- Рейтинг 3 звезды -->
-        <div class="other-profile-rating" id="otherProfileRating">
-           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-        </div>
-      </div>
-
-      <!-- Секция объявлений -->
-      <div class="other-ads-section">
-        <div class="other-ads-title">Объявления пользователя</div>
-        
-        <!-- Поисковая строка -->
-        <div class="other-search-container">
-          <div class="search-bar">
-            <div class="search-icon">
-              <svg viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="7"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </div>
-            <input type="text" class="search-input" id="otherProfileSearchInput" placeholder="Поиск по объявлениям...">
-          </div>
-        </div>
-
-        <!-- Сетка объявлений -->
-        <div class="other-ads-grid" id="otherAdsGrid"></div>
-        
-        <!-- Пустое состояние -->
-        <div class="empty-state" id="otherAdsEmpty" style="position:relative; transform:none; margin-top:20px; display:none;">
-          <div class="empty-state-text">Нет активных объявлений</div>
-        </div>
-      </div>
-
     </div>
   </div>
 
@@ -1686,7 +1518,7 @@
         navStack.push(currentScreen);
       }
 
-      document.querySelectorAll('.page, .chat-screen, .detail-modal, .other-profile-modal').forEach(el => {
+      document.querySelectorAll('.page, .chat-screen, .detail-modal').forEach(el => {
         el.classList.remove('active');
       });
 
@@ -1696,7 +1528,6 @@
       else if (screenId === 'profile') targetEl = document.getElementById('pageProfile');
       else if (screenId === 'chat') targetEl = document.getElementById('chatScreen');
       else if (screenId === 'detail') targetEl = document.getElementById('detailModal');
-      else if (screenId === 'otherProfile') targetEl = document.getElementById('otherProfileModal');
 
       if (targetEl) {
         targetEl.classList.add('active');
@@ -1740,9 +1571,6 @@
       const activeDetail = document.querySelector('.detail-modal.active');
       if (activeDetail) return activeDetail.dataset.screenId;
       
-      const activeOther = document.querySelector('.other-profile-modal.active');
-      if (activeOther) return activeOther.dataset.screenId;
-      
       return null;
     }
 
@@ -1759,7 +1587,7 @@
       navStack.pop();
       const previousScreen = navStack[navStack.length - 1];
       
-      document.querySelectorAll('.page, .chat-screen, .detail-modal, .other-profile-modal').forEach(el => {
+      document.querySelectorAll('.page, .chat-screen, .detail-modal').forEach(el => {
         el.classList.remove('active');
       });
 
@@ -1769,7 +1597,6 @@
       else if (previousScreen === 'profile') targetEl = document.getElementById('pageProfile');
       else if (previousScreen === 'chat') targetEl = document.getElementById('chatScreen');
       else if (previousScreen === 'detail') targetEl = document.getElementById('detailModal');
-      else if (previousScreen === 'otherProfile') targetEl = document.getElementById('otherProfileModal');
 
       if (targetEl) targetEl.classList.add('active');
 
@@ -2408,123 +2235,6 @@
         container.appendChild(svg);
       }
     }
-
-    // Переменная для хранения текущего ID продавца в профиле
-    let currentOtherProfileUserId = null;
-
-    // Функция рендера объявлений в чужом профиле с фильтром
-    function renderOtherProfileAds(filter = '') {
-      if (!currentOtherProfileUserId) return;
-
-      const ads = loadAds();
-      const userAds = ads.filter(ad => ad.userId === currentOtherProfileUserId);
-      
-      let filteredAds = userAds;
-      if (filter.trim()) {
-        const q = filter.toLowerCase().trim();
-        filteredAds = userAds.filter(ad => ad.title.toLowerCase().includes(q));
-      }
-
-      const otherGrid = document.getElementById('otherAdsGrid');
-      const otherEmpty = document.getElementById('otherAdsEmpty');
-      otherGrid.innerHTML = '';
-
-      if (filteredAds.length === 0) {
-        otherEmpty.style.display = 'flex';
-        if (filter.trim() && userAds.length > 0) {
-            otherEmpty.querySelector('.empty-state-text').textContent = 'Ничего не найдено';
-        } else {
-            otherEmpty.querySelector('.empty-state-text').textContent = 'Нет активных объявлений';
-        }
-      } else {
-        otherEmpty.style.display = 'none';
-        filteredAds.forEach(ad => {
-          otherGrid.appendChild(createAdCard(ad, false));
-        });
-      }
-    }
-
-    function openOtherProfile() {
-      // Сначала пытаемся получить ID из активного чата (если мы пришли оттуда)
-      const chatScreen = document.getElementById('chatScreen');
-      const activeChatId = chatScreen ? chatScreen.dataset.chatId : null;
-      
-      let targetUserId = currentOtherProfileUserId; // Глобальная переменная, если установлена
-      
-      // Если мы не знаем ID, но есть активный чат, берем ID продавца из него
-      if (!targetUserId && activeChatId) {
-         const chats = loadChats();
-         const activeChat = chats.find(c => c.id === activeChatId);
-         if (activeChat) {
-             targetUserId = activeChat.sellerId;
-         }
-      }
-
-      // Если до сих пор нет ID (крайний случай), выходим
-      if (!targetUserId) {
-          console.error("Не удалось определить пользователя");
-          return;
-      }
-
-      currentOtherProfileUserId = targetUserId;
-
-      // Ищем ЛЮБОЙ чат с этим пользователем, чтобы достать его имя и фото
-      // Это надежнее, чем полагаться только на текущий экран
-      const allChats = loadChats();
-      // Ищем чат, где этот пользователь является продавцом (так как мы смотрим его профиль)
-      const userChat = allChats.find(c => c.sellerId === targetUserId);
-
-      const modal = document.getElementById('otherProfileModal');
-      const avatar = document.getElementById('otherProfileAvatar');
-      const nameEl = document.getElementById('otherProfileName');
-
-      // Заполняем данные
-      if (userChat) {
-          // Данные есть в истории чатов
-          if (userChat.sellerPhoto) {
-              avatar.src = userChat.sellerPhoto;
-              avatar.style.display = 'block';
-          } else {
-              avatar.style.display = 'none';
-          }
-          nameEl.textContent = userChat.sellerName;
-      } else {
-          // Чатов нет или данных нет. Пробуем найти в объявлениях.
-          const ads = loadAds();
-          const userAd = ads.find(a => a.userId === targetUserId);
-          
-          if (userAd) {
-              if (userAd.userPhoto) {
-                  avatar.src = userAd.userPhoto;
-                  avatar.style.display = 'block';
-              } else {
-                  avatar.style.display = 'none';
-              }
-              nameEl.textContent = userAd.userName || 'Пользователь';
-          } else {
-              // Совсем нет данных
-              avatar.style.display = 'none';
-              nameEl.textContent = 'Пользователь';
-          }
-      }
-      
-      // Рейтинг (пока статика)
-      renderStars('otherProfileRating', 0);
-
-      // Очищаем поиск
-      const searchInput = document.getElementById('otherProfileSearchInput');
-      if(searchInput) searchInput.value = '';
-
-      // Рендерим объявления этого пользователя
-      renderOtherProfileAds();
-
-      navigateTo('otherProfile');
-    }
-
-    // Обработчик поиска в чужом профиле
-    document.getElementById('otherProfileSearchInput').addEventListener('input', function(e) {
-      renderOtherProfileAds(e.target.value);
-    });
 
     function renderChatMessages(chat) {
       const container = document.getElementById('chatMessages');
