@@ -812,7 +812,14 @@
     .moon-btn:active svg { transform: rotate(15deg); }
 
     .profile-shifted-content { transform: translateY(-120px); }
-    .profile-user-info { padding: 20px 16px; text-align: center; transform: translateY(60px); }
+    
+    /* Общие стили для инфо пользователя в профиле */
+    .profile-user-info { 
+      padding: 20px 16px; 
+      text-align: center; 
+      /* В вашем профиле есть сдвиг translateY(60px) из-за shifted-content. 
+         Здесь мы зададим базовые отступы, а сдвиг будет зависеть от родителя. */
+    }
     
     .profile-avatar {
       width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px;
@@ -1286,25 +1293,24 @@
 
     <!-- OTHER USER PROFILE PAGE -->
     <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
-      <div class="profile-shifted-content">
-        <div class="profile-user-info">
-          <div id="otherProfileAvatarContainer"></div>
-          <div class="profile-name" id="otherProfileName">Имя пользователя</div>
-          
-          <!-- SVG Звезды -->
-          <div class="profile-rating" id="otherProfileRating">
-             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-          </div>
+      <!-- Убрали profile-shifted-content, так как он тянет контент вниз из-за отсутствия кнопки темы -->
+      <div class="profile-user-info" style="padding-top: 20px;">
+        <div id="otherProfileAvatarContainer"></div>
+        <div class="profile-name" id="otherProfileName">Имя пользователя</div>
+        
+        <!-- SVG Звезды -->
+        <div class="profile-rating" id="otherProfileRating">
+           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
         </div>
+      </div>
 
-        <div class="my-ads-title">Активные объявления (<span id="otherAdsCount">0</span>)</div>
-        <div class="my-ads-grid-wrapper">
-          <div class="ads-grid" id="otherAdsGrid"></div>
-          <div class="empty-state" id="otherAdsEmpty">
-            <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
-          </div>
+      <div class="my-ads-title">Активные объявления (<span id="otherAdsCount">0</span>)</div>
+      <div class="my-ads-grid-wrapper">
+        <div class="ads-grid" id="otherAdsGrid"></div>
+        <div class="empty-state" id="otherAdsEmpty">
+          <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
         </div>
       </div>
     </div>
