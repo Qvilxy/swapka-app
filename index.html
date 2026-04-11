@@ -829,7 +829,15 @@
       margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 36px;
     }
     .profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); }
-    .profile-username { font-size: 15px; color: var(--text-secondary); margin-top: 4px; transform: translateY(-5px); }
+    
+    /* СКРЫВАЕМ ЮЗЕРНЕЙМ */
+    .profile-username { 
+      font-size: 15px; 
+      color: var(--text-secondary); 
+      margin-top: 4px; 
+      transform: translateY(-5px); 
+      display: none;
+    }
     
     .profile-rating { 
       display: flex; justify-content: center; gap: 4px; 
@@ -1973,11 +1981,11 @@
       const imgHtml = ad.photos && ad.photos.length > 0
         ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
-      let deleteBtn = '';
-      if (isMyAd) {
-        deleteBtn = `<button class="ad-delete-btn" onclick="deleteAd(event, '${ad.id}')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>`;
-      }
-      card.innerHTML = `${deleteBtn}<div class="ad-image-container">${imgHtml}</div><div class="ad-info"><div class="ad-title">${escapeHtml(ad.title)}</div><div class="ad-price">${escapeHtml(ad.price)}</div><div class="ad-city">📍 ${escapeHtml(ad.city)}</div></div>`;
+      
+      // ИЗМЕНЕНИЕ: Убрана кнопка удаления для профиля (isMyAd игнорируется для кнопки, но можно оставить логику если нужно где-то еще)
+      // Сейчас кнопка удаления НЕ добавляется вообще, даже если isMyAd = true
+      
+      card.innerHTML = `<div class="ad-image-container">${imgHtml}</div><div class="ad-info"><div class="ad-title">${escapeHtml(ad.title)}</div><div class="ad-price">${escapeHtml(ad.price)}</div><div class="ad-city">📍 ${escapeHtml(ad.city)}</div></div>`;
       return card;
     }
 
