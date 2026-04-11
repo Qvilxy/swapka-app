@@ -28,6 +28,7 @@
       --star-filled: #FFD60A;
       --header-height: 102px;
       --danger-color: #FF3B30;
+      --rating-blue: #007AFF;
     }
 
     .dark-theme {
@@ -50,6 +51,7 @@
       --chat-header-bg: rgba(44, 44, 46, 0.85);
       --star-empty: #48484a;
       --star-filled: #FFD60A;
+      --rating-blue: #0A84FF;
     }
 
     * {
@@ -131,7 +133,6 @@
       z-index: 2;
       pointer-events: auto;
       margin-top: 0;
-      /* Подняли логотип на 5px */
       transform: translateY(-5px);
     }
 
@@ -842,10 +843,26 @@
     }
     
     .profile-rating { 
-      display: flex; justify-content: center; gap: 4px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      gap: 6px; 
       margin-top: 8px; 
       font-size: 20px; 
       transform: translateY(-10px); 
+    }
+
+    .rating-label-btn {
+      font-size: 14px;
+      color: var(--rating-blue);
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .rating-label-btn:active {
+      background: rgba(0, 122, 255, 0.1);
     }
     
     .profile-rating svg {
@@ -864,7 +881,6 @@
       border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
       box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
-      /* Подняли кнопку на 5px */
       transform: translateY(-5px);
     }
     .create-ad-btn:active { transform: scale(0.97) translateY(-5px); opacity: 0.9; }
@@ -880,12 +896,10 @@
       font-weight: 700; 
       padding: 0 16px 12px; 
       color: var(--text-primary); 
-      /* Подняли заголовок на 5px */
       transform: translateY(-5px);
     }
     
     .my-ads-grid-wrapper { 
-      /* Подняли блок объявлений на 8px */
       transform: translateY(-8px);
     }
 
@@ -1075,6 +1089,75 @@
       border: none; border-radius: 100px; font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit;
     }
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* --- REVIEWS MODAL --- */
+    .reviews-modal {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-primary); z-index: 300;
+      display: none; flex-direction: column;
+      max-width: 430px; margin: 0 auto;
+      animation: slideUp 0.3s ease;
+    }
+    .reviews-modal.active { display: flex; }
+    
+    .reviews-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-primary);
+      z-index: 10;
+    }
+    .reviews-title { font-size: 18px; font-weight: 700; }
+    
+    .reviews-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    
+    .review-item {
+      background: var(--bg-secondary);
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .review-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+    }
+    .review-author { font-weight: 600; font-size: 14px; }
+    .review-date { font-size: 12px; color: var(--text-secondary); }
+    .review-stars { display: flex; gap: 2px; margin-bottom: 6px; }
+    .review-stars svg { width: 14px; height: 14px; fill: var(--star-filled); }
+    .review-text { font-size: 14px; line-height: 1.4; color: var(--text-primary); }
+    
+    .review-input-area {
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-primary);
+    }
+    .review-star-selector {
+      display: flex; justify-content: center; gap: 8px; margin-bottom: 12px;
+    }
+    .review-star-selector svg {
+      width: 32px; height: 32px; fill: var(--star-empty); cursor: pointer; transition: transform 0.2s;
+    }
+    .review-star-selector svg.active { fill: var(--star-filled); transform: scale(1.1); }
+    .review-star-selector svg:active { transform: scale(0.9); }
+    
+    .review-textarea {
+      width: 100%; height: 80px; padding: 12px; border-radius: 12px;
+      border: 1px solid var(--border-color); background: var(--bg-secondary);
+      color: var(--text-primary); font-family: inherit; font-size: 15px; resize: none;
+      margin-bottom: 12px; outline: none;
+    }
+    .review-textarea:focus { border-color: var(--icon-active); }
+    
+    .send-review-btn {
+      width: 100%; padding: 12px; background: var(--icon-active); color: white;
+      border: none; border-radius: 12px; font-weight: 600; font-size: 16px;
+      cursor: pointer; opacity: 0.5; pointer-events: none; transition: opacity 0.2s;
+    }
+    .send-review-btn.active { opacity: 1; pointer-events: auto; }
 
     /* --- DETAIL MODAL (FULL SCREEN) --- */
     .detail-modal {
@@ -1386,11 +1469,14 @@
           <div class="profile-name" id="profileName">Загрузка...</div>
           <div class="profile-username" id="profileUsername">@loading</div>
           
-          <!-- SVG Звезды -->
+          <!-- SVG Звезды с надписью Рейтинг -->
           <div class="profile-rating" id="profileRating">
-             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             <span class="rating-label-btn" onclick="openReviewsModal(currentUser.id, currentUser.firstName)">Рейтинг</span>
+             <div class="stars-container">
+               <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+               <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+               <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             </div>
           </div>
         </div>
 
@@ -1412,11 +1498,14 @@
         <div id="otherProfileAvatarContainer"></div>
         <div class="profile-name" id="otherProfileName">Имя пользователя</div>
         
-        <!-- SVG Звезды -->
+        <!-- SVG Звезды с надписью Рейтинг -->
         <div class="profile-rating" id="otherProfileRating">
-           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+           <span class="rating-label-btn" id="otherProfileRatingBtn">Рейтинг</span>
+           <div class="stars-container">
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+           </div>
         </div>
       </div>
 
@@ -1427,6 +1516,33 @@
           <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- REVIEWS MODAL -->
+  <div class="reviews-modal" id="reviewsModal">
+    <div class="reviews-header">
+      <div class="reviews-title">Отзывы</div>
+      <button class="modal-close" onclick="closeReviewsModal()">
+        <svg width="24" height="24" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="reviews-list" id="reviewsList">
+      <!-- Отзывы будут здесь -->
+    </div>
+    <div class="review-input-area">
+      <div class="review-star-selector" id="reviewStarSelector">
+        <svg onclick="setReviewRating(1)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+        <svg onclick="setReviewRating(2)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+        <svg onclick="setReviewRating(3)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+        <svg onclick="setReviewRating(4)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+        <svg onclick="setReviewRating(5)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+      </div>
+      <textarea class="review-textarea" id="reviewTextarea" placeholder="Напишите отзыв..." oninput="checkReviewForm()"></textarea>
+      <button class="send-review-btn" id="sendReviewBtn" onclick="submitReview()">Отправить отзыв</button>
     </div>
   </div>
 
@@ -1652,6 +1768,7 @@
     const ADS_KEY = 'swapka_ads';
     const THEME_KEY = 'swapka_theme';
     const CHATS_KEY = 'swapka_chats';
+    const REVIEWS_KEY = 'swapka_reviews';
 
     // --- NAVIGATION STACK LOGIC ---
     let navStack = []; 
@@ -1659,11 +1776,23 @@
 
     // Инициализация кнопки Назад Telegram
     tg.BackButton.onClick(() => {
+      // Если открыто модальное окно отзывов, закрываем его
+      if (document.getElementById('reviewsModal').classList.contains('active')) {
+        closeReviewsModal();
+        return;
+      }
       goBack();
     });
 
     function updateTelegramBackButton() {
       const currentScreen = getCurrentScreenId();
+      const reviewsModal = document.getElementById('reviewsModal');
+      
+      if (reviewsModal.classList.contains('active')) {
+        tg.BackButton.show();
+        return;
+      }
+
       if (!currentScreen || mainTabs.includes(currentScreen)) {
         tg.BackButton.hide();
       } else {
@@ -1805,6 +1934,13 @@
     }
     function loadTheme() { return localStorage.getItem(THEME_KEY); }
     function saveTheme(theme) { localStorage.setItem(THEME_KEY, theme); }
+    
+    function loadReviews() {
+      try { const data = localStorage.getItem(REVIEWS_KEY); return data ? JSON.parse(data) : {}; } catch (e) { return {}; }
+    }
+    function saveReviews(reviews) {
+      try { localStorage.setItem(REVIEWS_KEY, JSON.stringify(reviews)); } catch (e) {}
+    }
 
     function applyTheme(theme) {
       const body = document.body;
@@ -2040,6 +2176,12 @@
         avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
       }
       document.getElementById('otherProfileName').textContent = userData.name || 'Пользователь';
+      
+      // Настраиваем кнопку рейтинга
+      const ratingBtn = document.getElementById('otherProfileRatingBtn');
+      if(ratingBtn) {
+        ratingBtn.onclick = () => openReviewsModal(userData.id, userData.name);
+      }
       
       // Получаем активные объявления пользователя
       const userAds = ads.filter(ad => ad.userId === userData.id);
@@ -2448,22 +2590,116 @@
     function renderStars(containerId, ratingValue) {
       const container = document.getElementById(containerId);
       if(!container) return;
-      container.innerHTML = '';
-      const maxStars = 3;
-      const filledCount = 0; 
+      // We only render static stars in profile for now, logic handled in CSS/HTML structure
+    }
 
-      for(let i=0; i<maxStars; i++) {
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("viewBox", "0 0 24 24");
-        if(i < filledCount) svg.classList.add('filled');
-        
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z");
-        
-        svg.appendChild(path);
-        container.appendChild(svg);
+    // --- REVIEWS LOGIC ---
+    let currentReviewUserId = null;
+    let currentReviewRating = 0;
+
+    function openReviewsModal(userId, userName) {
+      currentReviewUserId = userId;
+      currentReviewRating = 0;
+      
+      const modal = document.getElementById('reviewsModal');
+      const list = document.getElementById('reviewsList');
+      const textarea = document.getElementById('reviewTextarea');
+      const sendBtn = document.getElementById('sendReviewBtn');
+      
+      // Reset form
+      textarea.value = '';
+      sendBtn.classList.remove('active');
+      updateStarSelector(0);
+      
+      // Load reviews
+      const allReviews = loadReviews();
+      const userReviews = allReviews[userId] || [];
+      
+      list.innerHTML = '';
+      if (userReviews.length === 0) {
+        list.innerHTML = '<div class="empty-state" style="position:relative;transform:none;"><div class="empty-state-text">Пока нет отзывов</div></div>';
+      } else {
+        // Sort by date desc
+        userReviews.sort((a, b) => b.timestamp - a.timestamp).forEach(review => {
+          const date = new Date(review.timestamp).toLocaleDateString('ru-RU');
+          let starsHtml = '';
+          for(let i=0; i<5; i++) {
+            starsHtml += `<svg viewBox="0 0 24 24" style="${i < review.rating ? 'fill:var(--star-filled)' : 'fill:var(--star-empty)'}"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>`;
+          }
+          
+          const item = document.createElement('div');
+          item.className = 'review-item';
+          item.innerHTML = `
+            <div class="review-header">
+              <span class="review-author">${escapeHtml(review.author)}</span>
+              <span class="review-date">${date}</span>
+            </div>
+            <div class="review-stars">${starsHtml}</div>
+            <div class="review-text">${escapeHtml(review.text)}</div>
+          `;
+          list.appendChild(item);
+        });
+      }
+      
+      modal.classList.add('active');
+      updateTelegramBackButton();
+    }
+
+    function closeReviewsModal() {
+      document.getElementById('reviewsModal').classList.remove('active');
+      updateTelegramBackButton();
+    }
+
+    function setReviewRating(rating) {
+      currentReviewRating = rating;
+      updateStarSelector(rating);
+      checkReviewForm();
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function updateStarSelector(rating) {
+      const stars = document.querySelectorAll('#reviewStarSelector svg');
+      stars.forEach((star, index) => {
+        if (index < rating) star.classList.add('active');
+        else star.classList.remove('active');
+      });
+    }
+
+    function checkReviewForm() {
+      const text = document.getElementById('reviewTextarea').value.trim();
+      const btn = document.getElementById('sendReviewBtn');
+      if (text.length > 0 && currentReviewRating > 0) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
       }
     }
+
+    function submitReview() {
+      if (!currentReviewUserId || currentReviewRating === 0) return;
+      
+      const text = document.getElementById('reviewTextarea').value.trim();
+      if (!text) return;
+      
+      const allReviews = loadReviews();
+      if (!allReviews[currentReviewUserId]) allReviews[currentReviewUserId] = [];
+      
+      const newReview = {
+        id: 'rev_' + Date.now(),
+        author: currentUser.firstName,
+        rating: currentReviewRating,
+        text: text,
+        timestamp: Date.now()
+      };
+      
+      allReviews[currentReviewUserId].push(newReview);
+      saveReviews(allReviews);
+      
+      // Refresh list
+      openReviewsModal(currentReviewUserId, ''); // Keep same user
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    }
+    // --- END REVIEWS LOGIC ---
 
     // --- MESSAGE ACTIONS LOGIC ---
     let selectedMessageId = null;
