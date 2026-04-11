@@ -16,9 +16,12 @@
       --card-bg: #ffffff;
       --search-bg: #ffffff;
       --chat-pill-bg: #f9f9f9;
-      --glass-bg: rgba(255, 255, 255, 0.65);
-      --glass-border: rgba(255, 255, 255, 0.4);
-      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      
+      /* Обновленные переменные для навбара - более прозрачные */
+      --glass-bg: rgba(255, 255, 255, 0.0); /* Прозрачный фон */
+      --glass-border: rgba(255, 255, 255, 0.0); /* Без границ */
+      --glass-shadow: 0 0 0 0 rgba(0,0,0,0); /* Без теней блока */
+      
       --indicator-bg: #d0d0d0;
       --indicator-glow: rgba(208, 208, 208, 0.5);
       --icon-inactive: #8e8e93;
@@ -41,9 +44,12 @@
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
       --chat-pill-bg: #3a3a3c;
-      --glass-bg: rgba(30, 30, 30, 0.65);
-      --glass-border: rgba(255, 255, 255, 0.1);
-      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      
+      /* Темная тема навбара тоже прозрачная */
+      --glass-bg: rgba(30, 30, 30, 0.0);
+      --glass-border: rgba(255, 255, 255, 0.0);
+      --glass-shadow: 0 0 0 0 rgba(0,0,0,0);
+      
       --indicator-bg: #4a4a4a;
       --indicator-glow: rgba(74, 74, 74, 0.5);
       --icon-inactive: #8e8e93;
@@ -899,17 +905,18 @@
       max-width: 380px;
       height: 64px;
       
-      background: var(--glass-bg);
-      backdrop-filter: blur(25px) saturate(180%);
-      -webkit-backdrop-filter: blur(25px) saturate(180%);
+      /* Убраны фоны и границы для эффекта "без белого фона" */
+      background: transparent; 
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
       
       border-radius: 32px;
       padding: 0 8px;
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border: none;
+      box-shadow: none;
       
       position: relative;
-      overflow: hidden;
+      overflow: visible; /* Изменено на visible, чтобы индикатор не обрезался */
       transition: all 0.3s ease;
     }
 
@@ -1246,7 +1253,7 @@
       </div>
     </div>
 
-    <!-- PROFILE PAGE -->
+    <!-- PROFILE PAGE (MY) -->
     <div class="page" id="pageProfile" data-screen-id="profile">
       <div class="profile-moon-wrapper">
         <button class="moon-btn" id="themeToggle">
@@ -1267,7 +1274,6 @@
         </button>
       </div>
       
-      <!-- Контент профиля теперь без сдвига -->
       <div class="profile-shifted-content">
         <div class="profile-user-info">
           <div id="profileAvatarContainer"></div>
@@ -1295,24 +1301,29 @@
 
     <!-- OTHER USER PROFILE PAGE -->
     <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
+      <!-- Нет кнопки темы -->
       
-      <div class="profile-user-info" style="padding-top: 10px;">
-        <div id="otherProfileAvatarContainer"></div>
-        <div class="profile-name" id="otherProfileName">Имя пользователя</div>
-        
-        <!-- SVG Звезды -->
-        <div class="profile-rating" id="otherProfileRating">
-           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-           <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+      <div class="profile-shifted-content">
+        <div class="profile-user-info" style="padding-top: 10px;">
+          <div id="otherProfileAvatarContainer"></div>
+          <div class="profile-name" id="otherProfileName">Имя пользователя</div>
+          
+          <!-- SVG Звезды -->
+          <div class="profile-rating" id="otherProfileRating">
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+          </div>
         </div>
-      </div>
 
-      <div class="my-ads-title" style="transform: translateY(0);">Активные объявления (<span id="otherAdsCount">0</span>)</div>
-      <div class="my-ads-grid-wrapper" style="transform: translateY(0);">
-        <div class="ads-grid" id="otherAdsGrid"></div>
-        <div class="empty-state" id="otherAdsEmpty">
-          <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
+        <!-- Нет кнопки создать объявление -->
+
+        <div class="my-ads-title" style="transform: translateY(0);">Активные объявления (<span id="otherAdsCount">0</span>)</div>
+        <div class="my-ads-grid-wrapper" style="transform: translateY(0);">
+          <div class="ads-grid" id="otherAdsGrid"></div>
+          <div class="empty-state" id="otherAdsEmpty">
+            <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
+          </div>
         </div>
       </div>
     </div>
