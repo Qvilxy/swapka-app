@@ -26,7 +26,8 @@
       --chat-header-bg: rgba(249, 249, 249, 0.85);
       --star-empty: #c7c7cc;
       --star-filled: #FFD60A;
-      --header-height: 122px;
+      /* Высота хедера (логотип + градиент) */
+      --header-height: 122px; 
       --danger-color: #FF3B30;
     }
 
@@ -811,13 +812,14 @@
     .moon-btn:active { transform: scale(0.85); }
     .moon-btn:active svg { transform: rotate(15deg); }
 
-    /* ИЗМЕНЕНИЕ: Убран класс profile-shifted-content и его стили.
-       Теперь выравнивание происходит за счет обычного padding-top у контейнера профиля,
-       как в чужом профиле. */
+    /* ИЗМЕНЕНИЕ: Полностью убираем трансформацию сдвига, чтобы контент был наверху */
+    .profile-shifted-content { 
+      transform: none !important; 
+    }
     
     /* Общие стили для инфо пользователя в профиле */
     .profile-user-info { 
-      padding: 20px 16px; 
+      padding: 10px 16px 20px 16px; /* Уменьшил верхний отступ до 10px */
       text-align: center; 
     }
     
@@ -854,7 +856,6 @@
       color: #ffffff;
       border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
-      /* Убран transform: translateY(38px), так как контент больше не сдвинут вверх */
       box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
     }
     .create-ad-btn:active { transform: scale(0.97); opacity: 0.9; }
@@ -1266,12 +1267,11 @@
         </button>
       </div>
       
-      <!-- ИЗМЕНЕНИЕ: Заменили profile-shifted-content на div с обычным отступом, чтобы выровнять с чужим профилем -->
-      <div style="padding-top: 20px;">
+      <!-- Контент профиля теперь без сдвига -->
+      <div class="profile-shifted-content">
         <div class="profile-user-info">
           <div id="profileAvatarContainer"></div>
           <div class="profile-name" id="profileName">Загрузка...</div>
-          <div class="profile-username" id="profileUsername">@loading</div>
           
           <!-- SVG Звезды -->
           <div class="profile-rating" id="profileRating">
@@ -1295,8 +1295,8 @@
 
     <!-- OTHER USER PROFILE PAGE -->
     <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
-      <!-- Убрали profile-shifted-content, так как он тянет контент вниз из-за отсутствия кнопки темы -->
-      <div class="profile-user-info" style="padding-top: 20px;">
+      
+      <div class="profile-user-info" style="padding-top: 10px;">
         <div id="otherProfileAvatarContainer"></div>
         <div class="profile-name" id="otherProfileName">Имя пользователя</div>
         
@@ -1308,8 +1308,8 @@
         </div>
       </div>
 
-      <div class="my-ads-title">Активные объявления (<span id="otherAdsCount">0</span>)</div>
-      <div class="my-ads-grid-wrapper">
+      <div class="my-ads-title" style="transform: translateY(0);">Активные объявления (<span id="otherAdsCount">0</span>)</div>
+      <div class="my-ads-grid-wrapper" style="transform: translateY(0);">
         <div class="ads-grid" id="otherAdsGrid"></div>
         <div class="empty-state" id="otherAdsEmpty">
           <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
@@ -1716,7 +1716,7 @@
         avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
       }
       document.getElementById('profileName').textContent = currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
-      document.getElementById('profileUsername').textContent = currentUser.username ? '@' + currentUser.username : '';
+      // Юзернейм удален из отображения
     }
     setupProfile();
 
