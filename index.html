@@ -28,7 +28,7 @@
       --star-filled: #FFD60A;
       --header-height: 102px;
       --danger-color: #FF3B30;
-      --warning-color: #FF9500; /* Orange for complaint */
+      --warning-color: #FF9500;
       --rating-blue: #007AFF;
       --btn-blue: #007AFF;
       --favorite-color: #FF2D55;
@@ -615,7 +615,7 @@
       background: transparent; 
       border-top: none;
       display: flex;
-      align-items: flex-end; /* Align to bottom for photo preview */
+      align-items: flex-end;
       gap: 10px;
     }
 
@@ -623,13 +623,13 @@
       flex: 1;
       display: flex;
       align-items: flex-end;
-      background: #E5F1FF; /* Light Blue Background */
+      background: #E5F1FF;
       border-radius: 24px;
       padding: 6px;
       min-height: 44px;
     }
     .dark-theme .chat-input-wrapper-complex {
-      background: #1C2C3F; /* Darker Blue for Dark Mode */
+      background: #1C2C3F;
     }
 
     .chat-add-photo-btn {
@@ -690,7 +690,6 @@
       margin-left: 2px;
     }
     
-    /* Photo Preview in Chat Input */
     .attached-photo-preview {
       display: flex;
       align-items: center;
@@ -721,7 +720,7 @@
       position: absolute;
       top: -5px;
       right: -5px;
-      background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+      background: rgba(0, 0, 0, 0.5);
       border: 1px solid rgba(255,255,255,0.2);
       border-radius: 50%;
       width: 20px;
@@ -1042,7 +1041,6 @@
       background: rgba(0,0,0,0.5); z-index: 200; display: none;
       align-items: flex-end; justify-content: center;
       backdrop-filter: blur(5px);
-      /* Removed pointer-events: none to allow blocking clicks, but we won't close on click */
     }
     .modal-overlay.active { display: flex; }
     .modal-content {
@@ -1158,11 +1156,11 @@
       top: 0;
       right: 0;
       bottom: 0;
-      width: 140px; /* Wider for two buttons */
+      width: 140px;
       background: rgba(255, 59, 48, 0.85);
       border-radius: 20px;
       display: flex;
-      flex-direction: row; /* Horizontal layout for buttons */
+      flex-direction: row;
       align-items: center;
       justify-content: center;
       z-index: 1;
@@ -1228,7 +1226,7 @@
       touch-action: pan-y;
       display: flex;
       flex-direction: column;
-      min-height: 80px; /* Ensure height for centering */
+      min-height: 80px;
     }
     
     .review-item.swiping {
@@ -1279,10 +1277,10 @@
       position: absolute;
       right: 10px;
       top: 50%;
-      transform: translateY(-50%); /* Center vertically */
+      transform: translateY(-50%);
       height: 24px;
       width: 24px;
-      z-index: 4; /* Above content */
+      z-index: 4;
     }
     .review-options-btn svg {
       width: 20px;
@@ -1354,7 +1352,6 @@
        width: 100%;
     }
 
-    /* Top Action Buttons Container */
     .detail-top-actions {
       position: fixed;
       top: max(12px, env(safe-area-inset-top));
@@ -1879,7 +1876,6 @@
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
         </button>
-        <!-- Added multiple attribute -->
         <input type="file" id="chatPhotoInput" accept="image/*" multiple style="display:none;" onchange="handleChatPhotoSelect(event)">
         
         <input type="text" class="chat-input" id="chatInput" placeholder="Написать...">
@@ -2057,10 +2053,12 @@
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.ready();
     
-    // Full screen logic
-    tg.expand();
+    // ИНИЦИАЛИЗАЦИЯ И РАСШИРЕНИЕ ЭКРАНА
+    tg.ready();
+    // Принудительно расширяем приложение на весь экран
+    tg.expand(); 
+
     if (window.innerWidth > 430) {
       document.body.style.width = '430px';
     } else {
@@ -3083,7 +3081,6 @@
           item.innerHTML = `<div class="review-header-row"><div class="review-author-block"><span class="review-author">${escapeHtml(review.author)}</span><span class="review-date">${date}</span></div>${optionsHtml}</div><div class="review-stars">${starsHtml}</div><div class="review-text">${escapeHtml(review.text)}</div>`;
           
           const deleteBtn = document.createElement('button'); deleteBtn.className = 'review-delete-btn';
-          // No direct onclick on deleteBtn, handled by swipe logic showing the bg buttons
           
           wrapper.appendChild(deleteBg); wrapper.appendChild(item); wrapper.appendChild(deleteBtn); list.appendChild(wrapper);
           if (isMyReview) initReviewSwipe(item, wrapper, deleteBg, deleteBtn);
@@ -3096,7 +3093,6 @@
 
     function complainReview(id) {
        tg.showAlert('Жалоба отправлена');
-       // Reset swipe
        document.querySelectorAll('.review-item-wrapper').forEach(w => {
           w.querySelector('.review-item').style.transform = 'translateX(0)';
           w.querySelector('.review-delete-bg').classList.remove('visible');
@@ -3109,7 +3105,7 @@
       const item = wrapper.querySelector('.review-item');
       const deleteBg = wrapper.querySelector('.review-delete-bg');
       const deleteBtn = wrapper.querySelector('.review-delete-btn');
-      item.style.transform = `translateX(-140px)`; // Wider swipe
+      item.style.transform = `translateX(-140px)`;
       deleteBg.classList.add('visible');
       deleteBtn.classList.add('visible');
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
@@ -3117,7 +3113,7 @@
 
     function initReviewSwipe(item, wrapper, deleteBg, deleteBtn) {
       let startX = 0, currentX = 0, isSwiping = false, deleteWidth = 140;
-      item.addEventListener('touchstart', (e) => { startX = e.touches[0].clientY; /* Use Y for pull down check? No, X for swipe */ startX = e.touches[0].clientX; currentX = startX; isSwiping = true; item.classList.add('swiping'); }, { passive: true });
+      item.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; currentX = startX; isSwiping = true; item.classList.add('swiping'); }, { passive: true });
       item.addEventListener('touchmove', (e) => { if (!isSwiping) return; const touchX = e.touches[0].clientX; const diff = startX - touchX; if (diff > 0) { currentX = touchX; item.style.transform = `translateX(-${Math.min(diff, deleteWidth)}px)`; } }, { passive: true });
       item.addEventListener('touchend', (e) => { if (!isSwiping) return; isSwiping = false; item.classList.remove('swiping'); const diff = startX - currentX; if (diff > deleteWidth / 2) { item.style.transform = `translateX(-${deleteWidth}px)`; deleteBg.classList.add('visible'); deleteBtn.classList.add('visible'); } else { item.style.transform = 'translateX(0)'; deleteBg.classList.remove('visible'); deleteBtn.classList.remove('visible'); } });
     }
@@ -3142,7 +3138,6 @@
     }
 
     function showReviewForm() { 
-       // Clear form before showing
        document.getElementById('reviewTextarea').value = '';
        currentReviewRating = 0;
        updateStarSelector(0);
@@ -3164,7 +3159,6 @@
       allReviews[currentReviewUserId].push({ id: 'rev_' + Date.now(), authorId: currentUser.id, author: currentUser.firstName, rating: currentReviewRating, text: text, timestamp: Date.now() });
       saveReviews(allReviews);
       
-      // Clear form after submit
       document.getElementById('reviewTextarea').value = '';
       currentReviewRating = 0;
       updateStarSelector(0);
