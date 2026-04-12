@@ -4,10 +4,10 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 
 # Вставьте сюда токен вашего бота от @BotFather
-BOT_TOKEN = "ВАШ_ТОКЕН_БОТА"
+BOT_TOKEN = "8728153751:AAGk-VWQyQQVhhtpXw3bYr_ldaVaF0SpVj0"
 
 # Ссылка на ваше веб-приложение (Mini App)
-WEB_APP_URL = "https://your-site.com/app" 
+WEB_APP_URL = "https://qvilxy.github.io/swapka-app/" 
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
