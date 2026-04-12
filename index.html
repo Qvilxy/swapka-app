@@ -30,6 +30,8 @@
       --danger-color: #FF3B30;
       --rating-blue: #007AFF;
       --btn-blue: #007AFF;
+      --favorite-color: #FF2D55; /* Розовый для избранного */
+      --toast-green: #34C759;
     }
 
     .dark-theme {
@@ -54,6 +56,8 @@
       --star-filled: #FFD60A;
       --rating-blue: #0A84FF;
       --btn-blue: #0A84FF;
+      --favorite-color: #FF375F;
+      --toast-green: #30D158;
     }
 
     * {
@@ -245,39 +249,6 @@
     }
 
     .ad-card:active { transform: scale(0.97); }
-
-    .ad-delete-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 28px;
-      height: 28px;
-      background: rgba(255, 59, 48, 0.9);
-      border: none;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 10;
-      transition: transform 0.2s, background 0.2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-
-    .ad-delete-btn:active {
-      transform: scale(0.9);
-      background: rgba(255, 59, 48, 1);
-    }
-
-    .ad-delete-btn svg {
-      width: 16px;
-      height: 16px;
-      stroke: white;
-      stroke-width: 2.5;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
 
     .ad-image-container {
       width: 100%;
@@ -635,14 +606,28 @@
       text-align: right;
     }
     
+    /* --- NEW CHAT INPUT STYLE (Blue Background) --- */
     .chat-input-area {
       padding: 10px 16px;
       padding-bottom: max(10px, env(safe-area-inset-bottom));
       background: transparent; 
       border-top: none;
       display: flex;
-      align-items: center;
+      align-items: flex-end; /* Align to bottom for photo preview */
       gap: 10px;
+    }
+
+    .chat-input-wrapper-complex {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      background: #E5F1FF; /* Light Blue Background */
+      border-radius: 24px;
+      padding: 6px;
+      min-height: 44px;
+    }
+    .dark-theme .chat-input-wrapper-complex {
+      background: #1C2C3F; /* Darker Blue for Dark Mode */
     }
 
     .chat-add-photo-btn {
@@ -655,41 +640,31 @@
       justify-content: center;
       color: var(--icon-active);
       transition: transform 0.1s;
+      flex-shrink: 0;
     }
     .chat-add-photo-btn:active { transform: scale(0.9); }
     .chat-add-photo-btn svg {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       stroke: currentColor;
-      stroke-width: 2;
+      stroke-width: 2.5;
       fill: none;
     }
 
-    .chat-input-wrapper {
-      flex: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
     .chat-input {
-      width: 100%;
-      padding: 10px 45px 10px 16px;
-      border: 1px solid var(--border-color);
-      border-radius: 24px;
-      background: var(--bg-secondary);
+      flex: 1;
+      padding: 8px 4px;
+      border: none;
+      background: transparent;
       font-size: 16px;
       outline: none;
       color: var(--text-primary);
-      transition: border-color 0.2s;
-    }
-    .chat-input:focus {
-      border-color: var(--icon-active);
+      resize: none;
+      max-height: 100px;
+      overflow-y: auto;
     }
 
     .chat-send-btn {
-      position: absolute;
-      right: 4px;
       background: #007AFF;
       color: white;
       border: none;
@@ -701,6 +676,9 @@
       justify-content: center;
       cursor: pointer;
       transition: transform 0.2s, opacity 0.2s;
+      flex-shrink: 0;
+      margin-left: 4px;
+      margin-bottom: 4px;
     }
     .chat-send-btn:active { transform: scale(0.9); }
     .chat-send-btn svg {
@@ -710,45 +688,54 @@
       margin-left: 2px;
     }
     
+    /* Photo Preview in Chat Input */
     .attached-photo-preview {
-      position: absolute;
-      bottom: 100%;
-      left: 0;
-      right: 0;
-      padding: 10px 16px;
-      background: var(--bg-primary);
-      display: none;
+      display: flex;
       align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border-color);
+      background: #E5F1FF;
+      border-radius: 24px;
+      padding: 6px;
+      margin-bottom: 10px;
+      position: relative;
     }
-    .attached-photo-preview.active { display: flex; }
+    .dark-theme .attached-photo-preview {
+      background: #1C2C3F;
+    }
+
     .attached-photo-thumb {
-      height: 60px;
-      border-radius: 8px;
+      height: 50px;
+      width: 50px;
+      border-radius: 12px;
       overflow: hidden;
+      position: relative;
     }
     .attached-photo-thumb img {
       height: 100%;
-      width: auto;
+      width: 100%;
+      object-fit: cover;
     }
+    
     .remove-attachment-btn {
-      background: rgba(120, 120, 128, 0.12);
-      border: none;
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 50%;
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      color: var(--text-secondary);
+      color: white;
+      z-index: 10;
     }
     .remove-attachment-btn svg {
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
       stroke: currentColor;
-      stroke-width: 2.5;
+      stroke-width: 3;
     }
 
 
@@ -819,7 +806,6 @@
     .moon-btn:active { transform: scale(0.85); }
     .moon-btn:active svg { transform: rotate(15deg); }
     
-    /* Общие стили для инфо пользователя в профиле */
     .profile-user-info { 
       padding: 20px 16px; 
       text-align: center; 
@@ -835,7 +821,6 @@
     }
     .profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); }
     
-    /* СКРЫВАЕМ ЮЗЕРНЕЙМ */
     .profile-username { 
       font-size: 15px; 
       color: var(--text-secondary); 
@@ -875,7 +860,6 @@
     .profile-rating svg.filled {
       fill: var(--star-filled);
     }
-    /* Для половинчатой звезды */
     .profile-rating svg.half-filled {
        fill: url(#half-star-gradient);
     }
@@ -1063,16 +1047,17 @@
       border-radius: 20px 20px 0 0; padding: 20px;
       padding-bottom: max(20px, env(safe-area-inset-bottom));
       overflow-y: auto; animation: slideUp 0.3s ease;
+      position: relative;
+      /* For swipe down logic */
+      touch-action: pan-y; 
     }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .modal-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
-    .modal-close {
-      background: var(--bg-secondary); border: none; border-radius: 50%; width: 36px; height: 36px;
-      font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
-    }
     
+    /* Removed close button styles as requested */
+
     .form-group { margin-bottom: 16px; }
     .form-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block; }
     .form-input {
@@ -1096,7 +1081,7 @@
     }
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* --- REVIEWS MODAL (UPDATED TO MATCH CREATE AD STYLE) --- */
+    /* --- REVIEWS MODAL --- */
     .reviews-modal {
       position: fixed; 
       top: 0; left: 0; right: 0; bottom: 0;
@@ -1124,6 +1109,7 @@
       display: flex;
       flex-direction: column;
       position: relative;
+      touch-action: pan-y;
     }
 
     .reviews-header { 
@@ -1151,21 +1137,20 @@
       flex: 1;
       overflow-y: auto;
       margin-bottom: 16px;
-      padding-right: 4px; /* Space for scrollbar */
-      /* Скрываем скроллбар, но оставляем функционал */
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none;  /* IE 10+ */
+      padding-right: 4px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
     .reviews-list::-webkit-scrollbar { 
       width: 0px;
-      background: transparent; /* Chrome/Safari/Webkit */
+      background: transparent;
     }
     
     .review-item-wrapper {
       position: relative;
       overflow: hidden;
       margin-bottom: 12px;
-      border-radius: 20px; /* ИЗМЕНЕНИЕ: Скругление 20 */
+      border-radius: 20px;
     }
     
     .review-delete-bg {
@@ -1175,7 +1160,7 @@
       bottom: 0;
       width: 80px;
       background: rgba(255, 59, 48, 0.85);
-      border-radius: 20px; /* ИЗМЕНЕНИЕ: Скругление 20 */
+      border-radius: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1218,8 +1203,8 @@
     
     .review-item {
       background: var(--bg-secondary);
-      padding: 14px 20px; /* Увеличены отступы */
-      border-radius: 20px; /* ИЗМЕНЕНИЕ: Скругление 20 */
+      padding: 14px 20px;
+      border-radius: 20px;
       position: relative;
       z-index: 2;
       transition: transform 0.2s ease-out;
@@ -1273,8 +1258,7 @@
       margin-left: 8px;
       margin-right: -4px;
       flex-shrink: 0;
-      /* Центрирование по вертикали */
-      align-self: center;
+      align-self: center; /* Center vertically */
       height: 24px;
     }
     .review-options-btn svg {
@@ -1285,7 +1269,7 @@
     
     .review-stars { display: flex; gap: 3px; margin-bottom: 6px; }
     .review-stars svg { 
-      width: 24px; /* ИЗМЕНЕНИЕ: 1.5x от 16px */
+      width: 24px; 
       height: 24px; 
       fill: var(--star-filled); 
     }
@@ -1314,7 +1298,7 @@
     
     .send-review-btn {
       width: 100%; padding: 16px; 
-      background: var(--btn-blue); /* ИЗМЕНЕНИЕ: Голубой цвет */
+      background: var(--btn-blue);
       color: #ffffff;
       border: none; border-radius: 100px; font-weight: 700; font-size: 17px;
       cursor: pointer; opacity: 0.5; pointer-events: none; transition: opacity 0.2s;
@@ -1322,7 +1306,7 @@
     }
     
     .dark-theme .send-review-btn {
-        background: var(--btn-blue); /* ИЗМЕНЕНИЕ: Голубой цвет */
+        background: var(--btn-blue);
         color: #ffffff;
     }
 
@@ -1347,20 +1331,55 @@
        width: 100%;
     }
 
-    /* --- SETTINGS GEAR IN DETAIL MODAL --- */
-    .detail-settings-container {
+    /* Top Action Buttons Container */
+    .detail-top-actions {
       position: fixed;
       top: max(12px, env(safe-area-inset-top));
-      right: 16px;
+      left: 0;
+      right: 0;
       z-index: 210;
-      width: 44px;
-      height: 44px;
-      display: none; /* Скрыто по умолчанию, показываем если это мое объявление */
-    }
-    .detail-settings-container.visible {
-      display: block;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      pointer-events: none; /* Let clicks pass through empty space */
     }
 
+    .action-circle-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .dark-theme .action-circle-btn {
+      background: rgba(44, 44, 46, 0.8);
+    }
+    .action-circle-btn:active {
+      transform: scale(0.9);
+    }
+    .action-circle-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--text-primary);
+      stroke-width: 2;
+      fill: none;
+    }
+    
+    /* Favorite Heart Active State */
+    .action-circle-btn.favorite-active svg {
+      fill: var(--favorite-color);
+      stroke: var(--favorite-color);
+    }
+
+    /* Settings Gear Logic */
     .settings-gear-btn {
       width: 44px;
       height: 44px;
@@ -1372,9 +1391,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      position: absolute;
-      top: 0;
-      right: 0;
+      position: relative; /* Changed from absolute for flex layout */
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 2;
     }
@@ -1392,7 +1409,8 @@
       fill: none;
     }
 
-    .settings-actions {
+    /* Actions Container for Edit/Delete */
+    .settings-actions-container {
       position: absolute;
       top: 0;
       right: 0;
@@ -1401,7 +1419,7 @@
       pointer-events: none;
     }
 
-    .action-btn {
+    .sub-action-btn {
       position: absolute;
       top: 0;
       right: 0;
@@ -1420,24 +1438,28 @@
       z-index: 1;
     }
 
-    .action-btn.edit {
+    /* Edit Button: Moves DOWN */
+    .sub-action-btn.edit {
       background: #007AFF;
       color: white;
-      right: 55px; 
+      top: 55px; /* Move down */
+      right: 0;
     }
 
-    .action-btn.delete {
+    /* Delete Button: Moves RIGHT */
+    .sub-action-btn.delete {
       background: var(--danger-color);
       color: white;
-      top: 55px;
+      top: 0;
+      right: -55px; /* Move right */
     }
 
-    .settings-gear-btn.active ~ .settings-actions .action-btn {
+    .settings-gear-btn.active ~ .settings-actions-container .sub-action-btn {
       opacity: 1;
       transform: scale(1);
     }
     
-    .action-btn svg {
+    .sub-action-btn svg {
       width: 20px;
       height: 20px;
       stroke: white;
@@ -1445,8 +1467,7 @@
       fill: none;
     }
 
-    /* --- END SETTINGS GEAR --- */
-
+    /* Detail Content */
     .image-carousel { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: var(--bg-secondary); }
     .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
     .carousel-slide { min-width: 100%; height: 100%; }
@@ -1454,7 +1475,11 @@
     .carousel-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
     .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); border: none; cursor: pointer; padding: 0; }
     .carousel-dot.active { background: white; }
-    .detail-info { padding: 20px 16px; }
+    
+    .detail-info { 
+      padding: 20px 16px; 
+      padding-bottom: 100px; /* Space for bottom pill */
+    }
     .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
     .detail-price { font-size: 24px; font-weight: 800; color: #ff6b35; margin-bottom: 8px; }
     .detail-city { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
@@ -1465,16 +1490,49 @@
       margin-bottom: 20px; 
       white-space: pre-wrap;
     }
-    .detail-seller { display: flex; align-items: center; padding: 14px; background: var(--bg-secondary); border-radius: 14px; margin-bottom: 16px; cursor: pointer; transition: background 0.2s; }
-    .detail-seller:active { background: var(--border-color); }
-    .detail-seller-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--border-color); margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
+    
+    /* Bottom Seller Pill */
+    .detail-seller-pill {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border-color);
+      padding: 10px 16px;
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 205;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+    }
+
+    .seller-info {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .detail-seller-avatar { 
+      width: 44px; height: 44px; border-radius: 50%; background: var(--border-color); margin-right: 12px; 
+      display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; 
+    }
     .detail-seller-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .detail-seller-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    
     .detail-contact-btn {
-      width: 100%; padding: 16px; background: linear-gradient(270deg, #87CEEB, #B0E0E6, #9370DB, #BA55D3, #87CEEB);
-      background-size: 400% 400%; animation: gradientShift 6s ease infinite; color: white; border: none; border-radius: 14px;
-      font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 20px;
+      padding: 10px 24px; 
+      background: #007AFF;
+      color: white; 
+      border: none; 
+      border-radius: 20px;
+      font-size: 16px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      font-family: inherit;
     }
+    .detail-contact-btn:active { opacity: 0.8; }
+
     .main-content::-webkit-scrollbar { width: 0; }
 
     /* --- MESSAGE ACTION WIDGET STYLES --- */
@@ -1572,6 +1630,34 @@
       float: right;
     }
 
+    /* Toast Notification */
+    .toast-notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 500;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast-notification.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .toast-icon {
+      color: var(--toast-green);
+    }
+
   </style>
 </head>
 <body>
@@ -1585,6 +1671,12 @@
       </linearGradient>
     </defs>
   </svg>
+
+  <!-- Toast Notification -->
+  <div class="toast-notification" id="toastNotification">
+    <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toastText">Скопировано</span>
+  </div>
 
   <!-- ГЛОБАЛЬНАЯ ШАПКА -->
   <div class="app-header">
@@ -1648,7 +1740,6 @@
           <div class="profile-name" id="profileName">Загрузка...</div>
           <div class="profile-username" id="profileUsername">@loading</div>
           
-          <!-- SVG Звезды с надписью Рейтинг -->
           <div class="profile-rating" id="profileRating">
              <span class="rating-label-btn" onclick="openReviewsModal(currentUser.id, currentUser.firstName)">Рейтинг</span>
              <div class="stars-container" id="myProfileStars">
@@ -1677,7 +1768,6 @@
         <div id="otherProfileAvatarContainer"></div>
         <div class="profile-name" id="otherProfileName">Имя пользователя</div>
         
-        <!-- SVG Звезды с надписью Рейтинг -->
         <div class="profile-rating" id="otherProfileRating">
            <span class="rating-label-btn" id="otherProfileRatingBtn">Рейтинг</span>
            <div class="stars-container" id="otherProfileStars">
@@ -1698,27 +1788,20 @@
     </div>
   </div>
 
-  <!-- REVIEWS MODAL (UPDATED STRUCTURE) -->
-  <div class="reviews-modal" id="reviewsModal" onclick="if(event.target === this) closeReviewsModal()">
-    <div class="reviews-content-wrapper">
+  <!-- REVIEWS MODAL -->
+  <div class="reviews-modal" id="reviewsModal">
+    <div class="reviews-content-wrapper" id="reviewsWrapper">
       <div class="reviews-header">
         <span class="reviews-title">Отзывы</span>
         <span class="reviews-subtitle" id="reviewsUserName">Пользователь</span>
-        <button class="modal-close" onclick="closeReviewsModal()" style="position:absolute; right:16px; top:16px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+        <!-- Close button removed as requested -->
       </div>
       <div class="reviews-list" id="reviewsList">
-        <!-- Отзывы будут здесь -->
+        <!-- Reviews here -->
       </div>
       
-      <!-- КНОПКА ДЛЯ ОТКРЫТИЯ ФОРМЫ ОТЗЫВА -->
       <button class="send-review-btn active" id="openReviewFormBtn" onclick="showReviewForm()" style="margin-top: 10px;">Написать отзыв</button>
 
-      <!-- ФОРМА ОТЗЫВА (СКРЫТА ПО УМОЛЧАНИЮ) -->
       <div class="review-input-area" id="reviewInputArea" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 310; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
          <div style="background: var(--bg-primary); width: 90%; max-width: 350px; padding: 20px; border-radius: 20px; display: flex; flex-direction: column; align-items: center;">
             <h3 style="margin-bottom: 15px; color: var(--text-primary);">Ваша оценка</h3>
@@ -1751,10 +1834,7 @@
     </div>
 
     <div class="chat-messages" id="chatMessages">
-      <!-- Оверлей для размытия -->
       <div class="chat-message-overlay" id="msgOverlay" onclick="closeMessageActions()"></div>
-      
-      <!-- Виджет действий -->
       <div class="message-action-widget" id="msgActionWidget">
         <button class="msg-action-btn edit-btn" onclick="startEditMessage()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -1767,33 +1847,35 @@
       </div>
     </div>
     
-    <div class="attached-photo-preview" id="attachedPhotoPreview">
+    <!-- New Chat Input Layout -->
+    <div class="attached-photo-preview" id="attachedPhotoPreview" style="display:none;">
       <div class="attached-photo-thumb">
         <img id="attachedPhotoImg" src="" alt="">
+        <button class="remove-attachment-btn" onclick="removeAttachedPhoto()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
-      <button class="remove-attachment-btn" onclick="removeAttachedPhoto()">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
     </div>
 
     <div class="chat-input-area">
-      <button class="chat-add-photo-btn" onclick="document.getElementById('chatPhotoInput').click()">
-        <svg viewBox="0 0 24 24">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-      </button>
-      <input type="file" id="chatPhotoInput" accept="image/*" style="display:none;" onchange="handleChatPhotoSelect(event)">
-      
-      <div class="chat-input-wrapper">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Сообщение...">
-        <button class="chat-send-btn" onclick="sendMessage()">
+      <div class="chat-input-wrapper-complex">
+        <button class="chat-add-photo-btn" onclick="document.getElementById('chatPhotoInput').click()">
           <svg viewBox="0 0 24 24">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
         </button>
+        <input type="file" id="chatPhotoInput" accept="image/*" style="display:none;" onchange="handleChatPhotoSelect(event)">
+        
+        <input type="text" class="chat-input" id="chatInput" placeholder="Написать...">
       </div>
+      
+      <button class="chat-send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -1835,15 +1917,10 @@
 
   <!-- CREATE AD MODAL -->
   <div class="modal-overlay" id="createModal">
-    <div class="modal-content">
+    <div class="modal-content" id="createModalContent">
       <div class="modal-header">
         <span class="modal-title">Новое объявление</span>
-        <button class="modal-close" onclick="closeCreateModal()">
-          <svg width="18" height="18" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.5;fill:none;stroke-linecap:round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+        <!-- Close button removed -->
       </div>
 
       <div class="form-group">
@@ -1871,7 +1948,16 @@
         <input type="text" class="form-input" id="adCity" placeholder="Введите город">
       </div>
 
-      <!-- НОВОЕ ПОЛЕ ОПИСАНИЯ -->
+      <!-- NEW CATEGORY FIELD -->
+      <div class="form-group">
+        <label class="form-label">Категория</label>
+        <select class="form-input" id="adCategory" style="appearance: none; -webkit-appearance: none;">
+          <option value="" disabled selected>Выберите категорию</option>
+          <option value="Одежда">Одежда</option>
+          <option value="Электроника">Электроника</option>
+        </select>
+      </div>
+
       <div class="form-group">
         <label class="form-label">Описание (макс. 250 симв.)</label>
         <textarea class="form-input" id="adDesc" rows="3" maxlength="250" placeholder="Опишите товар..." style="resize: none;"></textarea>
@@ -1887,29 +1973,50 @@
   <!-- AD DETAIL MODAL -->
   <div class="detail-modal" id="detailModal" data-screen-id="detail">
     
-    <!-- КНОПКА НАСТРОЕК (ШЕСТЕРЕНКА) -->
-    <div class="detail-settings-container" id="detailSettingsContainer">
-      <button class="settings-gear-btn" id="settingsGearBtn" onclick="toggleSettingsMenu()">
+    <!-- Top Action Buttons -->
+    <div class="detail-top-actions">
+      <!-- Favorite -->
+      <button class="action-circle-btn" id="btnFavorite" onclick="toggleFavorite()">
         <svg viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
       </button>
-      <div class="settings-actions">
-        <button class="action-btn edit" onclick="editCurrentAd()">
+
+      <!-- Share -->
+      <button class="action-circle-btn" onclick="shareAd()">
+        <svg viewBox="0 0 24 24">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+      </button>
+
+      <!-- Settings Gear (Only visible if owner) -->
+      <div class="detail-settings-container" id="detailSettingsContainer" style="display:none; position:relative;">
+        <button class="settings-gear-btn" id="settingsGearBtn" onclick="toggleSettingsMenu()">
           <svg viewBox="0 0 24 24">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
         </button>
-        <button class="action-btn delete" onclick="deleteCurrentAdFromDetail()">
-          <svg viewBox="0 0 24 24">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            <line x1="10" y1="11" x2="10" y2="17"></line>
-            <line x1="14" y1="11" x2="14" y2="17"></line>
-          </svg>
-        </button>
+        <div class="settings-actions-container">
+          <button class="sub-action-btn edit" onclick="editCurrentAd()">
+            <svg viewBox="0 0 24 24">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
+          <button class="sub-action-btn delete" onclick="deleteCurrentAdFromDetail()">
+            <svg viewBox="0 0 24 24">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1923,14 +2030,18 @@
       <div class="detail-title" id="detailTitle"></div>
       <div class="detail-price" id="detailPrice"></div>
       <div class="detail-city" id="detailCity"></div>
-      <div class="detail-desc" id="detailDesc"></div> <!-- Блок описания -->
-      <div class="detail-seller" onclick="openOtherProfileFromDetail()">
+      <div class="detail-desc" id="detailDesc"></div>
+    </div>
+
+    <!-- Bottom Seller Pill -->
+    <div class="detail-seller-pill">
+      <div class="seller-info" onclick="openOtherProfileFromDetail()">
         <div class="detail-seller-avatar" id="detailSellerAvatar">👤</div>
         <div>
           <div class="detail-seller-name" id="detailSellerName"></div>
         </div>
       </div>
-      <button class="detail-contact-btn" onclick="contactSeller()">Написать продавцу</button>
+      <button class="detail-contact-btn" onclick="contactSeller()">Написать</button>
     </div>
   </div>
 
@@ -1960,14 +2071,16 @@
     const THEME_KEY = 'swapka_theme';
     const CHATS_KEY = 'swapka_chats';
     const REVIEWS_KEY = 'swapka_reviews';
+    const FAVORITES_KEY = 'swapka_favorites';
+
+    // --- CLEAR OLD REVIEWS ---
+    localStorage.removeItem(REVIEWS_KEY);
 
     // --- NAVIGATION STACK LOGIC ---
     let navStack = []; 
     const mainTabs = ['home', 'messages', 'profile'];
 
-    // Инициализация кнопки Назад Telegram
     tg.BackButton.onClick(() => {
-      // Если открыто модальное окно отзывов или форма отзыва, закрываем их
       if (document.getElementById('reviewInputArea').style.display === 'flex') {
         hideReviewForm();
         return;
@@ -1996,7 +2109,7 @@
     }
 
     function navigateTo(screenId, data = null) {
-      closeMessageActions(); // Закрываем меню сообщений при переходе
+      closeMessageActions();
       
       const currentScreen = getCurrentScreenId();
       
@@ -2063,7 +2176,6 @@
     }
 
     function goBack() {
-      // Закрываем меню настроек если открыто
       closeSettingsMenu();
       closeMessageActions();
 
@@ -2108,18 +2220,12 @@
       if(mainContent) mainContent.scrollTop = 0;
     }
 
-    // --- END NAVIGATION STACK LOGIC ---
-
-
+    // --- DATA MANAGEMENT ---
     function loadAds() {
       try { const data = localStorage.getItem(ADS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
     }
     function saveAds(ads) {
-      try { localStorage.setItem(ADS_KEY, JSON.stringify(ads)); } catch (e) {
-        console.error("Storage error:", e);
-        tg.showAlert("Ошибка памяти");
-        throw e;
-      }
+      try { localStorage.setItem(ADS_KEY, JSON.stringify(ads)); } catch (e) { throw e; }
     }
     function loadChats() {
       try { const data = localStorage.getItem(CHATS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
@@ -2135,6 +2241,13 @@
     }
     function saveReviews(reviews) {
       try { localStorage.setItem(REVIEWS_KEY, JSON.stringify(reviews)); } catch (e) {}
+    }
+
+    function loadFavorites() {
+      try { const data = localStorage.getItem(FAVORITES_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
+    }
+    function saveFavorites(favs) {
+      try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs)); } catch (e) {}
     }
 
     function applyTheme(theme) {
@@ -2189,6 +2302,7 @@
       else searchInput.placeholder = 'Погнали за покупками!';
     }
 
+    // --- INDICATOR PHYSICS ---
     const navPill = document.getElementById('navPill');
     const navIndicator = document.getElementById('navIndicator');
     const navItems = document.querySelectorAll('.nav-item');
@@ -2206,16 +2320,7 @@
     function updateIndicatorPosition(index, isDragging = false) {
       if (!indicatorPhysics.cachedItemWidth || indicatorPhysics.cachedItemWidth === 0) {
         const navItem = navItems[index] || navItems[0];
-        if (navItem) {
-          indicatorPhysics.cachedItemWidth = navItem.offsetWidth;
-        }
-      }
-      
-      if (indicatorPhysics.cachedItemWidth === 0) {
-        const navItem = navItems[0];
-        if (navItem) {
-          indicatorPhysics.cachedItemWidth = navItem.offsetWidth;
-        }
+        if (navItem) indicatorPhysics.cachedItemWidth = navItem.offsetWidth;
       }
       
       const targetX = index * indicatorPhysics.cachedItemWidth;
@@ -2295,6 +2400,7 @@
       return div.innerHTML;
     }
 
+    // --- ADS RENDERING ---
     function renderAds(filter = '') {
       const ads = loadAds();
       const grid = document.getElementById('adsGrid');
@@ -2307,15 +2413,14 @@
       }
       if (filteredAds.length === 0) {
         empty.style.display = 'flex';
-        if (filter.trim() && ads.length > 0) empty.querySelector('.empty-state-text').textContent = 'Ничего не найдено';
-        else empty.querySelector('.empty-state-text').textContent = 'Пока нет объявлений';
+        empty.querySelector('.empty-state-text').textContent = filter.trim() ? 'Ничего не найдено' : 'Пока нет объявлений';
       } else {
         empty.style.display = 'none';
         filteredAds.forEach(ad => grid.appendChild(createAdCard(ad)));
       }
     }
 
-    function createAdCard(ad, isMyAd = false) {
+    function createAdCard(ad) {
       const card = document.createElement('div');
       card.className = 'ad-card';
       card.onclick = () => {
@@ -2328,22 +2433,8 @@
         ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
         : `<div class="ad-image-placeholder">📷</div>`;
       
-      // ИЗМЕНЕНИЕ: Убрана кнопка удаления для профиля (isMyAd игнорируется для кнопки, но можно оставить логику если нужно где-то еще)
-      // Сейчас кнопка удаления НЕ добавляется вообще, даже если isMyAd = true
-      
       card.innerHTML = `<div class="ad-image-container">${imgHtml}</div><div class="ad-info"><div class="ad-title">${escapeHtml(ad.title)}</div><div class="ad-price">${escapeHtml(ad.price)}</div><div class="ad-city">📍 ${escapeHtml(ad.city)}</div></div>`;
       return card;
-    }
-
-    function deleteAd(event, adId) {
-      event.stopPropagation();
-      if (confirm('Удалить это объявление?')) {
-        const ads = loadAds();
-        saveAds(ads.filter(ad => ad.id !== adId));
-        renderAds();
-        renderMyAds();
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      }
     }
 
     function renderMyAds() {
@@ -2353,17 +2444,15 @@
       grid.innerHTML = '';
       const myAds = ads.filter(ad => ad.userId === currentUser.id);
       if (myAds.length === 0) { empty.style.display = 'flex'; }
-      else { empty.style.display = 'none'; myAds.forEach(ad => grid.appendChild(createAdCard(ad, true))); }
+      else { empty.style.display = 'none'; myAds.forEach(ad => grid.appendChild(createAdCard(ad))); }
     }
 
-    // --- RENDER OTHER USER PROFILE ---
     function renderOtherProfile(userData) {
       const ads = loadAds();
       const grid = document.getElementById('otherAdsGrid');
       const empty = document.getElementById('otherAdsEmpty');
       const countSpan = document.getElementById('otherAdsCount');
       
-      // Заполняем данные пользователя
       const avatarContainer = document.getElementById('otherProfileAvatarContainer');
       if (userData.photoUrl) {
         avatarContainer.innerHTML = `<img src="${userData.photoUrl}" class="profile-avatar" alt="Avatar">`;
@@ -2372,26 +2461,17 @@
       }
       document.getElementById('otherProfileName').textContent = userData.name || 'Пользователь';
       
-      // Настраиваем кнопку рейтинга
       const ratingBtn = document.getElementById('otherProfileRatingBtn');
-      if(ratingBtn) {
-        ratingBtn.onclick = () => openReviewsModal(userData.id, userData.name);
-      }
+      if(ratingBtn) ratingBtn.onclick = () => openReviewsModal(userData.id, userData.name);
       
-      // Обновляем звезды рейтинга для другого пользователя
       updateProfileStars(userData.id, 'otherProfileStars');
       
-      // Получаем активные объявления пользователя
       const userAds = ads.filter(ad => ad.userId === userData.id);
       countSpan.textContent = userAds.length;
       
       grid.innerHTML = '';
-      if (userAds.length === 0) { 
-        empty.style.display = 'flex'; 
-      } else { 
-        empty.style.display = 'none'; 
-        userAds.forEach(ad => grid.appendChild(createAdCard(ad, false))); 
-      }
+      if (userAds.length === 0) { empty.style.display = 'flex'; }
+      else { empty.style.display = 'none'; userAds.forEach(ad => grid.appendChild(createAdCard(ad))); }
     }
 
     function openOtherProfileFromChat() {
@@ -2399,33 +2479,16 @@
       const chatId = chatScreen.dataset.chatId;
       const chats = loadChats();
       const chat = chats.find(c => c.id === chatId);
-      
       if (chat) {
-        const userData = {
-          id: chat.sellerId,
-          name: chat.sellerName,
-          photoUrl: chat.sellerPhoto
-        };
-        navigateTo('otherProfile', userData);
+        navigateTo('otherProfile', { id: chat.sellerId, name: chat.sellerName, photoUrl: chat.sellerPhoto });
       }
     }
 
     function openOtherProfileFromDetail() {
       const ad = window.currentAdData;
       if (!ad) return;
-      
-      // Если это мой профиль, ничего не делаем или переходим на свой профиль
-      if (ad.userId === currentUser.id) {
-        navigateTo('profile');
-        return;
-      }
-
-      const userData = {
-        id: ad.userId,
-        name: ad.userName,
-        photoUrl: ad.userPhoto
-      };
-      navigateTo('otherProfile', userData);
+      if (ad.userId === currentUser.id) { navigateTo('profile'); return; }
+      navigateTo('otherProfile', { id: ad.userId, name: ad.userName, photoUrl: ad.userPhoto });
     }
 
     let searchTimeout;
@@ -2434,6 +2497,7 @@
       searchTimeout = setTimeout(() => renderAds(e.target.value), 200);
     });
 
+    // --- CREATE AD LOGIC ---
     let selectedPhotos = [];
     const bottomNav = document.getElementById('bottomNav');
     function hideBottomNav() { bottomNav.classList.add('hidden'); }
@@ -2445,6 +2509,7 @@
       document.getElementById('adTitle').value = '';
       document.getElementById('adPrice').value = '';
       document.getElementById('adCity').value = '';
+      document.getElementById('adCategory').value = '';
       document.getElementById('adDesc').value = '';
       updateDescCounter();
       document.getElementById('createModal').classList.add('active');
@@ -2457,19 +2522,10 @@
     }
     document.getElementById('openCreateBtn').addEventListener('click', openCreateModal);
 
-    // Логика счетчика описания
     const descInput = document.getElementById('adDesc');
     const descCounter = document.getElementById('descCounter');
-    
-    function updateDescCounter() {
-      if(descInput && descCounter) {
-        descCounter.textContent = descInput.value.length;
-      }
-    }
-    
-    if(descInput) {
-      descInput.addEventListener('input', updateDescCounter);
-    }
+    function updateDescCounter() { if(descInput && descCounter) descCounter.textContent = descInput.value.length; }
+    if(descInput) descInput.addEventListener('input', updateDescCounter);
 
     function resetPhotoSlots() {
       for (let i = 0; i < 4; i++) {
@@ -2485,22 +2541,15 @@
       const files = event.target.files;
       if (!files || files.length === 0) return;
       const remainingSlots = 4 - selectedPhotos.length;
-      if (remainingSlots <= 0) {
-        tg.showAlert('Максимум 4 фотографии');
-        event.target.value = '';
-        return;
-      }
+      if (remainingSlots <= 0) { tg.showAlert('Максимум 4 фотографии'); event.target.value = ''; return; }
       const filesToProcess = Array.from(files).slice(0, remainingSlots);
       let processedCount = 0;
       filesToProcess.forEach(file => {
         compressImage(file, (compressedDataUrl) => {
           selectedPhotos.push(compressedDataUrl);
           processedCount++;
-          const slotIndex = selectedPhotos.length - 1;
-          updatePhotoSlot(slotIndex, compressedDataUrl);
-          if (processedCount === filesToProcess.length) {
-             event.target.value = '';
-          }
+          updatePhotoSlot(selectedPhotos.length - 1, compressedDataUrl);
+          if (processedCount === filesToProcess.length) event.target.value = '';
         });
       });
     }
@@ -2515,25 +2564,12 @@
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
           const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
+          let width = img.width, height = img.height;
+          if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } }
+          else { if (height > MAX_WIDTH) { width *= MAX_WIDTH / height; height = MAX_WIDTH; } }
+          canvas.width = width; canvas.height = height;
           ctx.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-          callback(dataUrl);
+          callback(canvas.toDataURL('image/jpeg', 0.7));
         }
       }
     }
@@ -2554,12 +2590,12 @@
       const title = document.getElementById('adTitle').value.trim();
       const price = document.getElementById('adPrice').value.trim();
       const city = document.getElementById('adCity').value.trim();
+      const category = document.getElementById('adCategory').value;
       const desc = document.getElementById('adDesc').value.trim();
       
-      if (!title) { tg.showAlert('Введите название товара'); return; }
-      if (!price) { tg.showAlert('Введите цену'); return; }
-      if (!city) { tg.showAlert('Введите город'); return; }
-      if (selectedPhotos.length === 0) { tg.showAlert('Добавьте хотя бы одну фотографию'); return; }
+      if (!title || !price || !city || !category || selectedPhotos.length === 0) {
+        tg.showAlert('Заполните все поля и добавьте фото'); return;
+      }
       
       const ads = loadAds();
       const newAd = {
@@ -2568,8 +2604,7 @@
         userName: currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : ''),
         userUsername: currentUser.username,
         userPhoto: currentUser.photoUrl,
-        title, price, city,
-        description: desc, // Сохраняем описание
+        title, price, city, category, description: desc,
         photos: selectedPhotos.slice(0, 4),
         createdAt: Date.now()
       };
@@ -2582,6 +2617,7 @@
         document.getElementById('adTitle').value = '';
         document.getElementById('adPrice').value = '';
         document.getElementById('adCity').value = '';
+        document.getElementById('adCategory').value = '';
         document.getElementById('adDesc').value = '';
         closeCreateModal();
         renderAds();
@@ -2589,12 +2625,10 @@
         switchTab('home', 0);
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
         tg.showAlert('Объявление создано! ✅');
-      } catch (e) {
-        ads.shift();
-        console.error(e);
-      }
+      } catch (e) { ads.shift(); console.error(e); }
     }
 
+    // --- DETAIL MODAL LOGIC ---
     let currentCarouselIndex = 0;
     let currentAdForChat = null;
 
@@ -2603,10 +2637,9 @@
       document.getElementById('detailPrice').textContent = ad.price;
       document.getElementById('detailCity').textContent = '📍 ' + ad.city;
       
-      // Отображение описания
       const descEl = document.getElementById('detailDesc');
       if (ad.description && ad.description.trim() !== '') {
-        descEl.textContent = ad.description;
+        descEl.textContent = ad.description + (ad.category ? `\n\nКатегория: ${ad.category}` : '');
         descEl.style.display = 'block';
       } else {
         descEl.style.display = 'none';
@@ -2619,20 +2652,18 @@
         document.getElementById('detailSellerAvatar').innerHTML = '👤';
       }
       
-      // Показываем шестеренку только если это мое объявление
+      // Settings Gear Visibility
       const settingsContainer = document.getElementById('detailSettingsContainer');
-      if (ad.userId === currentUser.id) {
-        settingsContainer.classList.add('visible');
-      } else {
-        settingsContainer.classList.remove('visible');
-      }
-      closeSettingsMenu(); // Сброс состояния меню
+      if (ad.userId === currentUser.id) settingsContainer.style.display = 'block';
+      else settingsContainer.style.display = 'none';
+      closeSettingsMenu();
+
+      // Favorite State
+      updateFavoriteButtonState(ad.id);
 
       const track = document.getElementById('carouselTrack');
       const dots = document.getElementById('carouselDots');
-      track.innerHTML = '';
-      dots.innerHTML = '';
-      currentCarouselIndex = 0;
+      track.innerHTML = ''; dots.innerHTML = ''; currentCarouselIndex = 0;
       ad.photos.forEach((photo, i) => {
         const slide = document.createElement('div');
         slide.className = 'carousel-slide';
@@ -2645,37 +2676,80 @@
       });
     }
 
+    // --- FAVORITE & SHARE LOGIC ---
+    function toggleFavorite() {
+      const ad = window.currentAdData;
+      if (!ad) return;
+      
+      let favs = loadFavorites();
+      const idx = favs.indexOf(ad.id);
+      
+      if (idx === -1) {
+        favs.push(ad.id);
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      } else {
+        favs.splice(idx, 1);
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      }
+      saveFavorites(favs);
+      updateFavoriteButtonState(ad.id);
+    }
+
+    function updateFavoriteButtonState(adId) {
+      const btn = document.getElementById('btnFavorite');
+      const favs = loadFavorites();
+      if (favs.includes(adId)) {
+        btn.classList.add('favorite-active');
+      } else {
+        btn.classList.remove('favorite-active');
+      }
+    }
+
+    function shareAd() {
+      const ad = window.currentAdData;
+      if (!ad) return;
+      
+      // Simulate copying link
+      const dummyLink = `https://swapka.app/ad/${ad.id}`;
+      navigator.clipboard.writeText(dummyLink).then(() => {
+        showToast('Ссылка скопирована');
+      }).catch(() => {
+        showToast('Ссылка скопирована'); // Fallback
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastText');
+      text.textContent = message;
+      toast.classList.add('visible');
+      setTimeout(() => {
+        toast.classList.remove('visible');
+      }, 2000);
+    }
+
     // --- SETTINGS GEAR LOGIC ---
     function toggleSettingsMenu() {
       const btn = document.getElementById('settingsGearBtn');
       btn.classList.toggle('active');
     }
-
     function closeSettingsMenu() {
       const btn = document.getElementById('settingsGearBtn');
       if(btn) btn.classList.remove('active');
     }
-
-    function editCurrentAd() {
-      tg.showAlert('Редактирование скоро будет доступно!');
-      closeSettingsMenu();
-    }
-
+    function editCurrentAd() { tg.showAlert('Редактирование скоро будет доступно!'); closeSettingsMenu(); }
     function deleteCurrentAdFromDetail() {
       const ad = window.currentAdData;
       if (!ad) return;
-      
       if (confirm('Удалить это объявление?')) {
         const ads = loadAds();
         saveAds(ads.filter(a => a.id !== ad.id));
         closeSettingsMenu();
-        goBack(); // Возвращаемся назад
-        renderAds();
-        renderMyAds();
+        goBack();
+        renderAds(); renderMyAds();
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       }
     }
-    // --- END SETTINGS GEAR LOGIC ---
 
     function goToSlide(index) {
       const track = document.getElementById('carouselTrack');
@@ -2687,35 +2761,20 @@
     function contactSeller() {
       const ad = window.currentAdData;
       if (!ad) return;
-      
       currentAdForChat = ad;
       const chats = loadChats();
-      
-      // Ищем существующий чат
       let chat = chats.find(c => c.adId === ad.id && c.sellerId === ad.userId);
       
       if (!chat) {
-        // Создаем новый чат, используя ТОЧНЫЕ данные из объявления
         chat = {
-          id: 'chat_' + Date.now(),
-          adId: ad.id, 
-          adTitle: ad.title,
-          sellerId: ad.userId, 
-          sellerName: ad.userName || 'Пользователь', // Фоллбэк если имя пустое
-          sellerPhoto: ad.userPhoto || '',           // Фото может быть пустым, это нормально
-          sellerUsername: ad.userUsername || '',
-          buyerId: currentUser.id,
-          messages: [],
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-          lastActive: Date.now()
+          id: 'chat_' + Date.now(), adId: ad.id, adTitle: ad.title,
+          sellerId: ad.userId, sellerName: ad.userName || 'Пользователь',
+          sellerPhoto: ad.userPhoto || '', sellerUsername: ad.userUsername || '',
+          buyerId: currentUser.id, messages: [], createdAt: Date.now(), updatedAt: Date.now(), lastActive: Date.now()
         };
         chats.push(chat);
         saveChats(chats);
       } else {
-        // ВАЖНОЕ ИСПРАВЛЕНИЕ:
-        // Если чат уже есть, но в нем нет фото или имени (например, старые данные),
-        // обновляем их данными из текущего просматриваемого объявления.
         if ((!chat.sellerPhoto && ad.userPhoto) || chat.sellerName !== ad.userName) {
              chat.sellerPhoto = ad.userPhoto || chat.sellerPhoto;
              chat.sellerName = ad.userName || chat.sellerName;
@@ -2723,417 +2782,69 @@
              saveChats(chats);
         }
       }
-      
       openChat(chat);
     }
 
+    // --- CHAT LOGIC ---
     function formatLastSeen(lastActiveTimestamp) {
       if (!lastActiveTimestamp) return 'Был(а) недавно';
       const now = Date.now();
       const diff = now - lastActiveTimestamp;
-      if (diff < 5 * 60 * 1000) {
-        return 'В сети';
-      }
+      if (diff < 5 * 60 * 1000) return 'В сети';
       const minutes = Math.floor(diff / (60 * 1000));
       const hours = Math.floor(diff / (60 * 60 * 1000));
-      const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-      if (minutes < 60) {
-        return `Был(а) ${minutes} мин. назад`;
-      } else if (hours < 24) {
-        return `Был(а) ${hours} ч. назад`;
-      } else {
-        return `Был(а) ${days} дн. назад`;
-      }
+      if (minutes < 60) return `Был(а) ${minutes} мин. назад`;
+      else if (hours < 24) return `Был(а) ${hours} ч. назад`;
+      else return `Был(а) ${Math.floor(hours/24)} дн. назад`;
     }
 
     function updateChatHeaderStatus(chat) {
       const statusEl = document.getElementById('chatHeaderStatus');
       const statusText = formatLastSeen(chat.lastActive);
       statusEl.textContent = statusText;
-      if (statusText === 'В сети') {
-        statusEl.classList.add('online');
-      } else {
-        statusEl.classList.remove('online');
-      }
+      statusEl.classList.toggle('online', statusText === 'В сети');
     }
 
     function openChat(chat) {
       const chatScreen = document.getElementById('chatScreen');
       document.getElementById('chatHeaderName').textContent = chat.sellerName;
       const avatarEl = document.getElementById('chatHeaderAvatar');
-      if (chat.sellerPhoto) {
-        avatarEl.innerHTML = `<img src="${chat.sellerPhoto}" alt="">`;
-      } else {
-        avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
-      }
+      if (chat.sellerPhoto) avatarEl.innerHTML = `<img src="${chat.sellerPhoto}" alt="">`;
+      else avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
+      
       chatScreen.dataset.chatId = chat.id;
-      
       navigateTo('chat');
-      
       updateChatHeaderStatus(chat);
+      
       const chats = loadChats();
       const chatIdx = chats.findIndex(c => c.id === chat.id);
-      if (chatIdx !== -1) {
-        chats[chatIdx].unreadCount = 0;
-        saveChats(chats);
-        renderMessages();
-      }
+      if (chatIdx !== -1) { chats[chatIdx].unreadCount = 0; saveChats(chats); renderMessages(); }
+      
       renderChatMessages(chat);
-      setTimeout(() => {
-        const messagesContainer = document.getElementById('chatMessages');
-        messagesContainer.scrollTop = 0;
-      }, 100);
+      setTimeout(() => { document.getElementById('chatMessages').scrollTop = 0; }, 100);
     }
 
-    function renderStars(containerId, ratingValue) {
-      const container = document.getElementById(containerId);
-      if(!container) return;
-      // We only render static stars in profile for now, logic handled in CSS/HTML structure
-    }
-
-    // --- REVIEWS LOGIC ---
-    let currentReviewUserId = null;
-    let currentReviewRating = 0;
-    const MAX_RATING = 3; // Максимум 3 звезды
-
-    function calculateAverageRating(userId) {
-      const allReviews = loadReviews();
-      const userReviews = allReviews[userId] || [];
-      if (userReviews.length === 0) return 0;
-      
-      const sum = userReviews.reduce((acc, rev) => acc + rev.rating, 0);
-      return sum / userReviews.length;
-    }
-
-    function updateProfileStars(userId, containerId) {
-      const avg = calculateAverageRating(userId);
-      const container = document.getElementById(containerId);
-      if (!container) return;
-      
-      const stars = container.querySelectorAll('svg');
-      stars.forEach((star, index) => {
-        // Индекс начинается с 0.
-        // Полная звезда: index < floor(avg)
-        // Половинчатая звезда: index == floor(avg) и дробная часть >= 0.25 и <= 0.75 (примерно)
-        // Пустая звезда: иначе
-        
-        const starNum = index + 1;
-        
-        if (starNum <= Math.floor(avg)) {
-           // Полностью закрашена
-           star.classList.add('filled');
-           star.classList.remove('half-filled');
-        } else if (starNum === Math.ceil(avg) && (avg % 1) >= 0.25 && (avg % 1) <= 0.75) {
-           // Половинчатая (для диапазона типа 2.25 - 2.75)
-           star.classList.remove('filled');
-           star.classList.add('half-filled');
-        } else {
-           // Пустая
-           star.classList.remove('filled');
-           star.classList.remove('half-filled');
-        }
+    let attachedChatPhoto = null;
+    function handleChatPhotoSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      compressImage(file, (dataUrl) => {
+        attachedChatPhoto = dataUrl;
+        document.getElementById('attachedPhotoImg').src = dataUrl;
+        document.getElementById('attachedPhotoPreview').style.display = 'flex';
+        document.getElementById('chatInput').focus();
       });
+      event.target.value = '';
+    }
+    function removeAttachedPhoto() {
+      attachedChatPhoto = null;
+      document.getElementById('attachedPhotoPreview').style.display = 'none';
     }
 
-    function openReviewsModal(userId, userName) {
-      currentReviewUserId = userId;
-      currentReviewRating = 0;
-      
-      // Update Header Name
-      document.getElementById('reviewsUserName').textContent = userName || 'Пользователь';
-      
-      const modal = document.getElementById('reviewsModal');
-      const list = document.getElementById('reviewsList');
-      
-      // Reset form visibility
-      hideReviewForm();
-      
-      // Load reviews
-      const allReviews = loadReviews();
-      const userReviews = allReviews[userId] || [];
-      
-      list.innerHTML = '';
-      if (userReviews.length === 0) {
-        list.innerHTML = '<div class="empty-state" style="position:relative;transform:none;"><div class="empty-state-text">Пока нет отзывов</div></div>';
-      } else {
-        // Sort by date desc
-        userReviews.sort((a, b) => b.timestamp - a.timestamp).forEach(review => {
-          const date = new Date(review.timestamp).toLocaleDateString('ru-RU');
-          let starsHtml = '';
-          // Render only 3 stars max in list as well to match input
-          for(let i=0; i<MAX_RATING; i++) {
-            starsHtml += `<svg viewBox="0 0 24 24" style="${i < review.rating ? 'fill:var(--star-filled)' : 'fill:var(--star-empty)'}"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>`;
-          }
-          
-          const isMyReview = review.authorId === currentUser.id;
-          
-          const wrapper = document.createElement('div');
-          wrapper.className = 'review-item-wrapper';
-          
-          const deleteBg = document.createElement('div');
-          deleteBg.className = 'review-delete-bg';
-          deleteBg.innerHTML = `
-            <svg viewBox="0 0 24 24">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          `;
-          
-          const item = document.createElement('div');
-          item.className = 'review-item';
-          
-          let optionsHtml = '';
-          if (isMyReview) {
-            optionsHtml = `
-              <button class="review-options-btn" onclick="showReviewOptions('${review.id}', this)">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="1"></circle>
-                  <circle cx="12" cy="5" r="1"></circle>
-                  <circle cx="12" cy="19" r="1"></circle>
-                </svg>
-              </button>
-            `;
-          }
-          
-          item.innerHTML = `
-            <div class="review-header-row">
-              <div class="review-author-block">
-                <span class="review-author">${escapeHtml(review.author)}</span>
-                <span class="review-date">${date}</span>
-              </div>
-              ${optionsHtml}
-            </div>
-            <div class="review-stars">${starsHtml}</div>
-            <div class="review-text">${escapeHtml(review.text)}</div>
-          `;
-          
-          const deleteBtn = document.createElement('button');
-          deleteBtn.className = 'review-delete-btn';
-          deleteBtn.onclick = (e) => {
-            e.stopPropagation();
-            deleteReview(review.id, userId);
-          };
-          
-          wrapper.appendChild(deleteBg);
-          wrapper.appendChild(item);
-          wrapper.appendChild(deleteBtn);
-          list.appendChild(wrapper);
-          
-          if (isMyReview) {
-            initReviewSwipe(item, wrapper, deleteBg, deleteBtn);
-          }
-        });
-      }
-      
-      modal.classList.add('active');
-      hideBottomNav(); // ИЗМЕНЕНИЕ: Прячем навигацию
-      updateTelegramBackButton();
-    }
-
-    function showReviewOptions(reviewId, btn) {
-      // Find wrapper
-      const wrapper = btn.closest('.review-item-wrapper');
-      const item = wrapper.querySelector('.review-item');
-      const deleteBg = wrapper.querySelector('.review-delete-bg');
-      const deleteBtn = wrapper.querySelector('.review-delete-btn');
-      
-      // Animate swipe
-      item.style.transform = `translateX(-80px)`;
-      deleteBg.classList.add('visible');
-      deleteBtn.classList.add('visible');
-      
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }
-
-    function initReviewSwipe(item, wrapper, deleteBg, deleteBtn) {
-      let startX = 0;
-      let currentX = 0;
-      let isSwiping = false;
-      const deleteWidth = 80;
-      
-      item.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX;
-        currentX = startX;
-        isSwiping = true;
-        item.classList.add('swiping');
-      }, { passive: true });
-      
-      item.addEventListener('touchmove', (e) => {
-        if (!isSwiping) return;
-        const touchX = e.touches[0].clientX;
-        const diff = startX - touchX;
-        if (diff > 0) {
-          currentX = touchX;
-          const translateX = Math.min(diff, deleteWidth);
-          item.style.transform = `translateX(-${translateX}px)`;
-        }
-      }, { passive: true });
-      
-      item.addEventListener('touchend', (e) => {
-        if (!isSwiping) return;
-        isSwiping = false;
-        item.classList.remove('swiping');
-        
-        const diff = startX - currentX;
-        
-        if (diff > deleteWidth / 2) {
-          item.style.transform = `translateX(-${deleteWidth}px)`;
-          deleteBg.classList.add('visible');
-          deleteBtn.classList.add('visible');
-        } else {
-          item.style.transform = 'translateX(0)';
-          deleteBg.classList.remove('visible');
-          deleteBtn.classList.remove('visible');
-        }
-      });
-    }
-
-    function deleteReview(reviewId, userId) {
-      if (confirm('Удалить этот отзыв?')) {
-        const allReviews = loadReviews();
-        if (allReviews[userId]) {
-          allReviews[userId] = allReviews[userId].filter(r => r.id !== reviewId);
-          saveReviews(allReviews);
-          openReviewsModal(userId, document.getElementById('reviewsUserName').textContent);
-          // Update stars in background
-          if (userId === currentUser.id) {
-            updateProfileStars(userId, 'myProfileStars');
-          } else {
-             // If we are viewing other profile, we might need to update it too, but it's hidden behind modal
-             updateProfileStars(userId, 'otherProfileStars');
-          }
-          if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        }
-      }
-    }
-
-    function closeReviewsModal() {
-      document.getElementById('reviewsModal').classList.remove('active');
-      showBottomNav(); // ИЗМЕНЕНИЕ: Показываем навигацию
-      updateTelegramBackButton();
-      // Refresh stars when closing modal
-      updateProfileStars(currentUser.id, 'myProfileStars');
-    }
-
-    // --- NEW REVIEW FORM LOGIC ---
-    function showReviewForm() {
-      document.getElementById('reviewInputArea').style.display = 'flex';
-      hideBottomNav(); // Ensure nav stays hidden
-    }
-
-    function hideReviewForm() {
-      document.getElementById('reviewInputArea').style.display = 'none';
-      // Don't show bottom nav here, because we are still inside the reviews modal
-    }
-
-    function setReviewRating(rating) {
-      currentReviewRating = rating;
-      updateStarSelector(rating);
-      checkReviewForm();
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }
-
-    function updateStarSelector(rating) {
-      const stars = document.querySelectorAll('#reviewStarSelector svg');
-      stars.forEach((star, index) => {
-        if (index < rating) star.classList.add('active');
-        else star.classList.remove('active');
-      });
-    }
-
-    function checkReviewForm() {
-      const text = document.getElementById('reviewTextarea').value.trim();
-      const btn = document.getElementById('sendReviewBtn');
-      if (text.length > 0 && currentReviewRating > 0) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    }
-
-    function submitReview() {
-      if (!currentReviewUserId || currentReviewRating === 0) return;
-      
-      const text = document.getElementById('reviewTextarea').value.trim();
-      if (!text) return;
-      
-      const allReviews = loadReviews();
-      if (!allReviews[currentReviewUserId]) allReviews[currentReviewUserId] = [];
-      
-      const newReview = {
-        id: 'rev_' + Date.now(),
-        authorId: currentUser.id, // ИЗМЕНЕНИЕ: Сохраняем ID автора
-        author: currentUser.firstName,
-        rating: currentReviewRating,
-        text: text,
-        timestamp: Date.now()
-      };
-      
-      allReviews[currentReviewUserId].push(newReview);
-      saveReviews(allReviews);
-      
-      // Hide form
-      hideReviewForm();
-      
-      // Refresh list
-      openReviewsModal(currentReviewUserId, document.getElementById('reviewsUserName').textContent);
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    }
-    // --- END REVIEWS LOGIC ---
-
-    // --- MESSAGE ACTIONS LOGIC ---
-    let selectedMessageId = null;
-    let longPressTimer = null;
-
-    function initMessageLongPress(msgElement, msgId) {
-      // Prevent default context menu
-      msgElement.addEventListener('contextmenu', e => e.preventDefault());
-
-      const startHandler = (e) => {
-        // Don't trigger if already editing or if it's an image click that might be zooming
-        if(document.querySelector('.edit-textarea')) return;
-        
-        longPressTimer = setTimeout(() => {
-          if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-          showMessageActions(msgId);
-        }, 500); // 500ms hold
-      };
-
-      const endHandler = () => {
-        if (longPressTimer) {
-          clearTimeout(longPressTimer);
-          longPressTimer = null;
-        }
-      };
-
-      msgElement.addEventListener('touchstart', startHandler, {passive: true});
-      msgElement.addEventListener('mousedown', startHandler);
-      
-      msgElement.addEventListener('touchend', endHandler);
-      msgElement.addEventListener('mouseup', endHandler);
-      msgElement.addEventListener('touchmove', endHandler); // Cancel if scrolling
-    }
-
-    function showMessageActions(msgId) {
-      selectedMessageId = msgId;
-      const overlay = document.getElementById('msgOverlay');
-      const widget = document.getElementById('msgActionWidget');
-      
-      overlay.classList.add('active');
-      widget.classList.add('active');
-    }
-
-    function closeMessageActions() {
-      selectedMessageId = null;
-      const overlay = document.getElementById('msgOverlay');
-      const widget = document.getElementById('msgActionWidget');
-      
-      overlay.classList.remove('active');
-      widget.classList.remove('active');
-    }
-
-    function deleteSelectedMessage() {
-      if (!selectedMessageId) return;
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text && !attachedChatPhoto) return;
       
       const chatScreen = document.getElementById('chatScreen');
       const chatId = chatScreen.dataset.chatId;
@@ -3141,93 +2852,26 @@
       const chat = chats.find(c => c.id === chatId);
       
       if (chat) {
-        chat.messages = chat.messages.filter(m => m.id !== selectedMessageId);
+        chat.messages.push({
+          id: 'msg_' + Date.now(), senderId: currentUser.id,
+          text: text, image: attachedChatPhoto, timestamp: Date.now()
+        });
+        chat.updatedAt = Date.now(); chat.lastActive = Date.now();
         saveChats(chats);
-        renderChatMessages(chat);
-        closeMessageActions();
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        
+        input.value = ''; removeAttachedPhoto();
+        renderChatMessages(chat); updateChatHeaderStatus(chat);
+        setTimeout(() => { document.getElementById('chatMessages').scrollTop = 0; }, 50);
+        renderMessages();
       }
     }
-
-    function startEditMessage() {
-      if (!selectedMessageId) return;
-      
-      const chatScreen = document.getElementById('chatScreen');
-      const chatId = chatScreen.dataset.chatId;
-      const chats = loadChats();
-      const chat = chats.find(c => c.id === chatId);
-      const msg = chat ? chat.messages.find(m => m.id === selectedMessageId) : null;
-      
-      if (!msg) return;
-
-      // Find the DOM element for this message
-      // Since we use reverse order, finding by ID is safest after re-render or direct DOM query if we added IDs
-      // But easier: replace content of the specific bubble.
-      // However, since we render via JS loop, let's just modify the DOM directly then save on confirm.
-      
-      // We need to find the element in the DOM. Let's assume the structure rendered in renderChatMessages
-      // It doesn't have ID. Let's re-render with ID or just find by text/time match (risky).
-      // Better: Add ID to message div in renderChatMessages.
-      
-      const msgDiv = document.querySelector(`.chat-message[data-msg-id="${selectedMessageId}"]`);
-      if (!msgDiv) {
-         closeMessageActions();
-         return;
-      }
-
-      const contentDiv = msgDiv.querySelector('div:not(.chat-message-time)'); // The text/image container
-      if (!contentDiv) return;
-
-      // Replace text with textarea
-      const currentText = msg.text || '';
-      contentDiv.innerHTML = `
-        <textarea class="edit-textarea" id="editArea">${escapeHtml(currentText)}</textarea>
-        <button class="edit-confirm-btn" onclick="confirmEdit('${chatId}', '${selectedMessageId}')">Сохранить</button>
-      `;
-      
-      const textarea = document.getElementById('editArea');
-      textarea.focus();
-      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-      
-      // Hide widget but keep overlay so they can click away to cancel? 
-      // Or just keep widget open? Let's hide widget to give space.
-      document.getElementById('msgActionWidget').classList.remove('active');
-    }
-
-    function confirmEdit(chatId, msgId) {
-      const newText = document.getElementById('editArea').value.trim();
-      if (!newText) return; // Don't allow empty
-
-      const chats = loadChats();
-      const chat = chats.find(c => c.id === chatId);
-      const msg = chat ? chat.messages.find(m => m.id === msgId) : null;
-      
-      if (msg) {
-        msg.text = newText;
-        msg.edited = true; // Flag for (ред)
-        saveChats(chats);
-        renderChatMessages(chat);
-        closeMessageActions();
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      }
-    }
-    
-    // Make functions global for onclick handlers
-    window.closeMessageActions = closeMessageActions;
-    window.startEditMessage = startEditMessage;
-    window.deleteSelectedMessage = deleteSelectedMessage;
-    window.confirmEdit = confirmEdit;
-
-    // --- END MESSAGE ACTIONS LOGIC ---
+    document.getElementById('chatInput')?.addEventListener('keypress', function(e) { if (e.key === 'Enter') sendMessage(); });
 
     function renderChatMessages(chat) {
       const container = document.getElementById('chatMessages');
-      // Keep overlay and widget if they exist, clear rest
       const overlay = document.getElementById('msgOverlay');
       const widget = document.getElementById('msgActionWidget');
-      container.innerHTML = '';
-      container.appendChild(overlay);
-      container.appendChild(widget);
+      container.innerHTML = ''; container.appendChild(overlay); container.appendChild(widget);
       
       if (chat.messages.length === 0) {
         container.innerHTML += '<div class="empty-state"><div class="empty-state-text">Напишите свое первое сообщение</div></div>';
@@ -3238,291 +2882,316 @@
         const isSent = msg.senderId === currentUser.id;
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
-        messageDiv.dataset.msgId = msg.id; // Add ID for editing
+        messageDiv.dataset.msgId = msg.id;
         
         let contentHtml = '';
-        if (msg.image) {
-          contentHtml += `<img src="${msg.image}" alt="Photo">`;
-        }
-        if (msg.text) {
-          contentHtml += `<div>${escapeHtml(msg.text)}</div>`;
-        }
+        if (msg.image) contentHtml += `<img src="${msg.image}" alt="Photo">`;
+        if (msg.text) contentHtml += `<div>${escapeHtml(msg.text)}</div>`;
         
         const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         const editedMark = msg.edited ? ' <span style="opacity:0.6">(ред)</span>' : '';
-        
         messageDiv.innerHTML = `${contentHtml}<div class="chat-message-time">${time}${editedMark}</div>`;
         container.appendChild(messageDiv);
         
-        // Init long press only for MY messages
-        if (isSent) {
-          initMessageLongPress(messageDiv, msg.id);
-        }
+        if (isSent) initMessageLongPress(messageDiv, msg.id);
       });
     }
 
-    let attachedChatPhoto = null;
-
-    function handleChatPhotoSelect(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      
-      compressImage(file, (dataUrl) => {
-        attachedChatPhoto = dataUrl;
-        document.getElementById('attachedPhotoImg').src = dataUrl;
-        document.getElementById('attachedPhotoPreview').classList.add('active');
-        document.getElementById('chatInput').focus();
-      });
-      event.target.value = '';
+    // --- MESSAGE ACTIONS ---
+    let selectedMessageId = null;
+    let longPressTimer = null;
+    function initMessageLongPress(msgElement, msgId) {
+      msgElement.addEventListener('contextmenu', e => e.preventDefault());
+      const startHandler = () => { if(!document.querySelector('.edit-textarea')) longPressTimer = setTimeout(() => { if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged(); showMessageActions(msgId); }, 500); };
+      const endHandler = () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } };
+      msgElement.addEventListener('touchstart', startHandler, {passive: true});
+      msgElement.addEventListener('mousedown', startHandler);
+      msgElement.addEventListener('touchend', endHandler);
+      msgElement.addEventListener('mouseup', endHandler);
+      msgElement.addEventListener('touchmove', endHandler);
     }
-
-    function removeAttachedPhoto() {
-      attachedChatPhoto = null;
-      document.getElementById('attachedPhotoPreview').classList.remove('active');
-    }
-
-    function sendMessage() {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
-      
-      if (!text && !attachedChatPhoto) return;
-      
-      const chatScreen = document.getElementById('chatScreen');
-      const chatId = chatScreen.dataset.chatId;
+    function showMessageActions(msgId) { selectedMessageId = msgId; document.getElementById('msgOverlay').classList.add('active'); document.getElementById('msgActionWidget').classList.add('active'); }
+    function closeMessageActions() { selectedMessageId = null; document.getElementById('msgOverlay').classList.remove('active'); document.getElementById('msgActionWidget').classList.remove('active'); }
+    function deleteSelectedMessage() {
+      if (!selectedMessageId) return;
+      const chatId = document.getElementById('chatScreen').dataset.chatId;
       const chats = loadChats();
       const chat = chats.find(c => c.id === chatId);
-      
-      if (chat) {
-        const newMessage = {
-          id: 'msg_' + Date.now(),
-          senderId: currentUser.id,
-          text: text,
-          image: attachedChatPhoto,
-          timestamp: Date.now()
-        };
-        
-        chat.messages.push(newMessage);
-        chat.updatedAt = Date.now();
-        chat.lastActive = Date.now();
-        
-        saveChats(chats);
-        
-        input.value = '';
-        removeAttachedPhoto();
-        
-        renderChatMessages(chat);
-        updateChatHeaderStatus(chat);
-        
-        setTimeout(() => {
-          const messagesContainer = document.getElementById('chatMessages');
-          messagesContainer.scrollTop = 0;
-        }, 50);
-        
-        renderMessages();
-      }
+      if (chat) { chat.messages = chat.messages.filter(m => m.id !== selectedMessageId); saveChats(chats); renderChatMessages(chat); closeMessageActions(); }
     }
-
-    document.getElementById('chatInput')?.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') sendMessage();
-    });
-
-    function initChatSwipe(item, chatId) {
-      let startX = 0;
-      let currentX = 0;
-      let isSwiping = false;
-      const deleteWidth = 120;
-      
-      item.addEventListener('touchstart', (e) => {
-        // If we are in message edit mode, don't swipe list
-        if(selectedMessageId) return;
-
-        document.querySelectorAll('.message-item').forEach(el => {
-          if (el !== item) {
-            el.style.transform = 'translateX(0)';
-            const wrapper = el.closest('.message-item-wrapper');
-            if(wrapper) {
-                const bg = wrapper.querySelector('.message-delete-bg');
-                const btn = wrapper.querySelector('.message-delete-btn');
-                if(bg) bg.classList.remove('visible');
-                if(btn) btn.classList.remove('visible');
-            }
-          }
-        });
-
-        startX = e.touches[0].clientX;
-        currentX = startX;
-        isSwiping = true;
-        item.classList.add('swiping');
-      }, { passive: true });
-      
-      item.addEventListener('touchmove', (e) => {
-        if (!isSwiping) return;
-        const touchX = e.touches[0].clientX;
-        const diff = startX - touchX;
-        if (diff > 0) {
-          currentX = touchX;
-          const translateX = Math.min(diff, deleteWidth);
-          item.style.transform = `translateX(-${translateX}px)`;
-        }
-      }, { passive: true });
-      
-      item.addEventListener('touchend', (e) => {
-        if (!isSwiping) return;
-        isSwiping = false;
-        item.classList.remove('swiping');
-        
-        const diff = startX - currentX;
-        const wrapper = item.closest('.message-item-wrapper');
-        const deleteBg = wrapper.querySelector('.message-delete-bg');
-        const deleteBtn = wrapper.querySelector('.message-delete-btn');
-        
-        if (diff > deleteWidth / 2) {
-          item.style.transform = `translateX(-${deleteWidth}px)`;
-          if (deleteBg) deleteBg.classList.add('visible');
-          if (deleteBtn) deleteBtn.classList.add('visible');
-        } else {
-          item.style.transform = 'translateX(0)';
-          if (deleteBg) deleteBg.classList.remove('visible');
-          if (deleteBtn) deleteBtn.classList.remove('visible');
-        }
-      });
+    function startEditMessage() {
+      if (!selectedMessageId) return;
+      const chatId = document.getElementById('chatScreen').dataset.chatId;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      const msg = chat ? chat.messages.find(m => m.id === selectedMessageId) : null;
+      if (!msg) return;
+      const msgDiv = document.querySelector(`.chat-message[data-msg-id="${selectedMessageId}"]`);
+      if (!msgDiv) { closeMessageActions(); return; }
+      const contentDiv = msgDiv.querySelector('div:not(.chat-message-time)');
+      if (!contentDiv) return;
+      contentDiv.innerHTML = `<textarea class="edit-textarea" id="editArea">${escapeHtml(msg.text)}</textarea><button class="edit-confirm-btn" onclick="confirmEdit('${chatId}', '${selectedMessageId}')">Сохранить</button>`;
+      const textarea = document.getElementById('editArea'); textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      document.getElementById('msgActionWidget').classList.remove('active');
     }
-
-    function deleteChat(chatId) {
-      if (confirm('Удалить этот чат?')) {
-        const chats = loadChats();
-        saveChats(chats.filter(c => c.id !== chatId));
-        renderMessages();
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      }
+    function confirmEdit(chatId, msgId) {
+      const newText = document.getElementById('editArea').value.trim();
+      if (!newText) return;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      const msg = chat ? chat.messages.find(m => m.id === msgId) : null;
+      if (msg) { msg.text = newText; msg.edited = true; saveChats(chats); renderChatMessages(chat); closeMessageActions(); }
     }
+    window.closeMessageActions = closeMessageActions; window.startEditMessage = startEditMessage; window.deleteSelectedMessage = deleteSelectedMessage; window.confirmEdit = confirmEdit;
 
+    // --- MESSAGES LIST ---
     function renderMessages() {
       const chats = loadChats();
       const container = document.getElementById('messagesList');
       const userChats = chats.filter(c => c.buyerId === currentUser.id);
-      
-      if (userChats.length === 0) {
-        container.innerHTML = `<div class="empty-state"><div class="empty-state-text">У вас пока нет чатов</div></div>`;
-        return;
-      }
-      
+      if (userChats.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-state-text">У вас пока нет чатов</div></div>`; return; }
       userChats.sort((a, b) => b.updatedAt - a.updatedAt);
       container.innerHTML = '';
-      
       userChats.forEach(chat => {
         const lastMessage = chat.messages[chat.messages.length - 1];
         let preview = 'Нет сообщений';
-        if (lastMessage) {
-          if (lastMessage.image) preview = '📷 Фотография';
-          else preview = lastMessage.text;
-        }
+        if (lastMessage) { if (lastMessage.image) preview = '📷 Фотография'; else preview = lastMessage.text; }
         
-        const wrapper = document.createElement('div');
-        wrapper.className = 'message-item-wrapper';
+        const wrapper = document.createElement('div'); wrapper.className = 'message-item-wrapper';
+        const deleteBg = document.createElement('div'); deleteBg.className = 'message-delete-bg';
+        deleteBg.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg><span>Удалить</span>`;
         
-        const deleteBg = document.createElement('div');
-        deleteBg.className = 'message-delete-bg';
-        deleteBg.innerHTML = `
-          <svg viewBox="0 0 24 24">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            <line x1="10" y1="11" x2="10" y2="17"></line>
-            <line x1="14" y1="11" x2="14" y2="17"></line>
-          </svg>
-          <span>Удалить</span>
-        `;
-        
-        const messageItem = document.createElement('div');
-        messageItem.className = 'message-item';
+        const messageItem = document.createElement('div'); messageItem.className = 'message-item';
         messageItem.onclick = function() {
-          const style = window.getComputedStyle(this);
-          const matrix = new WebKitCSSMatrix(style.transform);
-          if (matrix.m41 !== 0) {
-             this.style.transform = 'translateX(0)';
-             const wrapper = this.closest('.message-item-wrapper');
-             if(wrapper) {
-                const bg = wrapper.querySelector('.message-delete-bg');
-                const btn = wrapper.querySelector('.message-delete-btn');
-                if(bg) bg.classList.remove('visible');
-                if(btn) btn.classList.remove('visible');
-             }
-             return;
-          }
+          const style = window.getComputedStyle(this); const matrix = new WebKitCSSMatrix(style.transform);
+          if (matrix.m41 !== 0) { this.style.transform = 'translateX(0)'; const w = this.closest('.message-item-wrapper'); if(w){w.querySelector('.message-delete-bg').classList.remove('visible');w.querySelector('.message-delete-btn').classList.remove('visible');} return; }
           openChat(chat);
         };
         
-        const avatarHtml = chat.sellerPhoto
-          ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>`
-          : '<div class="message-avatar">👤</div>';
-        
+        const avatarHtml = chat.sellerPhoto ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>` : '<div class="message-avatar">👤</div>';
         const unreadBadge = chat.unreadCount > 0 ? `<div class="unread-badge">${chat.unreadCount}</div>` : '';
+        messageItem.innerHTML = `${avatarHtml}<div class="message-content"><div class="message-name">${escapeHtml(chat.sellerName)}</div><div class="message-preview">${escapeHtml(preview)}</div></div>${unreadBadge}`;
         
-        messageItem.innerHTML = `
-          ${avatarHtml}
-          <div class="message-content">
-            <div class="message-name">${escapeHtml(chat.sellerName)}</div>
-            <div class="message-preview">${escapeHtml(preview)}</div>
-          </div>
-          ${unreadBadge}
-        `;
+        const deleteBtn = document.createElement('button'); deleteBtn.className = 'message-delete-btn';
+        deleteBtn.onclick = (e) => { e.stopPropagation(); deleteChat(chat.id); };
         
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'message-delete-btn';
-        deleteBtn.onclick = (e) => {
-          e.stopPropagation();
-          deleteChat(chat.id);
-        };
-        
-        wrapper.appendChild(deleteBg);
-        wrapper.appendChild(messageItem);
-        wrapper.appendChild(deleteBtn);
-        container.appendChild(wrapper);
-        
+        wrapper.appendChild(deleteBg); wrapper.appendChild(messageItem); wrapper.appendChild(deleteBtn); container.appendChild(wrapper);
         initChatSwipe(messageItem, chat.id);
       });
     }
+    function deleteChat(chatId) { if (confirm('Удалить этот чат?')) { saveChats(loadChats().filter(c => c.id !== chatId)); renderMessages(); } }
+    function initChatSwipe(item, chatId) {
+      let startX = 0, currentX = 0, isSwiping = false, deleteWidth = 120;
+      item.addEventListener('touchstart', (e) => { if(selectedMessageId) return; document.querySelectorAll('.message-item').forEach(el => { if (el !== item) { el.style.transform = 'translateX(0)'; const w = el.closest('.message-item-wrapper'); if(w){const bg=w.querySelector('.message-delete-bg'),btn=w.querySelector('.message-delete-btn');if(bg)bg.classList.remove('visible');if(btn)btn.classList.remove('visible');} } }); startX = e.touches[0].clientX; currentX = startX; isSwiping = true; item.classList.add('swiping'); }, { passive: true });
+      item.addEventListener('touchmove', (e) => { if (!isSwiping) return; const touchX = e.touches[0].clientX; const diff = startX - touchX; if (diff > 0) { currentX = touchX; item.style.transform = `translateX(-${Math.min(diff, deleteWidth)}px)`; } }, { passive: true });
+      item.addEventListener('touchend', (e) => { if (!isSwiping) return; isSwiping = false; item.classList.remove('swiping'); const diff = startX - currentX; const wrapper = item.closest('.message-item-wrapper'); const deleteBg = wrapper.querySelector('.message-delete-bg'); const deleteBtn = wrapper.querySelector('.message-delete-btn'); if (diff > deleteWidth / 2) { item.style.transform = `translateX(-${deleteWidth}px)`; if(deleteBg)deleteBg.classList.add('visible'); if(deleteBtn)deleteBtn.classList.add('visible'); } else { item.style.transform = 'translateX(0)'; if(deleteBg)deleteBg.classList.remove('visible'); if(deleteBtn)deleteBtn.classList.remove('visible'); } });
+    }
 
-    document.getElementById('createModal').addEventListener('click', function (e) {
-      if (e.target === this) closeCreateModal();
-    });
+    // --- REVIEWS LOGIC ---
+    let currentReviewUserId = null;
+    let currentReviewRating = 0;
+    const MAX_RATING = 3;
 
-    let touchStartX = 0;
-    let touchEndX = 0;
-    document.getElementById('detailCarousel').addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-    document.getElementById('detailCarousel').addEventListener('touchend', e => {
-      touchEndX = e.changedTouches[0].screenX;
-      const diff = touchStartX - touchEndX;
-      const totalSlides = document.querySelectorAll('.carousel-slide').length;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0 && currentCarouselIndex < totalSlides - 1) goToSlide(currentCarouselIndex + 1);
-        else if (diff < 0 && currentCarouselIndex > 0) goToSlide(currentCarouselIndex - 1);
+    function calculateAverageRating(userId) {
+      const allReviews = loadReviews();
+      const userReviews = allReviews[userId] || [];
+      if (userReviews.length === 0) return 0;
+      return userReviews.reduce((acc, rev) => acc + rev.rating, 0) / userReviews.length;
+    }
+
+    function updateProfileStars(userId, containerId) {
+      const avg = calculateAverageRating(userId);
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const stars = container.querySelectorAll('svg');
+      stars.forEach((star, index) => {
+        const starNum = index + 1;
+        if (starNum <= Math.floor(avg)) { star.classList.add('filled'); star.classList.remove('half-filled'); }
+        else if (starNum === Math.ceil(avg) && (avg % 1) >= 0.25 && (avg % 1) <= 0.75) { star.classList.remove('filled'); star.classList.add('half-filled'); }
+        else { star.classList.remove('filled'); star.classList.remove('half-filled'); }
+      });
+    }
+
+    function openReviewsModal(userId, userName) {
+      currentReviewUserId = userId;
+      currentReviewRating = 0;
+      document.getElementById('reviewsUserName').textContent = userName || 'Пользователь';
+      const modal = document.getElementById('reviewsModal');
+      const list = document.getElementById('reviewsList');
+      hideReviewForm();
+      
+      const allReviews = loadReviews();
+      const userReviews = allReviews[userId] || [];
+      list.innerHTML = '';
+      if (userReviews.length === 0) { list.innerHTML = '<div class="empty-state" style="position:relative;transform:none;"><div class="empty-state-text">Пока нет отзывов</div></div>'; }
+      else {
+        userReviews.sort((a, b) => b.timestamp - a.timestamp).forEach(review => {
+          const date = new Date(review.timestamp).toLocaleDateString('ru-RU');
+          let starsHtml = '';
+          for(let i=0; i<MAX_RATING; i++) starsHtml += `<svg viewBox="0 0 24 24" style="${i < review.rating ? 'fill:var(--star-filled)' : 'fill:var(--star-empty)'}"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>`;
+          
+          const isMyReview = review.authorId === currentUser.id;
+          const wrapper = document.createElement('div'); wrapper.className = 'review-item-wrapper';
+          const deleteBg = document.createElement('div'); deleteBg.className = 'review-delete-bg';
+          deleteBg.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+          
+          const item = document.createElement('div'); item.className = 'review-item';
+          let optionsHtml = isMyReview ? `<button class="review-options-btn" onclick="showReviewOptions('${review.id}', this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg></button>` : '';
+          item.innerHTML = `<div class="review-header-row"><div class="review-author-block"><span class="review-author">${escapeHtml(review.author)}</span><span class="review-date">${date}</span></div>${optionsHtml}</div><div class="review-stars">${starsHtml}</div><div class="review-text">${escapeHtml(review.text)}</div>`;
+          
+          const deleteBtn = document.createElement('button'); deleteBtn.className = 'review-delete-btn';
+          deleteBtn.onclick = (e) => { e.stopPropagation(); deleteReview(review.id, userId); };
+          
+          wrapper.appendChild(deleteBg); wrapper.appendChild(item); wrapper.appendChild(deleteBtn); list.appendChild(wrapper);
+          if (isMyReview) initReviewSwipe(item, wrapper, deleteBg, deleteBtn);
+        });
       }
-    }, { passive: true });
+      modal.classList.add('active');
+      hideBottomNav();
+      updateTelegramBackButton();
+    }
 
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        if (window.innerHeight - window.visualViewport.height > 150) {
-           hideBottomNav();
+    function showReviewOptions(reviewId, btn) {
+      const wrapper = btn.closest('.review-item-wrapper');
+      const item = wrapper.querySelector('.review-item');
+      const deleteBg = wrapper.querySelector('.review-delete-bg');
+      const deleteBtn = wrapper.querySelector('.review-delete-btn');
+      item.style.transform = `translateX(-80px)`;
+      deleteBg.classList.add('visible');
+      deleteBtn.classList.add('visible');
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function initReviewSwipe(item, wrapper, deleteBg, deleteBtn) {
+      let startX = 0, currentX = 0, isSwiping = false, deleteWidth = 80;
+      item.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; currentX = startX; isSwiping = true; item.classList.add('swiping'); }, { passive: true });
+      item.addEventListener('touchmove', (e) => { if (!isSwiping) return; const touchX = e.touches[0].clientX; const diff = startX - touchX; if (diff > 0) { currentX = touchX; item.style.transform = `translateX(-${Math.min(diff, deleteWidth)}px)`; } }, { passive: true });
+      item.addEventListener('touchend', (e) => { if (!isSwiping) return; isSwiping = false; item.classList.remove('swiping'); const diff = startX - currentX; if (diff > deleteWidth / 2) { item.style.transform = `translateX(-${deleteWidth}px)`; deleteBg.classList.add('visible'); deleteBtn.classList.add('visible'); } else { item.style.transform = 'translateX(0)'; deleteBg.classList.remove('visible'); deleteBtn.classList.remove('visible'); } });
+    }
+
+    function deleteReview(reviewId, userId) {
+      if (confirm('Удалить этот отзыв?')) {
+        const allReviews = loadReviews();
+        if (allReviews[userId]) {
+          allReviews[userId] = allReviews[userId].filter(r => r.id !== reviewId);
+          saveReviews(allReviews);
+          openReviewsModal(userId, document.getElementById('reviewsUserName').textContent);
+          updateProfileStars(userId, userId === currentUser.id ? 'myProfileStars' : 'otherProfileStars');
+        }
+      }
+    }
+
+    function closeReviewsModal() {
+      document.getElementById('reviewsModal').classList.remove('active');
+      showBottomNav();
+      updateTelegramBackButton();
+      updateProfileStars(currentUser.id, 'myProfileStars');
+    }
+
+    function showReviewForm() { document.getElementById('reviewInputArea').style.display = 'flex'; hideBottomNav(); }
+    function hideReviewForm() { document.getElementById('reviewInputArea').style.display = 'none'; }
+    function setReviewRating(rating) { currentReviewRating = rating; updateStarSelector(rating); checkReviewForm(); if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); }
+    function updateStarSelector(rating) { const stars = document.querySelectorAll('#reviewStarSelector svg'); stars.forEach((star, index) => { if (index < rating) star.classList.add('active'); else star.classList.remove('active'); }); }
+    function checkReviewForm() { const text = document.getElementById('reviewTextarea').value.trim(); const btn = document.getElementById('sendReviewBtn'); if (text.length > 0 && currentReviewRating > 0) btn.classList.add('active'); else btn.classList.remove('active'); }
+    function submitReview() {
+      if (!currentReviewUserId || currentReviewRating === 0) return;
+      const text = document.getElementById('reviewTextarea').value.trim();
+      if (!text) return;
+      const allReviews = loadReviews();
+      if (!allReviews[currentReviewUserId]) allReviews[currentReviewUserId] = [];
+      allReviews[currentReviewUserId].push({ id: 'rev_' + Date.now(), authorId: currentUser.id, author: currentUser.firstName, rating: currentReviewRating, text: text, timestamp: Date.now() });
+      saveReviews(allReviews);
+      hideReviewForm();
+      openReviewsModal(currentReviewUserId, document.getElementById('reviewsUserName').textContent);
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    }
+
+    // --- SWIPE DOWN TO CLOSE LOGIC ---
+    function initSwipeDownToClose(modalId, contentId, onCloseCallback) {
+      const modal = document.getElementById(modalId);
+      const content = document.getElementById(contentId);
+      let startY = 0;
+      let currentY = 0;
+      let isDragging = false;
+
+      content.addEventListener('touchstart', (e) => {
+        if (content.scrollTop === 0) {
+          startY = e.touches[0].clientY;
+          isDragging = true;
+          content.style.transition = 'none';
+        }
+      }, { passive: true });
+
+      content.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+        if (diff > 0) {
+          content.style.transform = `translateY(${diff}px)`;
+        }
+      }, { passive: true });
+
+      content.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const diff = currentY - startY;
+        content.style.transition = 'transform 0.3s ease';
+        
+        if (diff > 100) {
+          content.style.transform = `translateY(100%)`;
+          setTimeout(() => {
+            onCloseCallback();
+            content.style.transform = '';
+          }, 300);
         } else {
-           if (!document.getElementById('createModal').classList.contains('active')) {
-             showBottomNav();
-           }
+          content.style.transform = 'translateY(0)';
         }
       });
     }
 
-    // Инициализация стека
+    // Initialize Swipe Down for Modals
+    initSwipeDownToClose('createModal', 'createModalContent', closeCreateModal);
+    initSwipeDownToClose('reviewsModal', 'reviewsWrapper', closeReviewsModal);
+    // For Detail Modal, we swipe the whole modal or main content? Let's swipe the modal itself if it was a sheet, but it's full screen.
+    // The request said "pull down this area to close". Since detail is full screen, usually you swipe from top edge.
+    // Let's implement swipe on the detail-modal itself for consistency with "pull down to close" behavior on full screens.
+    let detailStartY = 0;
+    let detailIsDragging = false;
+    const detailModal = document.getElementById('detailModal');
+    detailModal.addEventListener('touchstart', (e) => {
+       // Only allow swipe if at top of scroll
+       if (detailModal.scrollTop === 0 && e.touches[0].clientY < 100) {
+         detailStartY = e.touches[0].clientY;
+         detailIsDragging = true;
+         detailModal.style.transition = 'none';
+       }
+    }, {passive: true});
+    detailModal.addEventListener('touchmove', (e) => {
+       if(!detailIsDragging) return;
+       const diff = e.touches[0].clientY - detailStartY;
+       if(diff > 0) detailModal.style.transform = `translateY(${diff}px)`;
+    }, {passive: true});
+    detailModal.addEventListener('touchend', (e) => {
+       if(!detailIsDragging) return;
+       detailIsDragging = false;
+       detailModal.style.transition = 'transform 0.3s ease';
+       const diff = e.changedTouches[0].clientY - detailStartY;
+       if(diff > 100) {
+         detailModal.style.transform = `translateY(100%)`;
+         setTimeout(() => { goBack(); detailModal.style.transform = ''; }, 300);
+       } else {
+         detailModal.style.transform = 'translateY(0)';
+       }
+    });
+
+
+    // --- INITIALIZATION ---
     navStack = ['home'];
     updateTelegramBackButton();
-
     setRandomSearchPlaceholder();
     renderAds();
     renderMyAds();
-    
-    // Initial star render
     updateProfileStars(currentUser.id, 'myProfileStars');
   </script>
 </body>
 </html>
-
