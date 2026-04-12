@@ -1122,34 +1122,130 @@
 
     .reviews-header { 
       display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
+      flex-direction: column;
+      align-items: center;
       margin-bottom: 20px; 
+      text-align: center;
     }
     
     .reviews-title { 
-      font-size: 20px; 
-      font-weight: 700; 
+      font-size: 24px; 
+      font-weight: 800; 
       color: var(--text-primary); 
+      margin-bottom: 4px;
     }
 
+    .reviews-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
     .reviews-list {
       flex: 1;
       overflow-y: auto;
       margin-bottom: 16px;
+      padding-right: 4px; /* Space for scrollbar */
+    }
+    
+    .review-item-wrapper {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 12px;
+      border-radius: 12px;
+    }
+    
+    .review-delete-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 80px;
+      background: rgba(255, 59, 48, 0.85);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .review-delete-bg.visible {
+      opacity: 1;
+    }
+    
+    .review-delete-bg svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    
+    .review-delete-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 80px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
+      display: none;
+    }
+    
+    .review-delete-btn.visible {
+      display: block;
     }
     
     .review-item {
       background: var(--bg-secondary);
       padding: 12px;
       border-radius: 12px;
-      margin-bottom: 12px;
+      position: relative;
+      z-index: 2;
+      transition: transform 0.2s ease-out;
+      touch-action: pan-y;
     }
-    .review-header {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+    
+    .review-item.swiping {
+      transition: none;
     }
-    .review-author { font-weight: 600; font-size: 14px; }
-    .review-date { font-size: 12px; color: var(--text-secondary); }
+
+    .review-header-row {
+      display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;
+    }
+    .review-author-block {
+      display: flex;
+      flex-direction: column;
+    }
+    .review-author { font-weight: 600; font-size: 14px; color: var(--text-primary); }
+    .review-date { font-size: 12px; color: var(--text-secondary); margin-top: 2px;}
+    
+    .review-options-btn {
+      background: transparent;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      margin-left: 8px;
+      margin-top: -4px;
+      margin-right: -4px;
+    }
+    .review-options-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+    
     .review-stars { display: flex; gap: 2px; margin-bottom: 6px; }
     .review-stars svg { width: 14px; height: 14px; fill: var(--star-filled); }
     .review-text { font-size: 14px; line-height: 1.4; color: var(--text-primary); }
@@ -1158,10 +1254,10 @@
       background: transparent;
     }
     .review-star-selector {
-      display: flex; justify-content: center; gap: 8px; margin-bottom: 12px;
+      display: flex; justify-content: center; gap: 12px; margin-bottom: 12px;
     }
     .review-star-selector svg {
-      width: 32px; height: 32px; fill: var(--star-empty); cursor: pointer; transition: transform 0.2s;
+      width: 36px; height: 36px; fill: var(--star-empty); cursor: pointer; transition: transform 0.2s;
     }
     .review-star-selector svg.active { fill: var(--star-filled); transform: scale(1.1); }
     .review-star-selector svg:active { transform: scale(0.9); }
@@ -1502,7 +1598,7 @@
           <!-- SVG Звезды с надписью Рейтинг -->
           <div class="profile-rating" id="profileRating">
              <span class="rating-label-btn" onclick="openReviewsModal(currentUser.id, currentUser.firstName)">Рейтинг</span>
-             <div class="stars-container">
+             <div class="stars-container" id="myProfileStars">
                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -1531,7 +1627,7 @@
         <!-- SVG Звезды с надписью Рейтинг -->
         <div class="profile-rating" id="otherProfileRating">
            <span class="rating-label-btn" id="otherProfileRatingBtn">Рейтинг</span>
-           <div class="stars-container">
+           <div class="stars-container" id="otherProfileStars">
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -1554,7 +1650,8 @@
     <div class="reviews-content-wrapper">
       <div class="reviews-header">
         <span class="reviews-title">Отзывы</span>
-        <button class="modal-close" onclick="closeReviewsModal()">
+        <span class="reviews-subtitle" id="reviewsUserName">Пользователь</span>
+        <button class="modal-close" onclick="closeReviewsModal()" style="position:absolute; right:16px; top:16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -1569,8 +1666,6 @@
           <svg onclick="setReviewRating(1)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
           <svg onclick="setReviewRating(2)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
           <svg onclick="setReviewRating(3)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-          <svg onclick="setReviewRating(4)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-          <svg onclick="setReviewRating(5)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
         </div>
         <textarea class="review-textarea" id="reviewTextarea" placeholder="Напишите отзыв..." oninput="checkReviewForm()"></textarea>
         <button class="send-review-btn" id="sendReviewBtn" onclick="submitReview()">Отправить отзыв</button>
@@ -2628,10 +2723,40 @@
     // --- REVIEWS LOGIC ---
     let currentReviewUserId = null;
     let currentReviewRating = 0;
+    const MAX_RATING = 3; // Максимум 3 звезды
+
+    function calculateAverageRating(userId) {
+      const allReviews = loadReviews();
+      const userReviews = allReviews[userId] || [];
+      if (userReviews.length === 0) return 0;
+      
+      const sum = userReviews.reduce((acc, rev) => acc + rev.rating, 0);
+      return sum / userReviews.length;
+    }
+
+    function updateProfileStars(userId, containerId) {
+      const avg = calculateAverageRating(userId);
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      
+      const stars = container.querySelectorAll('svg');
+      stars.forEach((star, index) => {
+        // Индекс начинается с 0, рейтинг с 1.
+        // Если avg = 2.5, то star 0 (1) filled, star 1 (2) filled, star 2 (3) empty.
+        if (index < Math.round(avg)) {
+          star.classList.add('filled');
+        } else {
+          star.classList.remove('filled');
+        }
+      });
+    }
 
     function openReviewsModal(userId, userName) {
       currentReviewUserId = userId;
       currentReviewRating = 0;
+      
+      // Update Header Name
+      document.getElementById('reviewsUserName').textContent = userName || 'Пользователь';
       
       const modal = document.getElementById('reviewsModal');
       const list = document.getElementById('reviewsList');
@@ -2655,21 +2780,68 @@
         userReviews.sort((a, b) => b.timestamp - a.timestamp).forEach(review => {
           const date = new Date(review.timestamp).toLocaleDateString('ru-RU');
           let starsHtml = '';
-          for(let i=0; i<5; i++) {
+          // Render only 3 stars max in list as well to match input
+          for(let i=0; i<MAX_RATING; i++) {
             starsHtml += `<svg viewBox="0 0 24 24" style="${i < review.rating ? 'fill:var(--star-filled)' : 'fill:var(--star-empty)'}"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>`;
           }
           
+          const isMyReview = review.authorId === currentUser.id;
+          
+          const wrapper = document.createElement('div');
+          wrapper.className = 'review-item-wrapper';
+          
+          const deleteBg = document.createElement('div');
+          deleteBg.className = 'review-delete-bg';
+          deleteBg.innerHTML = `
+            <svg viewBox="0 0 24 24">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          `;
+          
           const item = document.createElement('div');
           item.className = 'review-item';
+          
+          let optionsHtml = '';
+          if (isMyReview) {
+            optionsHtml = `
+              <button class="review-options-btn" onclick="showReviewOptions('${review.id}', this)">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+              </button>
+            `;
+          }
+          
           item.innerHTML = `
-            <div class="review-header">
-              <span class="review-author">${escapeHtml(review.author)}</span>
-              <span class="review-date">${date}</span>
+            <div class="review-header-row">
+              <div class="review-author-block">
+                <span class="review-author">${escapeHtml(review.author)}</span>
+                <span class="review-date">${date}</span>
+              </div>
+              ${optionsHtml}
             </div>
             <div class="review-stars">${starsHtml}</div>
             <div class="review-text">${escapeHtml(review.text)}</div>
           `;
-          list.appendChild(item);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'review-delete-btn';
+          deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteReview(review.id, userId);
+          };
+          
+          wrapper.appendChild(deleteBg);
+          wrapper.appendChild(item);
+          wrapper.appendChild(deleteBtn);
+          list.appendChild(wrapper);
+          
+          if (isMyReview) {
+            initReviewSwipe(item, wrapper, deleteBg, deleteBtn);
+          }
         });
       }
       
@@ -2677,9 +2849,87 @@
       updateTelegramBackButton();
     }
 
+    function showReviewOptions(reviewId, btn) {
+      // Find wrapper
+      const wrapper = btn.closest('.review-item-wrapper');
+      const item = wrapper.querySelector('.review-item');
+      const deleteBg = wrapper.querySelector('.review-delete-bg');
+      const deleteBtn = wrapper.querySelector('.review-delete-btn');
+      
+      // Animate swipe
+      item.style.transform = `translateX(-80px)`;
+      deleteBg.classList.add('visible');
+      deleteBtn.classList.add('visible');
+      
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function initReviewSwipe(item, wrapper, deleteBg, deleteBtn) {
+      let startX = 0;
+      let currentX = 0;
+      let isSwiping = false;
+      const deleteWidth = 80;
+      
+      item.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        currentX = startX;
+        isSwiping = true;
+        item.classList.add('swiping');
+      }, { passive: true });
+      
+      item.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        const touchX = e.touches[0].clientX;
+        const diff = startX - touchX;
+        if (diff > 0) {
+          currentX = touchX;
+          const translateX = Math.min(diff, deleteWidth);
+          item.style.transform = `translateX(-${translateX}px)`;
+        }
+      }, { passive: true });
+      
+      item.addEventListener('touchend', (e) => {
+        if (!isSwiping) return;
+        isSwiping = false;
+        item.classList.remove('swiping');
+        
+        const diff = startX - currentX;
+        
+        if (diff > deleteWidth / 2) {
+          item.style.transform = `translateX(-${deleteWidth}px)`;
+          deleteBg.classList.add('visible');
+          deleteBtn.classList.add('visible');
+        } else {
+          item.style.transform = 'translateX(0)';
+          deleteBg.classList.remove('visible');
+          deleteBtn.classList.remove('visible');
+        }
+      });
+    }
+
+    function deleteReview(reviewId, userId) {
+      if (confirm('Удалить этот отзыв?')) {
+        const allReviews = loadReviews();
+        if (allReviews[userId]) {
+          allReviews[userId] = allReviews[userId].filter(r => r.id !== reviewId);
+          saveReviews(allReviews);
+          openReviewsModal(userId, document.getElementById('reviewsUserName').textContent);
+          // Update stars in background
+          if (userId === currentUser.id) {
+            updateProfileStars(userId, 'myProfileStars');
+          } else {
+             // If we are viewing other profile, we might need to update it too, but it's hidden behind modal
+          }
+          if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        }
+      }
+    }
+
     function closeReviewsModal() {
       document.getElementById('reviewsModal').classList.remove('active');
       updateTelegramBackButton();
+      // Refresh stars when closing modal
+      updateProfileStars(currentUser.id, 'myProfileStars');
     }
 
     function setReviewRating(rating) {
@@ -2718,6 +2968,7 @@
       
       const newReview = {
         id: 'rev_' + Date.now(),
+        authorId: currentUser.id,
         author: currentUser.firstName,
         rating: currentReviewRating,
         text: text,
@@ -2728,7 +2979,7 @@
       saveReviews(allReviews);
       
       // Refresh list
-      openReviewsModal(currentReviewUserId, ''); // Keep same user
+      openReviewsModal(currentReviewUserId, document.getElementById('reviewsUserName').textContent);
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
     // --- END REVIEWS LOGIC ---
@@ -3171,6 +3422,9 @@
     setRandomSearchPlaceholder();
     renderAds();
     renderMyAds();
+    
+    // Initial star render
+    updateProfileStars(currentUser.id, 'myProfileStars');
   </script>
 </body>
 </html>
