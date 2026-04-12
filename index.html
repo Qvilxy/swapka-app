@@ -29,6 +29,7 @@
       --header-height: 102px;
       --danger-color: #FF3B30;
       --rating-blue: #007AFF;
+      --btn-blue: #007AFF;
     }
 
     .dark-theme {
@@ -52,6 +53,7 @@
       --star-empty: #48484a;
       --star-filled: #FFD60A;
       --rating-blue: #0A84FF;
+      --btn-blue: #0A84FF;
     }
 
     * {
@@ -873,6 +875,10 @@
     .profile-rating svg.filled {
       fill: var(--star-filled);
     }
+    /* Для половинчатой звезды */
+    .profile-rating svg.half-filled {
+       fill: url(#half-star-gradient);
+    }
 
     .create-ad-btn {
       display: block; margin: 0 auto 20px; padding: 14px 15px; width: fit-content; min-width: 200px;
@@ -1146,13 +1152,20 @@
       overflow-y: auto;
       margin-bottom: 16px;
       padding-right: 4px; /* Space for scrollbar */
+      /* Скрываем скроллбар, но оставляем функционал */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE 10+ */
+    }
+    .reviews-list::-webkit-scrollbar { 
+      width: 0px;
+      background: transparent; /* Chrome/Safari/Webkit */
     }
     
     .review-item-wrapper {
       position: relative;
       overflow: hidden;
       margin-bottom: 12px;
-      border-radius: 100px; /* ИЗМЕНЕНИЕ: Скругление 100 */
+      border-radius: 20px; /* ИЗМЕНЕНИЕ: Скругление 20 */
     }
     
     .review-delete-bg {
@@ -1162,7 +1175,7 @@
       bottom: 0;
       width: 80px;
       background: rgba(255, 59, 48, 0.85);
-      border-radius: 100px; /* ИЗМЕНЕНИЕ: Скругление 100 */
+      border-radius: 20px; /* ИЗМЕНЕНИЕ: Скругление 20 */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1206,7 +1219,7 @@
     .review-item {
       background: var(--bg-secondary);
       padding: 14px 20px; /* Увеличены отступы */
-      border-radius: 100px; /* ИЗМЕНЕНИЕ: Скругление 100 */
+      border-radius: 20px; /* ИЗМЕНЕНИЕ: Скругление 20 */
       position: relative;
       z-index: 2;
       transition: transform 0.2s ease-out;
@@ -1260,6 +1273,9 @@
       margin-left: 8px;
       margin-right: -4px;
       flex-shrink: 0;
+      /* Центрирование по вертикали */
+      align-self: center;
+      height: 24px;
     }
     .review-options-btn svg {
       width: 20px;
@@ -1268,7 +1284,11 @@
     }
     
     .review-stars { display: flex; gap: 3px; margin-bottom: 6px; }
-    .review-stars svg { width: 16px; height: 16px; fill: var(--star-filled); }
+    .review-stars svg { 
+      width: 24px; /* ИЗМЕНЕНИЕ: 1.5x от 16px */
+      height: 24px; 
+      fill: var(--star-filled); 
+    }
     .review-text { font-size: 14px; line-height: 1.4; color: var(--text-primary); }
     
     .review-input-area {
@@ -1293,15 +1313,17 @@
     .review-textarea:focus { border-color: var(--icon-active); }
     
     .send-review-btn {
-      width: 100%; padding: 16px; background: #000000; color: #ffffff;
+      width: 100%; padding: 16px; 
+      background: var(--btn-blue); /* ИЗМЕНЕНИЕ: Голубой цвет */
+      color: #ffffff;
       border: none; border-radius: 100px; font-weight: 700; font-size: 17px;
       cursor: pointer; opacity: 0.5; pointer-events: none; transition: opacity 0.2s;
       font-family: inherit;
     }
     
     .dark-theme .send-review-btn {
-        background: #ffffff;
-        color: #000000;
+        background: var(--btn-blue); /* ИЗМЕНЕНИЕ: Голубой цвет */
+        color: #ffffff;
     }
 
     .send-review-btn.active { opacity: 1; pointer-events: auto; }
@@ -1554,6 +1576,16 @@
 </head>
 <body>
 
+  <!-- SVG Definitions for Half Star -->
+  <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="half-star-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="50%" style="stop-color:var(--star-filled);stop-opacity:1" />
+        <stop offset="50%" style="stop-color:var(--star-empty);stop-opacity:1" />
+      </linearGradient>
+    </defs>
+  </svg>
+
   <!-- ГЛОБАЛЬНАЯ ШАПКА -->
   <div class="app-header">
     <img src="logos.png" alt="Swapka Logo" class="header-logo">
@@ -1682,14 +1714,25 @@
       <div class="reviews-list" id="reviewsList">
         <!-- Отзывы будут здесь -->
       </div>
-      <div class="review-input-area">
-        <div class="review-star-selector" id="reviewStarSelector">
-          <svg onclick="setReviewRating(1)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-          <svg onclick="setReviewRating(2)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-          <svg onclick="setReviewRating(3)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-        </div>
-        <textarea class="review-textarea" id="reviewTextarea" placeholder="Напишите отзыв..." oninput="checkReviewForm()"></textarea>
-        <button class="send-review-btn" id="sendReviewBtn" onclick="submitReview()">Отправить отзыв</button>
+      
+      <!-- КНОПКА ДЛЯ ОТКРЫТИЯ ФОРМЫ ОТЗЫВА -->
+      <button class="send-review-btn active" id="openReviewFormBtn" onclick="showReviewForm()" style="margin-top: 10px;">Написать отзыв</button>
+
+      <!-- ФОРМА ОТЗЫВА (СКРЫТА ПО УМОЛЧАНИЮ) -->
+      <div class="review-input-area" id="reviewInputArea" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 310; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+         <div style="background: var(--bg-primary); width: 90%; max-width: 350px; padding: 20px; border-radius: 20px; display: flex; flex-direction: column; align-items: center;">
+            <h3 style="margin-bottom: 15px; color: var(--text-primary);">Ваша оценка</h3>
+            <div class="review-star-selector" id="reviewStarSelector">
+              <svg onclick="setReviewRating(1)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+              <svg onclick="setReviewRating(2)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+              <svg onclick="setReviewRating(3)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+            </div>
+            <textarea class="review-textarea" id="reviewTextarea" placeholder="Напишите отзыв (макс. 250 симв.)..." maxlength="250" oninput="checkReviewForm()"></textarea>
+            <div style="display: flex; gap: 10px; width: 100%;">
+               <button onclick="hideReviewForm()" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); font-weight: 600;">Отмена</button>
+               <button class="send-review-btn" id="sendReviewBtn" onclick="submitReview()" style="flex: 1; margin: 0; padding: 12px;">Создать</button>
+            </div>
+         </div>
       </div>
     </div>
   </div>
@@ -1924,7 +1967,11 @@
 
     // Инициализация кнопки Назад Telegram
     tg.BackButton.onClick(() => {
-      // Если открыто модальное окно отзывов, закрываем его
+      // Если открыто модальное окно отзывов или форма отзыва, закрываем их
+      if (document.getElementById('reviewInputArea').style.display === 'flex') {
+        hideReviewForm();
+        return;
+      }
       if (document.getElementById('reviewsModal').classList.contains('active')) {
         closeReviewsModal();
         return;
@@ -2330,6 +2377,9 @@
       if(ratingBtn) {
         ratingBtn.onclick = () => openReviewsModal(userData.id, userData.name);
       }
+      
+      // Обновляем звезды рейтинга для другого пользователя
+      updateProfileStars(userData.id, 'otherProfileStars');
       
       // Получаем активные объявления пользователя
       const userAds = ads.filter(ad => ad.userId === userData.id);
@@ -2762,12 +2812,25 @@
       
       const stars = container.querySelectorAll('svg');
       stars.forEach((star, index) => {
-        // Индекс начинается с 0, рейтинг с 1.
-        // Если avg = 2.5, то star 0 (1) filled, star 1 (2) filled, star 2 (3) empty.
-        if (index < Math.round(avg)) {
-          star.classList.add('filled');
+        // Индекс начинается с 0.
+        // Полная звезда: index < floor(avg)
+        // Половинчатая звезда: index == floor(avg) и дробная часть >= 0.25 и <= 0.75 (примерно)
+        // Пустая звезда: иначе
+        
+        const starNum = index + 1;
+        
+        if (starNum <= Math.floor(avg)) {
+           // Полностью закрашена
+           star.classList.add('filled');
+           star.classList.remove('half-filled');
+        } else if (starNum === Math.ceil(avg) && (avg % 1) >= 0.25 && (avg % 1) <= 0.75) {
+           // Половинчатая (для диапазона типа 2.25 - 2.75)
+           star.classList.remove('filled');
+           star.classList.add('half-filled');
         } else {
-          star.classList.remove('filled');
+           // Пустая
+           star.classList.remove('filled');
+           star.classList.remove('half-filled');
         }
       });
     }
@@ -2781,13 +2844,9 @@
       
       const modal = document.getElementById('reviewsModal');
       const list = document.getElementById('reviewsList');
-      const textarea = document.getElementById('reviewTextarea');
-      const sendBtn = document.getElementById('sendReviewBtn');
       
-      // Reset form
-      textarea.value = '';
-      sendBtn.classList.remove('active');
-      updateStarSelector(0);
+      // Reset form visibility
+      hideReviewForm();
       
       // Load reviews
       const allReviews = loadReviews();
@@ -2941,6 +3000,7 @@
             updateProfileStars(userId, 'myProfileStars');
           } else {
              // If we are viewing other profile, we might need to update it too, but it's hidden behind modal
+             updateProfileStars(userId, 'otherProfileStars');
           }
           if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
         }
@@ -2953,6 +3013,17 @@
       updateTelegramBackButton();
       // Refresh stars when closing modal
       updateProfileStars(currentUser.id, 'myProfileStars');
+    }
+
+    // --- NEW REVIEW FORM LOGIC ---
+    function showReviewForm() {
+      document.getElementById('reviewInputArea').style.display = 'flex';
+      hideBottomNav(); // Ensure nav stays hidden
+    }
+
+    function hideReviewForm() {
+      document.getElementById('reviewInputArea').style.display = 'none';
+      // Don't show bottom nav here, because we are still inside the reviews modal
     }
 
     function setReviewRating(rating) {
@@ -3000,6 +3071,9 @@
       
       allReviews[currentReviewUserId].push(newReview);
       saveReviews(allReviews);
+      
+      // Hide form
+      hideReviewForm();
       
       // Refresh list
       openReviewsModal(currentReviewUserId, document.getElementById('reviewsUserName').textContent);
