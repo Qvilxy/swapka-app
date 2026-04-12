@@ -1152,7 +1152,7 @@
       position: relative;
       overflow: hidden;
       margin-bottom: 12px;
-      border-radius: 12px;
+      border-radius: 100px; /* ИЗМЕНЕНИЕ: Скругление 100 */
     }
     
     .review-delete-bg {
@@ -1162,7 +1162,7 @@
       bottom: 0;
       width: 80px;
       background: rgba(255, 59, 48, 0.85);
-      border-radius: 12px;
+      border-radius: 100px; /* ИЗМЕНЕНИЕ: Скругление 100 */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1205,12 +1205,14 @@
     
     .review-item {
       background: var(--bg-secondary);
-      padding: 12px;
-      border-radius: 12px;
+      padding: 14px 20px; /* Увеличены отступы */
+      border-radius: 100px; /* ИЗМЕНЕНИЕ: Скругление 100 */
       position: relative;
       z-index: 2;
       transition: transform 0.2s ease-out;
       touch-action: pan-y;
+      display: flex;
+      flex-direction: column;
     }
     
     .review-item.swiping {
@@ -1218,14 +1220,33 @@
     }
 
     .review-header-row {
-      display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 4px;
+      width: 100%;
     }
     .review-author-block {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
     }
-    .review-author { font-weight: 600; font-size: 14px; color: var(--text-primary); }
-    .review-date { font-size: 12px; color: var(--text-secondary); margin-top: 2px;}
+    .review-author { 
+      font-weight: 700; 
+      font-size: 15px; 
+      color: var(--text-primary); 
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .review-date { 
+      font-size: 13px; 
+      color: var(--text-secondary); 
+      white-space: nowrap;
+    }
     
     .review-options-btn {
       background: transparent;
@@ -1237,8 +1258,8 @@
       justify-content: center;
       color: var(--text-secondary);
       margin-left: 8px;
-      margin-top: -4px;
       margin-right: -4px;
+      flex-shrink: 0;
     }
     .review-options-btn svg {
       width: 20px;
@@ -1246,8 +1267,8 @@
       fill: currentColor;
     }
     
-    .review-stars { display: flex; gap: 2px; margin-bottom: 6px; }
-    .review-stars svg { width: 14px; height: 14px; fill: var(--star-filled); }
+    .review-stars { display: flex; gap: 3px; margin-bottom: 6px; }
+    .review-stars svg { width: 16px; height: 16px; fill: var(--star-filled); }
     .review-text { font-size: 14px; line-height: 1.4; color: var(--text-primary); }
     
     .review-input-area {
@@ -2846,6 +2867,7 @@
       }
       
       modal.classList.add('active');
+      hideBottomNav(); // ИЗМЕНЕНИЕ: Прячем навигацию
       updateTelegramBackButton();
     }
 
@@ -2927,6 +2949,7 @@
 
     function closeReviewsModal() {
       document.getElementById('reviewsModal').classList.remove('active');
+      showBottomNav(); // ИЗМЕНЕНИЕ: Показываем навигацию
       updateTelegramBackButton();
       // Refresh stars when closing modal
       updateProfileStars(currentUser.id, 'myProfileStars');
@@ -2968,7 +2991,7 @@
       
       const newReview = {
         id: 'rev_' + Date.now(),
-        authorId: currentUser.id,
+        authorId: currentUser.id, // ИЗМЕНЕНИЕ: Сохраняем ID автора
         author: currentUser.firstName,
         rating: currentReviewRating,
         text: text,
