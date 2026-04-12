@@ -28,9 +28,10 @@
       --star-filled: #FFD60A;
       --header-height: 102px;
       --danger-color: #FF3B30;
+      --warning-color: #FF9500; /* Orange for complaint */
       --rating-blue: #007AFF;
       --btn-blue: #007AFF;
-      --favorite-color: #FF2D55; /* Розовый для избранного */
+      --favorite-color: #FF2D55;
       --toast-green: #34C759;
     }
 
@@ -57,6 +58,7 @@
       --rating-blue: #0A84FF;
       --btn-blue: #0A84FF;
       --favorite-color: #FF375F;
+      --warning-color: #FF9F0A;
       --toast-green: #30D158;
     }
 
@@ -1040,6 +1042,7 @@
       background: rgba(0,0,0,0.5); z-index: 200; display: none;
       align-items: flex-end; justify-content: center;
       backdrop-filter: blur(5px);
+      /* Removed pointer-events: none to allow blocking clicks, but we won't close on click */
     }
     .modal-overlay.active { display: flex; }
     .modal-content {
@@ -1048,7 +1051,6 @@
       padding-bottom: max(20px, env(safe-area-inset-bottom));
       overflow-y: auto; animation: slideUp 0.3s ease;
       position: relative;
-      /* For swipe down logic */
       touch-action: pan-y; 
     }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -1056,8 +1058,6 @@
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .modal-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
     
-    /* Removed close button styles as requested */
-
     .form-group { margin-bottom: 16px; }
     .form-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block; }
     .form-input {
@@ -1158,23 +1158,39 @@
       top: 0;
       right: 0;
       bottom: 0;
-      width: 80px;
+      width: 140px; /* Wider for two buttons */
       background: rgba(255, 59, 48, 0.85);
       border-radius: 20px;
       display: flex;
-      flex-direction: column;
+      flex-direction: row; /* Horizontal layout for buttons */
       align-items: center;
       justify-content: center;
       z-index: 1;
       opacity: 0;
       transition: opacity 0.3s;
+      gap: 10px;
+      padding: 0 10px;
     }
     
     .review-delete-bg.visible {
       opacity: 1;
     }
     
-    .review-delete-bg svg {
+    .review-action-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      width: 50px;
+    }
+    
+    .review-action-btn svg {
       width: 24px;
       height: 24px;
       stroke: white;
@@ -1182,14 +1198,15 @@
       fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
+      margin-bottom: 4px;
     }
-    
+
     .review-delete-btn {
       position: absolute;
       top: 0;
       right: 0;
       bottom: 0;
-      width: 80px;
+      width: 140px;
       background: transparent;
       border: none;
       cursor: pointer;
@@ -1211,6 +1228,7 @@
       touch-action: pan-y;
       display: flex;
       flex-direction: column;
+      min-height: 80px; /* Ensure height for centering */
     }
     
     .review-item.swiping {
@@ -1258,8 +1276,13 @@
       margin-left: 8px;
       margin-right: -4px;
       flex-shrink: 0;
-      align-self: center; /* Center vertically */
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%); /* Center vertically */
       height: 24px;
+      width: 24px;
+      z-index: 4; /* Above content */
     }
     .review-options-btn svg {
       width: 20px;
@@ -1341,7 +1364,7 @@
       display: flex;
       justify-content: center;
       gap: 16px;
-      pointer-events: none; /* Let clicks pass through empty space */
+      pointer-events: none;
     }
 
     .action-circle-btn {
@@ -1373,13 +1396,11 @@
       fill: none;
     }
     
-    /* Favorite Heart Active State */
     .action-circle-btn.favorite-active svg {
       fill: var(--favorite-color);
       stroke: var(--favorite-color);
     }
 
-    /* Settings Gear Logic */
     .settings-gear-btn {
       width: 44px;
       height: 44px;
@@ -1391,7 +1412,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      position: relative; /* Changed from absolute for flex layout */
+      position: relative;
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 2;
     }
@@ -1409,7 +1430,6 @@
       fill: none;
     }
 
-    /* Actions Container for Edit/Delete */
     .settings-actions-container {
       position: absolute;
       top: 0;
@@ -1438,20 +1458,18 @@
       z-index: 1;
     }
 
-    /* Edit Button: Moves DOWN */
     .sub-action-btn.edit {
       background: #007AFF;
       color: white;
-      top: 55px; /* Move down */
+      top: 55px;
       right: 0;
     }
 
-    /* Delete Button: Moves RIGHT */
     .sub-action-btn.delete {
       background: var(--danger-color);
       color: white;
       top: 0;
-      right: -55px; /* Move right */
+      right: -55px;
     }
 
     .settings-gear-btn.active ~ .settings-actions-container .sub-action-btn {
@@ -1467,7 +1485,6 @@
       fill: none;
     }
 
-    /* Detail Content */
     .image-carousel { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: var(--bg-secondary); }
     .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
     .carousel-slide { min-width: 100%; height: 100%; }
@@ -1478,7 +1495,7 @@
     
     .detail-info { 
       padding: 20px 16px; 
-      padding-bottom: 100px; /* Space for bottom pill */
+      padding-bottom: 100px;
     }
     .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
     .detail-price { font-size: 24px; font-weight: 800; color: #ff6b35; margin-bottom: 8px; }
@@ -1491,7 +1508,6 @@
       white-space: pre-wrap;
     }
     
-    /* Bottom Seller Pill */
     .detail-seller-pill {
       position: fixed;
       bottom: 0;
@@ -1794,7 +1810,6 @@
       <div class="reviews-header">
         <span class="reviews-title">Отзывы</span>
         <span class="reviews-subtitle" id="reviewsUserName">Пользователь</span>
-        <!-- Close button removed as requested -->
       </div>
       <div class="reviews-list" id="reviewsList">
         <!-- Reviews here -->
@@ -1847,7 +1862,6 @@
       </div>
     </div>
     
-    <!-- New Chat Input Layout -->
     <div class="attached-photo-preview" id="attachedPhotoPreview" style="display:none;">
       <div class="attached-photo-thumb">
         <img id="attachedPhotoImg" src="" alt="">
@@ -1865,7 +1879,8 @@
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
         </button>
-        <input type="file" id="chatPhotoInput" accept="image/*" style="display:none;" onchange="handleChatPhotoSelect(event)">
+        <!-- Added multiple attribute -->
+        <input type="file" id="chatPhotoInput" accept="image/*" multiple style="display:none;" onchange="handleChatPhotoSelect(event)">
         
         <input type="text" class="chat-input" id="chatInput" placeholder="Написать...">
       </div>
@@ -1920,7 +1935,6 @@
     <div class="modal-content" id="createModalContent">
       <div class="modal-header">
         <span class="modal-title">Новое объявление</span>
-        <!-- Close button removed -->
       </div>
 
       <div class="form-group">
@@ -1948,7 +1962,6 @@
         <input type="text" class="form-input" id="adCity" placeholder="Введите город">
       </div>
 
-      <!-- NEW CATEGORY FIELD -->
       <div class="form-group">
         <label class="form-label">Категория</label>
         <select class="form-input" id="adCategory" style="appearance: none; -webkit-appearance: none;">
@@ -1973,16 +1986,13 @@
   <!-- AD DETAIL MODAL -->
   <div class="detail-modal" id="detailModal" data-screen-id="detail">
     
-    <!-- Top Action Buttons -->
     <div class="detail-top-actions">
-      <!-- Favorite -->
       <button class="action-circle-btn" id="btnFavorite" onclick="toggleFavorite()">
         <svg viewBox="0 0 24 24">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
       </button>
 
-      <!-- Share -->
       <button class="action-circle-btn" onclick="shareAd()">
         <svg viewBox="0 0 24 24">
           <circle cx="18" cy="5" r="3"></circle>
@@ -1993,7 +2003,6 @@
         </svg>
       </button>
 
-      <!-- Settings Gear (Only visible if owner) -->
       <div class="detail-settings-container" id="detailSettingsContainer" style="display:none; position:relative;">
         <button class="settings-gear-btn" id="settingsGearBtn" onclick="toggleSettingsMenu()">
           <svg viewBox="0 0 24 24">
@@ -2033,7 +2042,6 @@
       <div class="detail-desc" id="detailDesc"></div>
     </div>
 
-    <!-- Bottom Seller Pill -->
     <div class="detail-seller-pill">
       <div class="seller-info" onclick="openOtherProfileFromDetail()">
         <div class="detail-seller-avatar" id="detailSellerAvatar">👤</div>
@@ -2050,8 +2058,9 @@
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
+    
+    // Full screen logic
     tg.expand();
-
     if (window.innerWidth > 430) {
       document.body.style.width = '430px';
     } else {
@@ -2073,7 +2082,6 @@
     const REVIEWS_KEY = 'swapka_reviews';
     const FAVORITES_KEY = 'swapka_favorites';
 
-    // --- CLEAR OLD REVIEWS ---
     localStorage.removeItem(REVIEWS_KEY);
 
     // --- NAVIGATION STACK LOGIC ---
@@ -2652,13 +2660,11 @@
         document.getElementById('detailSellerAvatar').innerHTML = '👤';
       }
       
-      // Settings Gear Visibility
       const settingsContainer = document.getElementById('detailSettingsContainer');
       if (ad.userId === currentUser.id) settingsContainer.style.display = 'block';
       else settingsContainer.style.display = 'none';
       closeSettingsMenu();
 
-      // Favorite State
       updateFavoriteButtonState(ad.id);
 
       const track = document.getElementById('carouselTrack');
@@ -2709,12 +2715,11 @@
       const ad = window.currentAdData;
       if (!ad) return;
       
-      // Simulate copying link
       const dummyLink = `https://swapka.app/ad/${ad.id}`;
       navigator.clipboard.writeText(dummyLink).then(() => {
         showToast('Ссылка скопирована');
       }).catch(() => {
-        showToast('Ссылка скопирована'); // Fallback
+        showToast('Ссылка скопирована');
       });
     }
 
@@ -2825,17 +2830,44 @@
     }
 
     let attachedChatPhoto = null;
+    
+    // Handle Multiple Photos
     function handleChatPhotoSelect(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      compressImage(file, (dataUrl) => {
-        attachedChatPhoto = dataUrl;
-        document.getElementById('attachedPhotoImg').src = dataUrl;
-        document.getElementById('attachedPhotoPreview').style.display = 'flex';
-        document.getElementById('chatInput').focus();
+      const files = Array.from(event.target.files);
+      if (!files || files.length === 0) return;
+      
+      // Process files sequentially
+      let processedCount = 0;
+      files.forEach(file => {
+        compressImage(file, (dataUrl) => {
+           // Send each photo as a separate message immediately or queue them
+           // Here we send immediately for simplicity
+           sendPhotoMessage(dataUrl);
+           processedCount++;
+        });
       });
       event.target.value = '';
     }
+
+    function sendPhotoMessage(dataUrl) {
+       const chatScreen = document.getElementById('chatScreen');
+       const chatId = chatScreen.dataset.chatId;
+       const chats = loadChats();
+       const chat = chats.find(c => c.id === chatId);
+       
+       if (chat) {
+         chat.messages.push({
+           id: 'msg_' + Date.now() + Math.random(), senderId: currentUser.id,
+           text: '', image: dataUrl, timestamp: Date.now()
+         });
+         chat.updatedAt = Date.now(); chat.lastActive = Date.now();
+         saveChats(chats);
+         renderChatMessages(chat);
+         setTimeout(() => { document.getElementById('chatMessages').scrollTop = 0; }, 50);
+         renderMessages();
+       }
+    }
+
     function removeAttachedPhoto() {
       attachedChatPhoto = null;
       document.getElementById('attachedPhotoPreview').style.display = 'none';
@@ -3032,15 +3064,26 @@
           
           const isMyReview = review.authorId === currentUser.id;
           const wrapper = document.createElement('div'); wrapper.className = 'review-item-wrapper';
+          
+          // Updated Delete BG with Complaint Button
           const deleteBg = document.createElement('div'); deleteBg.className = 'review-delete-bg';
-          deleteBg.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+          deleteBg.innerHTML = `
+            <button class="review-action-btn" onclick="complainReview('${review.id}')">
+               <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+               Жалоба
+            </button>
+            <button class="review-action-btn" onclick="deleteReview('${review.id}', '${userId}')">
+               <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+               Удалить
+            </button>
+          `;
           
           const item = document.createElement('div'); item.className = 'review-item';
           let optionsHtml = isMyReview ? `<button class="review-options-btn" onclick="showReviewOptions('${review.id}', this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg></button>` : '';
           item.innerHTML = `<div class="review-header-row"><div class="review-author-block"><span class="review-author">${escapeHtml(review.author)}</span><span class="review-date">${date}</span></div>${optionsHtml}</div><div class="review-stars">${starsHtml}</div><div class="review-text">${escapeHtml(review.text)}</div>`;
           
           const deleteBtn = document.createElement('button'); deleteBtn.className = 'review-delete-btn';
-          deleteBtn.onclick = (e) => { e.stopPropagation(); deleteReview(review.id, userId); };
+          // No direct onclick on deleteBtn, handled by swipe logic showing the bg buttons
           
           wrapper.appendChild(deleteBg); wrapper.appendChild(item); wrapper.appendChild(deleteBtn); list.appendChild(wrapper);
           if (isMyReview) initReviewSwipe(item, wrapper, deleteBg, deleteBtn);
@@ -3051,20 +3094,30 @@
       updateTelegramBackButton();
     }
 
+    function complainReview(id) {
+       tg.showAlert('Жалоба отправлена');
+       // Reset swipe
+       document.querySelectorAll('.review-item-wrapper').forEach(w => {
+          w.querySelector('.review-item').style.transform = 'translateX(0)';
+          w.querySelector('.review-delete-bg').classList.remove('visible');
+          w.querySelector('.review-delete-btn').classList.remove('visible');
+       });
+    }
+
     function showReviewOptions(reviewId, btn) {
       const wrapper = btn.closest('.review-item-wrapper');
       const item = wrapper.querySelector('.review-item');
       const deleteBg = wrapper.querySelector('.review-delete-bg');
       const deleteBtn = wrapper.querySelector('.review-delete-btn');
-      item.style.transform = `translateX(-80px)`;
+      item.style.transform = `translateX(-140px)`; // Wider swipe
       deleteBg.classList.add('visible');
       deleteBtn.classList.add('visible');
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
     function initReviewSwipe(item, wrapper, deleteBg, deleteBtn) {
-      let startX = 0, currentX = 0, isSwiping = false, deleteWidth = 80;
-      item.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; currentX = startX; isSwiping = true; item.classList.add('swiping'); }, { passive: true });
+      let startX = 0, currentX = 0, isSwiping = false, deleteWidth = 140;
+      item.addEventListener('touchstart', (e) => { startX = e.touches[0].clientY; /* Use Y for pull down check? No, X for swipe */ startX = e.touches[0].clientX; currentX = startX; isSwiping = true; item.classList.add('swiping'); }, { passive: true });
       item.addEventListener('touchmove', (e) => { if (!isSwiping) return; const touchX = e.touches[0].clientX; const diff = startX - touchX; if (diff > 0) { currentX = touchX; item.style.transform = `translateX(-${Math.min(diff, deleteWidth)}px)`; } }, { passive: true });
       item.addEventListener('touchend', (e) => { if (!isSwiping) return; isSwiping = false; item.classList.remove('swiping'); const diff = startX - currentX; if (diff > deleteWidth / 2) { item.style.transform = `translateX(-${deleteWidth}px)`; deleteBg.classList.add('visible'); deleteBtn.classList.add('visible'); } else { item.style.transform = 'translateX(0)'; deleteBg.classList.remove('visible'); deleteBtn.classList.remove('visible'); } });
     }
@@ -3088,7 +3141,16 @@
       updateProfileStars(currentUser.id, 'myProfileStars');
     }
 
-    function showReviewForm() { document.getElementById('reviewInputArea').style.display = 'flex'; hideBottomNav(); }
+    function showReviewForm() { 
+       // Clear form before showing
+       document.getElementById('reviewTextarea').value = '';
+       currentReviewRating = 0;
+       updateStarSelector(0);
+       checkReviewForm();
+       
+       document.getElementById('reviewInputArea').style.display = 'flex'; 
+       hideBottomNav(); 
+    }
     function hideReviewForm() { document.getElementById('reviewInputArea').style.display = 'none'; }
     function setReviewRating(rating) { currentReviewRating = rating; updateStarSelector(rating); checkReviewForm(); if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); }
     function updateStarSelector(rating) { const stars = document.querySelectorAll('#reviewStarSelector svg'); stars.forEach((star, index) => { if (index < rating) star.classList.add('active'); else star.classList.remove('active'); }); }
@@ -3101,6 +3163,13 @@
       if (!allReviews[currentReviewUserId]) allReviews[currentReviewUserId] = [];
       allReviews[currentReviewUserId].push({ id: 'rev_' + Date.now(), authorId: currentUser.id, author: currentUser.firstName, rating: currentReviewRating, text: text, timestamp: Date.now() });
       saveReviews(allReviews);
+      
+      // Clear form after submit
+      document.getElementById('reviewTextarea').value = '';
+      currentReviewRating = 0;
+      updateStarSelector(0);
+      checkReviewForm();
+      
       hideReviewForm();
       openReviewsModal(currentReviewUserId, document.getElementById('reviewsUserName').textContent);
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
@@ -3149,17 +3218,13 @@
       });
     }
 
-    // Initialize Swipe Down for Modals
     initSwipeDownToClose('createModal', 'createModalContent', closeCreateModal);
     initSwipeDownToClose('reviewsModal', 'reviewsWrapper', closeReviewsModal);
-    // For Detail Modal, we swipe the whole modal or main content? Let's swipe the modal itself if it was a sheet, but it's full screen.
-    // The request said "pull down this area to close". Since detail is full screen, usually you swipe from top edge.
-    // Let's implement swipe on the detail-modal itself for consistency with "pull down to close" behavior on full screens.
+    
     let detailStartY = 0;
     let detailIsDragging = false;
     const detailModal = document.getElementById('detailModal');
     detailModal.addEventListener('touchstart', (e) => {
-       // Only allow swipe if at top of scroll
        if (detailModal.scrollTop === 0 && e.touches[0].clientY < 100) {
          detailStartY = e.touches[0].clientY;
          detailIsDragging = true;
@@ -3183,6 +3248,29 @@
          detailModal.style.transform = 'translateY(0)';
        }
     });
+
+    // --- CAROUSEL SWIPE LOGIC ---
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const carousel = document.getElementById('detailCarousel');
+    
+    carousel.addEventListener('touchstart', e => { 
+      touchStartX = e.changedTouches[0].screenX; 
+    }, { passive: true });
+    
+    carousel.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleCarouselSwipe();
+    }, { passive: true });
+
+    function handleCarouselSwipe() {
+      const diff = touchStartX - touchEndX;
+      const totalSlides = document.querySelectorAll('.carousel-slide').length;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && currentCarouselIndex < totalSlides - 1) goToSlide(currentCarouselIndex + 1);
+        else if (diff < 0 && currentCarouselIndex > 0) goToSlide(currentCarouselIndex - 1);
+      }
+    }
 
 
     // --- INITIALIZATION ---
