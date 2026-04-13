@@ -187,6 +187,8 @@
       top: 0;
       z-index: 10;
       transition: background 0.3s;
+      display: flex;
+      gap: 10px;
     }
 
     .search-bar {
@@ -197,6 +199,7 @@
       padding: 10px 14px;
       box-shadow: 0 3px 18px rgba(0,0,0,0.12);
       transition: box-shadow 0.2s, background 0.3s;
+      flex: 1;
     }
 
     .search-bar:focus-within {
@@ -231,6 +234,29 @@
 
     .search-input::placeholder { color: #C8C8C8; }
     .dark-theme .search-input::placeholder { color: #6b6b6b; }
+
+    .fav-search-btn {
+      background: var(--search-bg);
+      border: none;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 18px rgba(0,0,0,0.12);
+      transition: transform 0.2s, background 0.3s;
+      flex-shrink: 0;
+    }
+    .fav-search-btn:active { transform: scale(0.9); }
+    .fav-search-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--favorite-color);
+      stroke-width: 2;
+      fill: none;
+    }
 
     .ads-grid {
       display: grid;
@@ -292,7 +318,7 @@
     .ad-price {
       font-size: 15px;
       font-weight: 800;
-      color: var(--text-primary);
+      color: var(--text-primary); /* Changed from orange to black */
       margin-bottom: 2px;
       transform: translateY(-2px);
     }
@@ -943,7 +969,7 @@
       top: 8px;
       bottom: 8px;
       left: 8px;
-      width: calc(33.33% - 8px);
+      width: calc(33.33% - 8px); /* Default for 3 items, adjusted via JS */
       
       background: var(--indicator-bg);
       border-radius: 24px;
@@ -1465,8 +1491,8 @@
     .sub-action-btn.delete {
       background: var(--danger-color);
       color: white;
-      top: 0;
-      right: -55px;
+      top: 110px;
+      right: 0;
     }
 
     .settings-gear-btn.active ~ .settings-actions-container .sub-action-btn {
@@ -1495,7 +1521,7 @@
       padding-bottom: 100px;
     }
     .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-    .detail-price { font-size: 24px; font-weight: 800; color: #ff6b35; margin-bottom: 8px; }
+    .detail-price { font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
     .detail-city { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
     .detail-desc { 
       font-size: 15px; 
@@ -1710,10 +1736,28 @@
           </div>
           <input type="text" class="search-input" id="searchInput" placeholder="Загрузка...">
         </div>
+        <button class="fav-search-btn" onclick="navigateToFavorites()">
+           <svg viewBox="0 0 24 24">
+             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+           </svg>
+        </button>
       </div>
       <div class="ads-grid" id="adsGrid"></div>
       <div class="empty-state" id="homeEmpty" style="display:none;">
         <div class="empty-state-text">Пока нет объявлений</div>
+      </div>
+    </div>
+    
+    <!-- FAVORITES PAGE -->
+    <div class="page" id="pageFavorites" data-screen-id="favorites">
+      <div class="search-container">
+         <div class="search-bar" style="justify-content: center; pointer-events: none;">
+            <span style="font-weight: 700; font-size: 18px; color: var(--text-primary);">Избранное</span>
+         </div>
+      </div>
+      <div class="ads-grid" id="favGrid"></div>
+      <div class="empty-state" id="favEmpty" style="display:none;">
+        <div class="empty-state-text">Нет избранных объявлений</div>
       </div>
     </div>
 
@@ -1774,6 +1818,23 @@
         </div>
       </div>
     </div>
+    
+    <!-- ADMIN PAGE -->
+    <div class="page" id="pageAdmin" data-screen-id="admin">
+      <div class="profile-user-info" style="padding-top: 20px;">
+        <div class="profile-avatar-placeholder" style="background: var(--btn-blue); color: white;">👑</div>
+        <div class="profile-name">Администрация</div>
+        <div class="profile-username">Модераторы</div>
+      </div>
+      <div style="padding: 20px; text-align: center;">
+         <p style="color: var(--text-secondary);">Панель управления модератора.</p>
+         <div style="margin-top: 20px; padding: 15px; background: var(--bg-secondary); border-radius: 12px;">
+            <strong>Статистика:</strong><br>
+            Объявлений: <span id="adminAdCount">0</span><br>
+            Пользователей: <span id="adminUserCount">1</span>
+         </div>
+      </div>
+    </div>
 
     <!-- OTHER USER PROFILE PAGE -->
     <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
@@ -1814,7 +1875,7 @@
       
       <button class="send-review-btn active" id="openReviewFormBtn" onclick="showReviewForm()" style="margin-top: 10px;">Написать отзыв</button>
 
-      <div class="review-input-area" id="reviewInputArea" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 310; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+      <div class="review-input-area" id="reviewInputArea" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 310; align-items: center; justify-content: center; backdrop-filter: blur(5px);" ondblclick="hideReviewForm()">
          <div style="background: var(--bg-primary); width: 90%; max-width: 350px; padding: 20px; border-radius: 20px; display: flex; flex-direction: column; align-items: center;">
             <h3 style="margin-bottom: 15px; color: var(--text-primary);">Ваша оценка</h3>
             <div class="review-star-selector" id="reviewStarSelector">
@@ -1824,7 +1885,6 @@
             </div>
             <textarea class="review-textarea" id="reviewTextarea" placeholder="Напишите отзыв (макс. 250 симв.)..." maxlength="250" oninput="checkReviewForm()"></textarea>
             <div style="display: flex; gap: 10px; width: 100%;">
-               <button onclick="hideReviewForm()" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); font-weight: 600;">Отмена</button>
                <button class="send-review-btn" id="sendReviewBtn" onclick="submitReview()" style="flex: 1; margin: 0; padding: 12px;">Создать</button>
             </div>
          </div>
@@ -1923,6 +1983,15 @@
         </div>
         <span class="nav-label">Профиль</span>
       </button>
+      
+      <button class="nav-item" data-tab="admin" id="navAdmin" style="display: none;">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5v-2z"></path>
+          </svg>
+        </div>
+        <span class="nav-label">Админ</span>
+      </button>
     </div>
   </div>
 
@@ -1930,7 +1999,7 @@
   <div class="modal-overlay" id="createModal">
     <div class="modal-content" id="createModalContent">
       <div class="modal-header">
-        <span class="modal-title">Новое объявление</span>
+        <span class="modal-title" id="createModalTitle">Новое объявление</span>
       </div>
 
       <div class="form-group">
@@ -2056,7 +2125,6 @@
     
     // ИНИЦИАЛИЗАЦИЯ И РАСШИРЕНИЕ ЭКРАНА
     tg.ready();
-    // Принудительно расширяем приложение на весь экран
     tg.expand(); 
 
     if (window.innerWidth > 430) {
@@ -2066,6 +2134,11 @@
     }
 
     const user = tg.initDataUnsafe?.user;
+    
+    // Модераторы
+    const moderators = ['qvilxy'];
+    const isAdmin = user && user.username && moderators.includes(user.username.toLowerCase().replace('@', ''));
+
     const currentUser = {
       id: user?.id || 'guest_' + Date.now(),
       firstName: user?.first_name || 'Гость',
@@ -2084,7 +2157,7 @@
 
     // --- NAVIGATION STACK LOGIC ---
     let navStack = []; 
-    const mainTabs = ['home', 'messages', 'profile'];
+    const mainTabs = ['home', 'messages', 'profile', 'admin'];
 
     tg.BackButton.onClick(() => {
       if (document.getElementById('reviewInputArea').style.display === 'flex') {
@@ -2129,8 +2202,10 @@
 
       let targetEl;
       if (screenId === 'home') targetEl = document.getElementById('pageHome');
+      else if (screenId === 'favorites') targetEl = document.getElementById('pageFavorites');
       else if (screenId === 'messages') targetEl = document.getElementById('pageMessages');
       else if (screenId === 'profile') targetEl = document.getElementById('pageProfile');
+      else if (screenId === 'admin') targetEl = document.getElementById('pageAdmin');
       else if (screenId === 'otherProfile') targetEl = document.getElementById('pageOtherProfile');
       else if (screenId === 'chat') targetEl = document.getElementById('chatScreen');
       else if (screenId === 'detail') targetEl = document.getElementById('detailModal');
@@ -2162,10 +2237,16 @@
       if (screenId === 'messages') renderMessages();
       if (screenId === 'profile') renderMyAds();
       if (screenId === 'home') renderAds();
+      if (screenId === 'favorites') renderFavorites();
+      if (screenId === 'admin') renderAdminStats();
       if (screenId === 'otherProfile' && data) renderOtherProfile(data);
       
       const mainContent = document.getElementById('mainContent');
       if(mainContent) mainContent.scrollTop = 0;
+    }
+    
+    function navigateToFavorites() {
+       navigateTo('favorites');
     }
 
     function getCurrentScreenId() {
@@ -2200,8 +2281,10 @@
 
       let targetEl;
       if (previousScreen === 'home') targetEl = document.getElementById('pageHome');
+      else if (previousScreen === 'favorites') targetEl = document.getElementById('pageFavorites');
       else if (previousScreen === 'messages') targetEl = document.getElementById('pageMessages');
       else if (previousScreen === 'profile') targetEl = document.getElementById('pageProfile');
+      else if (previousScreen === 'admin') targetEl = document.getElementById('pageAdmin');
       else if (previousScreen === 'otherProfile') targetEl = document.getElementById('pageOtherProfile');
       else if (previousScreen === 'chat') targetEl = document.getElementById('chatScreen');
       else if (previousScreen === 'detail') targetEl = document.getElementById('detailModal');
@@ -2335,7 +2418,11 @@
       if (isDragging) return;
       navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
       navIndicator.style.transform = `translate3d(${targetX}px, 0, 0) scale(1)`;
-      navIndicator.style.width = `calc(33.33% - 8px)`;
+      
+      // Adjust width based on number of items
+      const totalItems = Array.from(navItems).filter(i => i.style.display !== 'none').length;
+      const itemWidthPercent = 100 / totalItems;
+      navIndicator.style.width = `calc(${itemWidthPercent}% - 8px)`;
       navIndicator.style.borderRadius = '24px';
     }
 
@@ -2425,6 +2512,23 @@
         filteredAds.forEach(ad => grid.appendChild(createAdCard(ad)));
       }
     }
+    
+    function renderFavorites() {
+       const favIds = loadFavorites();
+       const ads = loadAds();
+       const grid = document.getElementById('favGrid');
+       const empty = document.getElementById('favEmpty');
+       grid.innerHTML = '';
+       
+       const favAds = ads.filter(ad => favIds.includes(ad.id));
+       
+       if (favAds.length === 0) {
+         empty.style.display = 'flex';
+       } else {
+         empty.style.display = 'none';
+         favAds.forEach(ad => grid.appendChild(createAdCard(ad)));
+       }
+    }
 
     function createAdCard(ad) {
       const card = document.createElement('div');
@@ -2451,6 +2555,13 @@
       const myAds = ads.filter(ad => ad.userId === currentUser.id);
       if (myAds.length === 0) { empty.style.display = 'flex'; }
       else { empty.style.display = 'none'; myAds.forEach(ad => grid.appendChild(createAdCard(ad))); }
+    }
+    
+    function renderAdminStats() {
+       const ads = loadAds();
+       document.getElementById('adminAdCount').textContent = ads.length;
+       // Mock user count or calculate unique users from ads/chats
+       document.getElementById('adminUserCount').textContent = "1+";
     }
 
     function renderOtherProfile(userData) {
@@ -2505,18 +2616,33 @@
 
     // --- CREATE AD LOGIC ---
     let selectedPhotos = [];
+    let editingAdId = null;
     const bottomNav = document.getElementById('bottomNav');
     function hideBottomNav() { bottomNav.classList.add('hidden'); }
     function showBottomNav() { bottomNav.classList.remove('hidden'); }
 
-    function openCreateModal() {
-      selectedPhotos = [];
+    function openCreateModal(editAd = null) {
+      editingAdId = editAd ? editAd.id : null;
+      document.getElementById('createModalTitle').textContent = editAd ? 'Редактировать объявление' : 'Новое объявление';
+      document.getElementById('submitAdBtn').textContent = editAd ? 'Сохранить' : 'Создать';
+      
+      if (editAd) {
+         document.getElementById('adTitle').value = editAd.title;
+         document.getElementById('adPrice').value = editAd.price;
+         document.getElementById('adCity').value = editAd.city;
+         document.getElementById('adCategory').value = editAd.category || '';
+         document.getElementById('adDesc').value = editAd.description || '';
+         selectedPhotos = [...(editAd.photos || [])];
+      } else {
+         selectedPhotos = [];
+         document.getElementById('adTitle').value = '';
+         document.getElementById('adPrice').value = '';
+         document.getElementById('adCity').value = '';
+         document.getElementById('adCategory').value = '';
+         document.getElementById('adDesc').value = '';
+      }
+      
       resetPhotoSlots();
-      document.getElementById('adTitle').value = '';
-      document.getElementById('adPrice').value = '';
-      document.getElementById('adCity').value = '';
-      document.getElementById('adCategory').value = '';
-      document.getElementById('adDesc').value = '';
       updateDescCounter();
       document.getElementById('createModal').classList.add('active');
       hideBottomNav();
@@ -2525,8 +2651,9 @@
     function closeCreateModal() {
       document.getElementById('createModal').classList.remove('active');
       showBottomNav();
+      editingAdId = null;
     }
-    document.getElementById('openCreateBtn').addEventListener('click', openCreateModal);
+    document.getElementById('openCreateBtn').addEventListener('click', () => openCreateModal(null));
 
     const descInput = document.getElementById('adDesc');
     const descCounter = document.getElementById('descCounter');
@@ -2536,9 +2663,13 @@
     function resetPhotoSlots() {
       for (let i = 0; i < 4; i++) {
         const slot = document.getElementById('photoSlot' + i);
-        slot.innerHTML = '<span class="add-icon">+</span>';
-        slot.style.display = 'flex';
-        slot.onclick = () => addPhoto(i);
+        if (i < selectedPhotos.length) {
+           updatePhotoSlot(i, selectedPhotos[i]);
+        } else {
+           slot.innerHTML = '<span class="add-icon">+</span>';
+           slot.style.display = 'flex';
+           slot.onclick = () => addPhoto(i);
+        }
       }
     }
     function addPhoto(index) { document.getElementById('photoInput').dataset.index = index; document.getElementById('photoInput').click(); }
@@ -2604,34 +2735,61 @@
       }
       
       const ads = loadAds();
-      const newAd = {
-        id: 'ad_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-        userId: currentUser.id,
-        userName: currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : ''),
-        userUsername: currentUser.username,
-        userPhoto: currentUser.photoUrl,
-        title, price, city, category, description: desc,
-        photos: selectedPhotos.slice(0, 4),
-        createdAt: Date.now()
-      };
       
-      try {
-        ads.unshift(newAd);
-        saveAds(ads);
-        selectedPhotos = [];
-        resetPhotoSlots();
-        document.getElementById('adTitle').value = '';
-        document.getElementById('adPrice').value = '';
-        document.getElementById('adCity').value = '';
-        document.getElementById('adCategory').value = '';
-        document.getElementById('adDesc').value = '';
-        closeCreateModal();
-        renderAds();
-        renderMyAds();
-        switchTab('home', 0);
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert('Объявление создано! ✅');
-      } catch (e) { ads.shift(); console.error(e); }
+      if (editingAdId) {
+         // Edit existing
+         const adIndex = ads.findIndex(a => a.id === editingAdId);
+         if (adIndex !== -1) {
+            ads[adIndex].title = title;
+            ads[adIndex].price = price;
+            ads[adIndex].city = city;
+            ads[adIndex].category = category;
+            ads[adIndex].description = desc;
+            ads[adIndex].photos = selectedPhotos.slice(0, 4);
+            
+            saveAds(ads);
+            closeCreateModal();
+            renderAds();
+            renderMyAds();
+            // If we are in detail view, update it
+            if(window.currentAdData && window.currentAdData.id === editingAdId) {
+               window.currentAdData = ads[adIndex];
+               renderDetailModalContent(ads[adIndex]);
+            }
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            tg.showAlert('Объявление обновлено! ✅');
+         }
+      } else {
+         // Create new
+         const newAd = {
+           id: 'ad_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+           userId: currentUser.id,
+           userName: currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : ''),
+           userUsername: currentUser.username,
+           userPhoto: currentUser.photoUrl,
+           title, price, city, category, description: desc,
+           photos: selectedPhotos.slice(0, 4),
+           createdAt: Date.now()
+         };
+         
+         try {
+           ads.unshift(newAd);
+           saveAds(ads);
+           selectedPhotos = [];
+           resetPhotoSlots();
+           document.getElementById('adTitle').value = '';
+           document.getElementById('adPrice').value = '';
+           document.getElementById('adCity').value = '';
+           document.getElementById('adCategory').value = '';
+           document.getElementById('adDesc').value = '';
+           closeCreateModal();
+           renderAds();
+           renderMyAds();
+           switchTab('home', 0);
+           if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+           tg.showAlert('Объявление создано! ✅');
+         } catch (e) { ads.shift(); console.error(e); }
+      }
     }
 
     // --- DETAIL MODAL LOGIC ---
@@ -2740,7 +2898,15 @@
       const btn = document.getElementById('settingsGearBtn');
       if(btn) btn.classList.remove('active');
     }
-    function editCurrentAd() { tg.showAlert('Редактирование скоро будет доступно!'); closeSettingsMenu(); }
+    
+    function editCurrentAd() { 
+       const ad = window.currentAdData;
+       if(ad) {
+          closeSettingsMenu();
+          openCreateModal(ad);
+       }
+    }
+    
     function deleteCurrentAdFromDetail() {
       const ad = window.currentAdData;
       if (!ad) return;
@@ -3274,6 +3440,11 @@
     renderAds();
     renderMyAds();
     updateProfileStars(currentUser.id, 'myProfileStars');
+    
+    // Show Admin Tab if moderator
+    if (isAdmin) {
+       document.getElementById('navAdmin').style.display = 'flex';
+    }
   </script>
 </body>
 </html>
