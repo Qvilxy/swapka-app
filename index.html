@@ -1128,8 +1128,8 @@
     .reviews-content-wrapper {
       background: var(--bg-primary);
       width: 100%; 
-      /* FIX: Fixed height similar to Create Ad modal */
-      max-height: 65vh;
+      /* FIX: Fixed height similar to Create Ad modal but taller */
+      max-height: 75vh;
       border-radius: 20px 20px 0 0;
       padding: 20px;
       padding-bottom: max(20px, env(safe-area-inset-bottom));
@@ -1424,9 +1424,8 @@
       fill: none;
     }
     
-    /* FIX: Always filled favorite button */
-    .action-circle-btn.favorite-active svg,
-    .action-circle-btn#btnFavorite svg {
+    /* Heart Logic: Default is empty (stroke only). Active class fills it. */
+    .action-circle-btn.favorite-active svg {
       fill: var(--favorite-color);
       stroke: var(--favorite-color);
     }
@@ -1542,8 +1541,8 @@
     
     .detail-info { 
       padding: 20px 16px; 
-      /* Removed extra padding bottom since island is no longer fixed */
-      padding-bottom: 40px;
+      /* Increased padding bottom to make room for the floating island at the bottom of the scroll view */
+      padding-bottom: 120px; 
     }
     .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
     .detail-price { font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
@@ -1561,15 +1560,17 @@
       overflow-wrap: break-word;
     }
     
-    /* --- SELLER ISLAND (NOW SCROLLS WITH PAGE) --- */
+    /* --- SELLER ISLAND (FLOATING BUT SCROLLABLE) --- */
     .seller-island-container {
-      /* Removed position: fixed */
+      /* Removed position: fixed. It is now part of the flow. */
+      /* But we use negative margin or absolute positioning relative to container to make it "float" visually over the bottom area */
       position: relative;
       width: 100%;
       display: flex;
       justify-content: center;
       pointer-events: auto;
-      margin-top: 10px;
+      margin-top: 20px;
+      z-index: 10;
     }
 
     .seller-island {
@@ -1579,9 +1580,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 100%;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      border: 1px solid var(--border-color);
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
       transition: transform 0.2s;
     }
     
@@ -2973,7 +2974,12 @@
 
     function updateFavoriteButtonState(adId) {
       const btn = document.getElementById('btnFavorite');
-      // Logic removed because CSS now forces it to always look active/filled
+      const favs = loadFavorites();
+      if (favs.includes(adId)) {
+        btn.classList.add('favorite-active');
+      } else {
+        btn.classList.remove('favorite-active');
+      }
     }
 
     function shareAd() {
