@@ -1428,25 +1428,40 @@
       stroke: var(--favorite-color);
     }
 
+    /* FIXED SETTINGS GEAR STYLES */
+    .detail-settings-container {
+      position: relative; 
+      z-index: 220;
+      pointer-events: auto;
+    }
+
     .settings-gear-btn {
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      background: rgba(120, 120, 128, 0.15);
+      background: rgba(255, 255, 255, 0.8);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border: none;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      position: relative;
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
+    .dark-theme .settings-gear-btn {
+      background: rgba(44, 44, 46, 0.8);
+    }
+
     .settings-gear-btn.active {
-      opacity: 0.5;
       transform: rotate(90deg);
+      background: rgba(0,0,0,0.1);
+    }
+    
+    .dark-theme .settings-gear-btn.active {
+       background: rgba(255,255,255,0.1);
     }
 
     .settings-gear-btn svg {
@@ -1464,6 +1479,7 @@
       width: 44px;
       height: 44px;
       pointer-events: none;
+      overflow: visible;
     }
 
     .sub-action-btn {
@@ -1479,29 +1495,30 @@
       justify-content: center;
       cursor: pointer;
       opacity: 0;
-      transform: scale(0.5);
+      transform: scale(0.5) translateY(-10px);
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       pointer-events: auto;
-      z-index: 1;
+      z-index: 230;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     .sub-action-btn.edit {
       background: #007AFF;
       color: white;
-      top: 55px;
+      top: 55px; 
       right: 0;
     }
 
     .sub-action-btn.delete {
       background: var(--danger-color);
       color: white;
-      top: 110px;
+      top: 110px; 
       right: 0;
     }
 
     .settings-gear-btn.active ~ .settings-actions-container .sub-action-btn {
       opacity: 1;
-      transform: scale(1);
+      transform: scale(1) translateY(0);
     }
     
     .sub-action-btn svg {
@@ -1544,7 +1561,7 @@
       z-index: 205;
       display: flex;
       justify-content: center;
-      pointer-events: none; /* Let clicks pass through outside the pill */
+      pointer-events: none;
     }
 
     .seller-island {
@@ -2127,7 +2144,7 @@
         </svg>
       </button>
 
-      <div class="detail-settings-container" id="detailSettingsContainer" style="display:none; position:relative;">
+      <div class="detail-settings-container" id="detailSettingsContainer" style="display:none;">
         <button class="settings-gear-btn" id="settingsGearBtn" onclick="toggleSettingsMenu()">
           <svg viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="3"></circle>
