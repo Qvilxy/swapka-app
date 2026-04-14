@@ -259,7 +259,7 @@
       height: 22px;
       stroke: var(--favorite-color);
       stroke-width: 2;
-      fill: none;
+      fill: var(--favorite-color); /* Filled heart for search button */
     }
 
     .ads-grid {
@@ -1128,7 +1128,8 @@
     .reviews-content-wrapper {
       background: var(--bg-primary);
       width: 100%; 
-      max-height: 92vh;
+      /* FIX: Fixed height similar to Create Ad modal */
+      max-height: 65vh;
       border-radius: 20px 20px 0 0;
       padding: 20px;
       padding-bottom: max(20px, env(safe-area-inset-bottom));
@@ -1423,7 +1424,9 @@
       fill: none;
     }
     
-    .action-circle-btn.favorite-active svg {
+    /* FIX: Always filled favorite button */
+    .action-circle-btn.favorite-active svg,
+    .action-circle-btn#btnFavorite svg {
       fill: var(--favorite-color);
       stroke: var(--favorite-color);
     }
@@ -1539,42 +1542,46 @@
     
     .detail-info { 
       padding: 20px 16px; 
-      padding-bottom: 120px; /* More space for the floating island */
+      /* Removed extra padding bottom since island is no longer fixed */
+      padding-bottom: 40px;
     }
     .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
     .detail-price { font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
     .detail-city { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
+    
+    /* FIX: Description wrapping and width */
     .detail-desc { 
       font-size: 15px; 
       color: var(--text-primary); 
       line-height: 1.5; 
       margin-bottom: 20px; 
       white-space: pre-wrap;
+      width: 100%;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
     
-    /* --- NEW FLOATING SELLER ISLAND --- */
+    /* --- SELLER ISLAND (NOW SCROLLS WITH PAGE) --- */
     .seller-island-container {
-      position: fixed;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      z-index: 205;
+      /* Removed position: fixed */
+      position: relative;
+      width: 100%;
       display: flex;
       justify-content: center;
-      pointer-events: none;
+      pointer-events: auto;
+      margin-top: 10px;
     }
 
     .seller-island {
-      pointer-events: auto;
       background: var(--bg-primary);
       border-radius: 100px;
       padding: 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 90%;
-      max-width: 380px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border: 1px solid var(--border-color);
       transition: transform 0.2s;
     }
     
@@ -2181,19 +2188,19 @@
       <div class="detail-price" id="detailPrice"></div>
       <div class="detail-city" id="detailCity"></div>
       <div class="detail-desc" id="detailDesc"></div>
-    </div>
 
-    <!-- NEW FLOATING SELLER ISLAND -->
-    <div class="seller-island-container">
-      <div class="seller-island">
-        <div class="island-seller-info" onclick="openOtherProfileFromDetail()">
-          <div class="island-avatar" id="detailSellerAvatar">👤</div>
-          <div class="island-name-block">
-            <div class="island-name" id="detailSellerName">Продавец</div>
-            <div class="island-status">Был(а) недавно</div>
+      <!-- MOVED SELLER ISLAND INSIDE DETAIL INFO SO IT SCROLLS -->
+      <div class="seller-island-container">
+        <div class="seller-island">
+          <div class="island-seller-info" onclick="openOtherProfileFromDetail()">
+            <div class="island-avatar" id="detailSellerAvatar">👤</div>
+            <div class="island-name-block">
+              <div class="island-name" id="detailSellerName">Продавец</div>
+              <div class="island-status">Был(а) недавно</div>
+            </div>
           </div>
+          <button class="island-write-btn" onclick="contactSeller()">Написать</button>
         </div>
-        <button class="island-write-btn" onclick="contactSeller()">Написать</button>
       </div>
     </div>
 
@@ -2966,12 +2973,7 @@
 
     function updateFavoriteButtonState(adId) {
       const btn = document.getElementById('btnFavorite');
-      const favs = loadFavorites();
-      if (favs.includes(adId)) {
-        btn.classList.add('favorite-active');
-      } else {
-        btn.classList.remove('favorite-active');
-      }
+      // Logic removed because CSS now forces it to always look active/filled
     }
 
     function shareAd() {
@@ -3555,3 +3557,4 @@
   </script>
 </body>
 </html>
+
