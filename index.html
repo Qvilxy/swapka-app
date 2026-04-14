@@ -16,7 +16,8 @@
       --card-bg: #ffffff;
       --search-bg: #ffffff;
       --chat-pill-bg: #f9f9f9;
-      --glass-bg: rgba(255, 255, 255, 0.65);
+      /* FIX: Removed white background from nav variables, kept blur/shadow */
+      --glass-bg: rgba(255, 255, 255, 0.0); 
       --glass-border: rgba(255, 255, 255, 0.4);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
       --indicator-bg: #d0d0d0;
@@ -48,7 +49,8 @@
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
       --chat-pill-bg: #3a3a3c;
-      --glass-bg: rgba(30, 30, 30, 0.65);
+      /* FIX: Dark theme nav bg also transparent */
+      --glass-bg: rgba(30, 30, 30, 0.0);
       --glass-border: rgba(255, 255, 255, 0.1);
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
       --indicator-bg: #4a4a4a;
@@ -954,6 +956,7 @@
       max-width: 380px;
       height: 64px;
       
+      /* FIX: Using updated transparent glass-bg variable */
       background: var(--glass-bg);
       backdrop-filter: blur(25px) saturate(180%);
       -webkit-backdrop-filter: blur(25px) saturate(180%);
@@ -1560,20 +1563,21 @@
       overflow-wrap: break-word;
     }
     
-    /* --- SELLER ISLAND (FLOATING BUT SCROLLABLE) --- */
+    /* --- SELLER ISLAND (FIXED FLOATING LAYER) --- */
     .seller-island-container {
-      /* Removed position: fixed. It is now part of the flow. */
-      /* But we use negative margin or absolute positioning relative to container to make it "float" visually over the bottom area */
-      position: relative;
-      width: 100%;
+      position: fixed;
+      bottom: 100px; /* Positioned above the nav bar */
+      left: 0;
+      right: 0;
+      z-index: 150; /* High Z-index to float above content */
       display: flex;
       justify-content: center;
-      pointer-events: auto;
-      margin-top: 20px;
-      z-index: 10;
+      pointer-events: none; /* Let clicks pass through around the pill */
+      margin-top: 0;
     }
 
     .seller-island {
+      pointer-events: auto; /* Re-enable clicks on the pill itself */
       background: var(--bg-primary);
       border-radius: 100px;
       padding: 8px;
