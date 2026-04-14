@@ -1566,7 +1566,8 @@
     /* --- SELLER ISLAND (FIXED FLOATING LAYER) --- */
     .seller-island-container {
       position: fixed;
-      bottom: 100px; /* Positioned above the nav bar */
+      /* UPDATED: Moved down to align with navigation pill height */
+      bottom: 26px; 
       left: 0;
       right: 0;
       z-index: 150; /* High Z-index to float above content */
@@ -1597,7 +1598,8 @@
     .island-seller-info {
       display: flex;
       align-items: center;
-      padding-left: 12px;
+      /* UPDATED: Reduced padding from 12px to 5px (moved left by 7px) */
+      padding-left: 5px;
       flex: 1;
       min-width: 0;
       cursor: pointer;
@@ -1608,7 +1610,8 @@
       height: 44px;
       border-radius: 50%;
       background: var(--border-color);
-      margin-right: 12px;
+      /* UPDATED: Reduced margin to match the shift */
+      margin-right: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
