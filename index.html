@@ -16,6 +16,7 @@
       --card-bg: #ffffff;
       --search-bg: #ffffff;
       --chat-pill-bg: #f9f9f9;
+      /* FIX: Removed white background from nav variables, kept blur/shadow */
       --glass-bg: rgba(255, 255, 255, 0.0); 
       --glass-border: rgba(255, 255, 255, 0.4);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
@@ -33,6 +34,8 @@
       --btn-blue: #007AFF;
       --favorite-color: #FF2D55;
       --toast-green: #34C759;
+      
+      /* New Color for Write Button */
       --write-btn-green: #34C759; 
     }
 
@@ -46,6 +49,7 @@
       --card-bg: #2c2c2e;
       --search-bg: #2c2c2e;
       --chat-pill-bg: #3a3a3c;
+      /* FIX: Dark theme nav bg also transparent */
       --glass-bg: rgba(30, 30, 30, 0.0);
       --glass-border: rgba(255, 255, 255, 0.1);
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
@@ -257,7 +261,7 @@
       height: 22px;
       stroke: var(--favorite-color);
       stroke-width: 2;
-      fill: var(--favorite-color);
+      fill: var(--favorite-color); /* Filled heart for search button */
     }
 
     .ads-grid {
@@ -636,6 +640,7 @@
       text-align: right;
     }
     
+    /* --- NEW CHAT INPUT STYLE (Blue Background) --- */
     .chat-input-area {
       padding: 10px 16px;
       padding-bottom: max(10px, env(safe-area-inset-bottom));
@@ -951,6 +956,7 @@
       max-width: 380px;
       height: 64px;
       
+      /* FIX: Using updated transparent glass-bg variable */
       background: var(--glass-bg);
       backdrop-filter: blur(25px) saturate(180%);
       -webkit-backdrop-filter: blur(25px) saturate(180%);
@@ -970,7 +976,7 @@
       top: 8px;
       bottom: 8px;
       left: 8px;
-      width: calc(33.33% - 8px);
+      width: calc(33.33% - 8px); /* Default for 3 items, adjusted via JS */
       
       background: var(--indicator-bg);
       border-radius: 24px;
@@ -1066,20 +1072,19 @@
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5); z-index: 200; display: none;
-      /* FIX: Centered alignment */
-      align-items: center; justify-content: center;
+      align-items: flex-end; justify-content: center;
       backdrop-filter: blur(5px);
     }
     .modal-overlay.active { display: flex; }
     .modal-content {
-      background: var(--bg-primary); width: 90%; max-width: 400px; max-height: 92vh;
-      border-radius: 20px; padding: 20px;
+      background: var(--bg-primary); width: 100%; max-height: 92vh;
+      border-radius: 20px 20px 0 0; padding: 20px;
       padding-bottom: max(20px, env(safe-area-inset-bottom));
       overflow-y: auto; animation: slideUp 0.3s ease;
       position: relative;
       touch-action: pan-y; 
     }
-    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .modal-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
@@ -1126,6 +1131,7 @@
     .reviews-content-wrapper {
       background: var(--bg-primary);
       width: 100%; 
+      /* FIX: Fixed height similar to Create Ad modal but taller */
       max-height: 75vh;
       border-radius: 20px 20px 0 0;
       padding: 20px;
@@ -1421,11 +1427,13 @@
       fill: none;
     }
     
+    /* Heart Logic: Default is empty (stroke only). Active class fills it. */
     .action-circle-btn.favorite-active svg {
       fill: var(--favorite-color);
       stroke: var(--favorite-color);
     }
 
+    /* FIXED SETTINGS GEAR STYLES */
     .detail-settings-container {
       position: relative; 
       z-index: 220;
@@ -1536,12 +1544,14 @@
     
     .detail-info { 
       padding: 20px 16px; 
+      /* Increased padding bottom to make room for the floating island at the bottom of the scroll view */
       padding-bottom: 20px; 
     }
     .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
     .detail-price { font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
     .detail-city { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
     
+    /* FIX: Description wrapping and width */
     .detail-desc { 
       font-size: 15px; 
       color: var(--text-primary); 
@@ -1553,20 +1563,21 @@
       overflow-wrap: break-word;
     }
     
+    /* --- SELLER ISLAND (FIXED FLOATING LAYER) --- */
     .seller-island-container {
-      position: absolute;
+      position: absolute; /* Changed from fixed to absolute so it scrolls with content */
       bottom: 20px; 
       left: 0;
       right: 0;
-      z-index: 150;
+      z-index: 150; /* High Z-index to float above content */
       display: flex;
       justify-content: center;
-      pointer-events: none;
+      pointer-events: none; /* Let clicks pass through around the pill */
       margin-top: 0;
     }
 
     .seller-island {
-      pointer-events: auto;
+      pointer-events: auto; /* Re-enable clicks on the pill itself */
       background: var(--bg-primary);
       border-radius: 100px;
       padding: 8px;
@@ -1586,6 +1597,7 @@
     .island-seller-info {
       display: flex;
       align-items: center;
+      /* UPDATED: Reduced padding from 12px to 5px (moved left by 7px) */
       padding-left: 5px;
       flex: 1;
       min-width: 0;
@@ -1597,6 +1609,7 @@
       height: 44px;
       border-radius: 50%;
       background: var(--border-color);
+      /* UPDATED: Reduced margin to match the shift */
       margin-right: 5px;
       display: flex;
       align-items: center;
@@ -2242,33 +2255,22 @@
     const mainTabs = ['home', 'messages', 'profile', 'admin'];
 
     tg.BackButton.onClick(() => {
-      // FIX: Handle Back Button for Modals
-      const createModal = document.getElementById('createModal');
-      const reviewsModal = document.getElementById('reviewsModal');
-      const reviewInputArea = document.getElementById('reviewInputArea');
-
-      if (reviewInputArea.style.display === 'flex') {
+      if (document.getElementById('reviewInputArea').style.display === 'flex') {
         hideReviewForm();
         return;
       }
-      if (reviewsModal.classList.contains('active')) {
+      if (document.getElementById('reviewsModal').classList.contains('active')) {
         closeReviewsModal();
         return;
       }
-      if (createModal.classList.contains('active')) {
-        closeCreateModal();
-        return;
-      }
-      
       goBack();
     });
 
     function updateTelegramBackButton() {
       const currentScreen = getCurrentScreenId();
       const reviewsModal = document.getElementById('reviewsModal');
-      const createModal = document.getElementById('createModal');
       
-      if (reviewsModal.classList.contains('active') || createModal.classList.contains('active')) {
+      if (reviewsModal.classList.contains('active')) {
         tg.BackButton.show();
         return;
       }
@@ -3022,8 +3024,6 @@
        const ad = window.currentAdData;
        if(ad) {
           closeSettingsMenu();
-          // FIX: Clear stack to ensure modal opens correctly and back button works
-          navStack = []; 
           openCreateModal(ad);
        }
     }
@@ -3376,9 +3376,6 @@
       modal.classList.add('active');
       hideBottomNav();
       updateTelegramBackButton();
-      
-      // FIX: Reset swipe handlers to prevent accidental closing when clicking stars
-      resetSwipeHandlers();
     }
 
     function complainReview(id) {
@@ -3460,11 +3457,6 @@
     }
 
     // --- SWIPE DOWN TO CLOSE LOGIC ---
-    function resetSwipeHandlers() {
-      // Remove old listeners by cloning node (simple way to clear all listeners)
-      // Or just rely on the logic below checking scrollTop strictly
-    }
-
     function initSwipeDownToClose(modalId, contentId, onCloseCallback) {
       const modal = document.getElementById(modalId);
       const content = document.getElementById(contentId);
@@ -3472,47 +3464,37 @@
       let currentY = 0;
       let isDragging = false;
 
-      // Remove old listeners to prevent duplicates if called multiple times
-      const newContent = content.cloneNode(true);
-      content.parentNode.replaceChild(newContent, content);
-      
-      // Re-assign ID because clone loses it
-      newContent.id = contentId;
-
-      newContent.addEventListener('touchstart', (e) => {
-        // Only allow swipe if at the very top of the scrollable area
-        if (newContent.scrollTop === 0) {
+      content.addEventListener('touchstart', (e) => {
+        if (content.scrollTop === 0) {
           startY = e.touches[0].clientY;
           isDragging = true;
-          newContent.style.transition = 'none';
+          content.style.transition = 'none';
         }
       }, { passive: true });
 
-      newContent.addEventListener('touchmove', (e) => {
+      content.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
         currentY = e.touches[0].clientY;
         const diff = currentY - startY;
-        // Only drag downwards
         if (diff > 0) {
-          newContent.style.transform = `translateY(${diff}px)`;
+          content.style.transform = `translateY(${diff}px)`;
         }
       }, { passive: true });
 
-      newContent.addEventListener('touchend', (e) => {
+      content.addEventListener('touchend', (e) => {
         if (!isDragging) return;
         isDragging = false;
         const diff = currentY - startY;
-        newContent.style.transition = 'transform 0.3s ease';
+        content.style.transition = 'transform 0.3s ease';
         
-        // Threshold to close
         if (diff > 100) {
-          newContent.style.transform = `translateY(100%)`;
+          content.style.transform = `translateY(100%)`;
           setTimeout(() => {
             onCloseCallback();
-            newContent.style.transform = '';
+            content.style.transform = '';
           }, 300);
         } else {
-          newContent.style.transform = 'translateY(0)';
+          content.style.transform = 'translateY(0)';
         }
       });
     }
