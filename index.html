@@ -1545,7 +1545,7 @@
     .detail-info { 
       padding: 20px 16px; 
       /* Increased padding bottom to make room for the floating island at the bottom of the scroll view */
-      padding-bottom: 120px; 
+      padding-bottom: 20px; 
     }
     .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
     .detail-price { font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
@@ -1565,9 +1565,8 @@
     
     /* --- SELLER ISLAND (FIXED FLOATING LAYER) --- */
     .seller-island-container {
-      position: fixed;
-      /* UPDATED: Moved down to align with navigation pill height */
-      bottom: 26px; 
+      position: absolute; /* Changed from fixed to absolute so it scrolls with content */
+      bottom: 20px; 
       left: 0;
       right: 0;
       z-index: 150; /* High Z-index to float above content */
