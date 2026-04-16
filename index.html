@@ -51,14 +51,13 @@
         }
 
         /* АГРЕССИВНАЯ БЛОКИРОВКА СКРОЛЛА */
-        body.no-scroll {
+        body.scroll-locked {
             overflow: hidden !important;
             height: 100vh !important;
             position: fixed !important;
             width: 100% !important;
             top: 0 !important;
             left: 0 !important;
-            touch-action: none !important; /* Отключаем любые жесты на всем теле */
         }
 
         .app-container {
@@ -454,7 +453,7 @@
             });
         }
 
-        // --- NAVIGATION LOGIC WITH PHYSICS (FIXED SCROLL ISSUE) ---
+        // --- НАВИГАЦИЯ (ПОЛНОСТЬЮ ПЕРЕПИСАНА) ---
         let currentTabIndex = 0;
         const indicator = document.getElementById('navIndicator');
         const navItems = document.querySelectorAll('.nav-item');
@@ -463,6 +462,7 @@
         let isDragging = false;
         let startX = 0;
         let currentTranslateX = 0;
+        let savedScrollY = 0;
 
         function updateIndicatorPosition(index, animate = true) {
             const targetItem = navItems[index];
@@ -506,22 +506,28 @@
         window.addEventListener('load', () => updateIndicatorPosition(0, false));
         window.addEventListener('resize', () => updateIndicatorPosition(currentTabIndex, false));
 
-        // --- DRAG AND DROP PHYSICS (SCROLL FIX) ---
+        // --- ФИЗИКА ИНДИКАТОРА (БЕЗ СКРОЛЛА) ---
         
+        // 1. НАЧАЛО КАСАНИЯ
         indicator.addEventListener('touchstart', (e) => {
             isDragging = true;
             startX = e.touches[0].clientX;
+            
+            // Сохраняем текущую прокрутку
+            savedScrollY = window.scrollY;
+            
+            // БЛОКИРУЕМ СКРОЛЛ НАМЕРТВО
+            document.body.classList.add('scroll-locked');
+            
             indicator.classList.add('dragging');
             indicator.style.transition = 'none';
-            
-            // ЖЕСТКАЯ БЛОКИРОВКА СКРОЛЛА
-            document.body.classList.add('no-scroll');
         }, {passive: false});
 
+        // 2. ДВИЖЕНИЕ ПАЛЬЦА
         document.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
             
-            // КРИТИЧЕСКИ ВАЖНО: preventDefault блокирует нативный скролл браузера
+            // ОТМЕНЯЕМ ЛЮБОЕ ПОВЕДЕНИЕ БРАУЗЕРА (СКРОЛЛ)
             e.preventDefault(); 
             
             const x = e.touches[0].clientX;
@@ -529,24 +535,26 @@
             
             let newPos = currentTranslateX + diff;
             
-            // Ограничители
+            // Ограничители, чтобы не улететь в бесконечность
             const maxRight = navContainer.offsetWidth - indicator.offsetWidth;
             if (newPos < -50) newPos = -50;
             if (newPos > maxRight + 50) newPos = maxRight + 50;
 
             indicator.style.transform = `translateX(${newPos}px)`;
-        }, {passive: false}); // passive: false разрешает использовать preventDefault
+        }, {passive: false});
 
+        // 3. КОНЕЦ КАСАНИЯ
         document.addEventListener('touchend', (e) => {
             if (!isDragging) return;
             isDragging = false;
             indicator.classList.remove('dragging');
             
-            // РАЗРЕШАЕМ СКРОЛЛ ОБРАТНО
-            document.body.classList.remove('no-scroll');
+            // РАЗБЛОКИРУЕМ СКРОЛЛ
+            document.body.classList.remove('scroll-locked');
             
             indicator.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease';
             
+            // Вычисляем, где оказался индикатор
             const style = window.getComputedStyle(indicator);
             const matrix = new WebKitCSSMatrix(style.transform);
             const currentLeft = matrix.m41;
@@ -564,6 +572,7 @@
                 }
             });
             
+            // Переключаем таб и ставим индикатор ровно
             switchTabByIndex(nearestIndex);
         });
 
