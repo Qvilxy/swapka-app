@@ -47,7 +47,8 @@
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
+            user-select: none; /* Запрет выделения текста */
+            -webkit-user-select: none;
         }
 
         body {
@@ -55,6 +56,8 @@
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
+            /* Важно для предотвращения скролла всего боди при драге */
+            touch-action: pan-y; 
         }
 
         .app-container {
@@ -126,7 +129,7 @@
         .o-detail span { color: var(--secondary-text); }
         .o-phone { color: var(--blue-accent) !important; font-weight: 500; }
 
-        /* --- NEW FLOATING NAVIGATION (Updated) --- */
+        /* --- NAVIGATION --- */
         .nav-wrapper {
             position: fixed;
             bottom: 20px;
@@ -140,7 +143,6 @@
 
         .nav-container {
             background-color: var(--nav-container-bg);
-            /* ИЗМЕНЕНИЕ: Скругление 100px */
             border-radius: 100px;
             padding: 6px;
             display: flex;
@@ -155,18 +157,18 @@
             position: absolute;
             top: 6px;
             bottom: 6px;
-            /* Ширина будет задаваться через JS для идеального центрирования */
             background-color: var(--nav-indicator-bg);
-            /* ИЗМЕНЕНИЕ: Скругление 100px */
             border-radius: 100px;
             z-index: 1;
             cursor: grab;
-            /* Плавность для возврата на место */
+            /* Анимация только когда мы НЕ тащим его */
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
+            will-change: transform, width;
         }
         
-        .nav-indicator:active {
+        .nav-indicator.dragging {
             cursor: grabbing;
+            transition: none; /* Отключаем анимацию при драге для мгновенной реакции */
             background-color: #d1d1d6;
         }
 
@@ -268,13 +270,11 @@
 
     </div>
 
-    <!-- === NEW FLOATING NAVIGATION === -->
+    <!-- === NAVIGATION === -->
     <div class="nav-wrapper">
         <div class="nav-container" id="navContainer">
-            <!-- Индикатор -->
             <div class="nav-indicator" id="navIndicator"></div>
             
-            <!-- Кнопки -->
             <div class="nav-item" data-index="0" onclick="switchTabByIndex(0)">
                 <i class="fas fa-gift"></i>
                 <span>Подарки</span>
@@ -442,7 +442,7 @@
             });
         }
 
-        // --- NAVIGATION LOGIC WITH PHYSICS (Updated) ---
+        // --- NAVIGATION LOGIC WITH PHYSICS (FIXED) ---
         let currentTabIndex = 0;
         const indicator = document.getElementById('navIndicator');
         const navItems = document.querySelectorAll('.nav-item');
@@ -450,26 +450,15 @@
         
         let isDragging = false;
         let startX = 0;
-        let startIndicatorLeft = 0;
+        let currentTranslateX = 0;
 
-        // Функция для точного центрирования индикатора под вкладкой
+        // Функция позиционирования индикатора по центру кнопки
         function updateIndicatorPosition(index, animate = true) {
             const targetItem = navItems[index];
-            
-            // Получаем координаты относительно родителя (navContainer)
-            // offsetLeft дает позицию левого края элемента относительно родителя
             const itemLeft = targetItem.offsetLeft;
             const itemWidth = targetItem.offsetWidth;
-            
-            // Вычисляем центр вкладки
             const itemCenter = itemLeft + (itemWidth / 2);
-            
-            // Ширина индикатора должна быть чуть меньше ширины вкладки или такой же.
-            // Сделаем его шириной как вкладка минус небольшие отступы, чтобы было красиво
             const indicatorWidth = itemWidth - 12; 
-            
-            // Позиция left для индикатора, чтобы он был по центру:
-            // Center - (IndicatorWidth / 2)
             const newLeft = itemCenter - (indicatorWidth / 2);
 
             if (!animate) {
@@ -478,11 +467,10 @@
                 indicator.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease';
             }
             
-            // Применяем ширину и трансформацию
             indicator.style.width = `${indicatorWidth}px`;
             indicator.style.transform = `translateX(${newLeft}px)`;
+            currentTranslateX = newLeft; // Запоминаем текущую позицию X
 
-            // Обновляем активный класс
             navItems.forEach((el, i) => {
                 if (i === index) el.classList.add('active');
                 else el.classList.remove('active');
@@ -494,71 +482,58 @@
         function switchTabByIndex(index) {
             if (isDragging) return;
             
-            // Переключение контента
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             const tabs = ['gifts', 'profile', 'courier', 'admin'];
             const targetId = index === 3 ? 'tab-gifts' : `tab-${tabs[index]}`;
             
-            if(index === 3) {
-                 alert("Раздел Админ в разработке");
-                 // Не переключаем визуально на пустоту, остаемся на текущем или возвращаемся
-                 // Но индикатор уже сдвинут логикой ниже, так что пусть будет
-            }
+            if(index === 3) alert("Раздел Админ в разработке");
             
             document.getElementById(targetId).classList.add('active');
             updateIndicatorPosition(index);
         }
 
-        // Инициализация
-        window.addEventListener('load', () => {
-            updateIndicatorPosition(0, false);
-        });
-        
-        window.addEventListener('resize', () => {
-            updateIndicatorPosition(currentTabIndex, false);
-        });
+        window.addEventListener('load', () => updateIndicatorPosition(0, false));
+        window.addEventListener('resize', () => updateIndicatorPosition(currentTabIndex, false));
 
-        // --- DRAG AND DROP PHYSICS ---
+        // --- DRAG AND DROP PHYSICS (HARD FIXED) ---
         
         indicator.addEventListener('touchstart', (e) => {
             isDragging = true;
             startX = e.touches[0].clientX;
-            
-            // Текущая позиция индикатора (парсим transform)
-            const style = window.getComputedStyle(indicator);
-            const matrix = new WebKitCSSMatrix(style.transform);
-            startIndicatorLeft = matrix.m41;
-            
-            indicator.style.transition = 'none'; // Отключаем плавность для мгновенной реакции
-            indicator.style.cursor = 'grabbing';
+            indicator.classList.add('dragging');
+            // Блокируем переходы CSS
+            indicator.style.transition = 'none';
         }, {passive: false});
 
         document.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
-            e.preventDefault(); // Блокируем скролл страницы
+            
+            // ВАЖНО: Предотвращаем скролл страницы и другие действия
+            e.preventDefault(); 
             
             const x = e.touches[0].clientX;
             const diff = x - startX;
             
-            // Просто двигаем индикатор за пальцем
-            // Добавляем небольшое сопротивление, если уходим далеко за пределы
-            let newPos = startIndicatorLeft + diff;
+            // Двигаем индикатор ровно за пальцем относительно начальной позиции
+            let newPos = currentTranslateX + diff;
             
-            // Границы контейнера (примерно)
+            // Ограничители, чтобы не улетел в космос (мягкие границы)
             const maxRight = navContainer.offsetWidth - indicator.offsetWidth;
-            if (newPos < -20) newPos = -20 + (newPos + 20) * 0.2;
-            if (newPos > maxRight + 20) newPos = maxRight + 20 + (newPos - maxRight - 20) * 0.2;
+            if (newPos < -50) newPos = -50;
+            if (newPos > maxRight + 50) newPos = maxRight + 50;
 
             indicator.style.transform = `translateX(${newPos}px)`;
-        }, {passive: false});
+        }, {passive: false}); // passive: false критически важен для работы preventDefault
 
         document.addEventListener('touchend', (e) => {
             if (!isDragging) return;
             isDragging = false;
-            indicator.style.cursor = 'grab';
+            indicator.classList.remove('dragging');
             
-            // Определяем, над какой вкладкой отпустили палец
-            // Берем центр индикатора
+            // Включаем анимацию обратно для магнита
+            indicator.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease';
+            
+            // Вычисляем, где сейчас центр индикатора
             const style = window.getComputedStyle(indicator);
             const matrix = new WebKitCSSMatrix(style.transform);
             const currentLeft = matrix.m41;
@@ -567,6 +542,7 @@
             let nearestIndex = 0;
             let minDiff = Infinity;
 
+            // Ищем ближайшую кнопку
             navItems.forEach((item, index) => {
                 const itemCenter = item.offsetLeft + (item.offsetWidth / 2);
                 const diff = Math.abs(indicatorCenter - itemCenter);
@@ -576,7 +552,7 @@
                 }
             });
             
-            // Переключаем таб и ставим индикатор ровно по центру новой вкладки
+            // Переключаем таб и примагничиваем индикатор
             switchTabByIndex(nearestIndex);
         });
 
