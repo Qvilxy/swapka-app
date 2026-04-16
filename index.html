@@ -50,7 +50,7 @@
             -webkit-user-select: none;
         }
 
-        /* Блокировка скролла всего тела при драге индикатора */
+        /* Блокировка скролла при перетаскивании индикатора */
         body.no-scroll {
             overflow: hidden !important;
             height: 100vh !important;
@@ -66,6 +66,9 @@
             min-height: 100vh;
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
+            /* Важно для правильного stacking context */
+            position: relative;
+            z-index: 1;
         }
 
         /* --- Headers --- */
@@ -147,7 +150,8 @@
             transform: translateX(-50%);
             width: calc(100% - 32px);
             max-width: 400px;
-            z-index: 1000;
+            /* Максимальный z-index чтобы быть поверх всего */
+            z-index: 9999;
             pointer-events: none;
         }
 
@@ -161,6 +165,8 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
             pointer-events: auto;
             backdrop-filter: blur(10px);
+            /* Создаем новый контекст наложения */
+            isolation: isolate;
         }
 
         .nav-indicator {
@@ -171,15 +177,15 @@
             border-radius: 100px;
             z-index: 1;
             cursor: grab;
-            /* Анимация только когда мы не тащим его */
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
             will-change: transform, width;
-            touch-action: none; /* Важно для тач-событий */
+            /* Отключаем действия браузера по умолчанию для этого элемента */
+            touch-action: none;
         }
         
         .nav-indicator.dragging {
             cursor: grabbing;
-            transition: none; /* Отключаем анимацию при драге для мгновенного отклика */
+            transition: none;
             background-color: #d1d1d6;
         }
 
@@ -490,7 +496,6 @@
         }
 
         function switchTabByIndex(index) {
-            // Если мы тащим индикатор, не переключаем таб сразу, ждем окончания драга
             if (isDragging) return;
             
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -514,7 +519,7 @@
             indicator.classList.add('dragging');
             indicator.style.transition = 'none';
             
-            // ЖЕСТКАЯ БЛОКИРОВКА СКРОЛЛА СТРАНИЦЫ
+            // ЖЕСТКАЯ БЛОКИРОВКА СКРОЛЛА
             document.body.classList.add('no-scroll');
         }, {passive: false});
 
@@ -529,9 +534,8 @@
             
             let newPos = currentTranslateX + diff;
             
-            // Ограничители, чтобы не улететь за края меню
+            // Ограничители
             const maxRight = navContainer.offsetWidth - indicator.offsetWidth;
-            // Небольшой запас (-50 и +50) для эффекта "резины"
             if (newPos < -50) newPos = -50;
             if (newPos > maxRight + 50) newPos = maxRight + 50;
 
@@ -548,13 +552,11 @@
             
             indicator.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease';
             
-            // Вычисляем текущую позицию индикатора
             const style = window.getComputedStyle(indicator);
             const matrix = new WebKitCSSMatrix(style.transform);
             const currentLeft = matrix.m41;
             const indicatorCenter = currentLeft + (indicator.offsetWidth / 2);
             
-            // Ищем ближайшую вкладку
             let nearestIndex = 0;
             let minDiff = Infinity;
 
@@ -567,7 +569,6 @@
                 }
             });
             
-            // Переключаем таб и примагничиваем индикатор
             switchTabByIndex(nearestIndex);
         });
 
