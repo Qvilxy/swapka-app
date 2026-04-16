@@ -50,22 +50,36 @@
             -webkit-user-select: none;
         }
 
-        /* ВАЖНО: Блокируем скролл всего боди, если идет драг */
+        /* Блокировка скролла всего тела при драге */
         body.no-scroll {
-            overflow: hidden;
-            height: 100vh;
+            overflow: hidden !important;
+            height: 100vh !important;
+            position: fixed !important;
+            width: 100%;
         }
 
         .app-container {
             padding-top: 100px; 
             padding-bottom: 120px;
             min-height: 100vh;
+            /* Разрешаем скролл внутри контейнера */
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* --- Headers & Common --- */
-        .page-header { padding: 0 16px 15px; display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-color); position: sticky; top: 0; z-index: 10; }
+        /* --- Headers (НЕ липкие) --- */
+        .page-header {
+            padding: 0 16px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: transparent; /* Убрали фон */
+            /* Убрали position: sticky, чтобы заголовок уезжал при скролле */
+        }
+        
         h1 { font-size: 28px; font-weight: 700; }
         .icon-btn { background: none; border: none; font-size: 22px; color: var(--text-color); cursor: pointer; }
+        
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -163,7 +177,7 @@
         
         .nav-indicator.dragging {
             cursor: grabbing;
-            transition: none; /* Отключаем анимацию при драге */
+            transition: none;
             background-color: #d1d1d6;
         }
 
@@ -497,7 +511,7 @@
             indicator.classList.add('dragging');
             indicator.style.transition = 'none';
             
-            // БЛОКИРУЕМ СКРОЛЛ СТРАНИЦЫ
+            // ЖЕСТКАЯ БЛОКИРОВКА СКРОЛЛА
             document.body.classList.add('no-scroll');
         }, {passive: false});
 
