@@ -50,7 +50,7 @@
             -webkit-user-select: none;
         }
 
-        /* Блокировка скролла при перетаскивании индикатора */
+        /* КЛАСС ДЛЯ ПОЛНОЙ БЛОКИРОВКИ СКРОЛЛА СТРАНИЦЫ */
         body.no-scroll {
             overflow: hidden !important;
             height: 100vh !important;
@@ -66,9 +66,6 @@
             min-height: 100vh;
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
-            /* Важно для правильного stacking context */
-            position: relative;
-            z-index: 1;
         }
 
         /* --- Headers --- */
@@ -150,8 +147,7 @@
             transform: translateX(-50%);
             width: calc(100% - 32px);
             max-width: 400px;
-            /* Максимальный z-index чтобы быть поверх всего */
-            z-index: 9999;
+            z-index: 9999; /* Максимальный приоритет */
             pointer-events: none;
         }
 
@@ -165,8 +161,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
             pointer-events: auto;
             backdrop-filter: blur(10px);
-            /* Создаем новый контекст наложения */
-            isolation: isolate;
         }
 
         .nav-indicator {
@@ -177,15 +171,16 @@
             border-radius: 100px;
             z-index: 1;
             cursor: grab;
+            /* Анимация только когда отпускаем */
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
             will-change: transform, width;
-            /* Отключаем действия браузера по умолчанию для этого элемента */
-            touch-action: none;
+            /* ВАЖНО: Отключаем стандартные жесты браузера на этом элементе */
+            touch-action: none; 
         }
         
         .nav-indicator.dragging {
             cursor: grabbing;
-            transition: none;
+            transition: none; /* Убираем плавность при перетаскивании для мгновенной реакции */
             background-color: #d1d1d6;
         }
 
