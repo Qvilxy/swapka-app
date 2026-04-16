@@ -18,6 +18,7 @@
             --shadow: 0 2px 8px rgba(0,0,0,0.04);
             --green-tile: #a8e6cf;
             --blue-accent: #007aff;
+            --border-color: #d1d1d6;
         }
 
         body.dark-mode {
@@ -29,6 +30,7 @@
             --nav-bg: rgba(28, 28, 30, 0.85);
             --shadow: 0 2px 8px rgba(0,0,0,0.2);
             --green-tile: #1c3a2a;
+            --border-color: #3a3a3c;
         }
 
         * {
@@ -46,9 +48,9 @@
             overflow-x: hidden;
         }
 
-        /* ГЛАВНОЕ ИЗМЕНЕНИЕ: Отступ 120px сверху */
+        /* ИЗМЕНЕНИЕ 1: Отступ уменьшен на 20px (было 120, стало 100) */
         .app-container {
-            padding-top: 120px; 
+            padding-top: 100px; 
             padding-bottom: 100px;
             min-height: 100vh;
         }
@@ -106,8 +108,36 @@
         .card-head { font-size: 12px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--secondary-text); text-transform: uppercase; letter-spacing: 0.5px; }
         .card-head i { color: var(--text-color); font-size: 14px; }
 
-        /* Calendar Specifics */
-        .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 600; font-size: 16px; cursor: pointer; }
+        /* Calendar Specifics & Date Picker Styling */
+        .cal-nav { 
+            display: flex; 
+            justify-content: center; /* Центрируем блоки */
+            align-items: center; 
+            gap: 12px; /* Расстояние между кнопками */
+            margin-bottom: 15px; 
+        }
+
+        /* Стиль кнопок как на фото (Март v) (2026 v) */
+        .date-select-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .date-select-btn i {
+            font-size: 12px;
+            color: var(--secondary-text);
+        }
+
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
         .d-name { font-size: 11px; color: var(--secondary-text); margin-bottom: 6px; }
         
@@ -122,25 +152,9 @@
             position: relative;
         }
 
-        /* Черный круг для сегодня */
-        .d-cell.today {
-            background-color: var(--text-color);
-            color: var(--bg-color);
-            font-weight: 600;
-        }
-
-        /* Красный круг для события */
-        .d-cell.event {
-            background-color: #ff3b30;
-            color: white;
-            font-weight: 600;
-        }
-        
-        /* Если день и сегодня, и событие (приоритет у события или смешивание? Обычно событие важнее визуально, но сделаем красный) */
-        .d-cell.today.event {
-            background-color: #ff3b30;
-            color: white;
-        }
+        .d-cell.today { background-color: var(--text-color); color: var(--bg-color); font-weight: 600; }
+        .d-cell.event { background-color: #ff3b30; color: white; font-weight: 600; }
+        .d-cell.today.event { background-color: #ff3b30; color: white; }
 
         .list-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--input-bg); font-size: 15px; }
         .list-row:last-child { border-bottom: none; }
@@ -175,21 +189,91 @@
         .sheet.open { transform: translateY(0); }
         .handle { width: 36px; height: 4px; background: var(--secondary-text); border-radius: 2px; margin: 0 auto 20px; opacity: 0.3; }
 
-        /* Date Picker Widget Styles */
-        .date-picker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .dp-item { padding: 12px; background: var(--input-bg); border-radius: 8px; text-align: center; font-weight: 500; cursor: pointer; }
-        .dp-item.selected { background: var(--blue-accent); color: white; }
-        
-        .year-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
-        .year-item { padding: 10px 20px; background: var(--input-bg); border-radius: 20px; white-space: nowrap; cursor: pointer; }
-        .year-item.selected { background: var(--blue-accent); color: white; }
+        /* Event Input Widget Styles */
+        .event-widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .event-widget-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .trash-btn {
+            background: none;
+            border: none;
+            color: #ff3b30;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
 
-        /* Event Input Widget */
-        .event-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--input-bg); background: var(--bg-color); color: var(--text-color); font-size: 16px; margin-bottom: 15px; outline: none; }
-        .btn-full { width: 100%; padding: 14px; background: var(--blue-accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; margin-top: 5px; cursor: pointer; opacity: 1; transition: opacity 0.2s; }
-        .btn-full:disabled { background: var(--input-bg); color: var(--secondary-text); cursor: not-allowed; opacity: 0.7; }
+        .event-date-label {
+            color: var(--secondary-text);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .event-input { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: 1px solid var(--input-bg); 
+            background: var(--bg-color); 
+            color: var(--text-color); 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+            outline: none; 
+        }
+        
+        .btn-full { 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--blue-accent); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            margin-top: 5px; 
+            cursor: pointer; 
+            opacity: 1; 
+            transition: opacity 0.2s; 
+        }
+        .btn-full:disabled { 
+            background: var(--input-bg); 
+            color: var(--secondary-text); 
+            cursor: not-allowed; 
+            opacity: 0.7; 
+        }
         
         .cat-btn { width: 100%; padding: 14px; text-align: left; background: none; border: none; border-bottom: 1px solid var(--input-bg); font-size: 16px; color: var(--text-color); }
+
+        /* Date Picker List Styles */
+        .picker-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 40vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .picker-item {
+            padding: 14px;
+            background: var(--bg-color);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .picker-item.selected {
+            background: var(--blue-accent);
+            color: white;
+            border-color: var(--blue-accent);
+        }
 
     </style>
 </head>
@@ -243,12 +327,19 @@
 
             <div class="info-card">
                 <div class="card-head"><i class="far fa-flag"></i> Важные даты</div>
-                <!-- Клик по этому блоку открывает виджет выбора даты -->
-                <div class="cal-nav" onclick="openDatePicker()">
-                    <i class="fas fa-chevron-left" style="color:var(--secondary-text)"></i>
-                    <span id="calendarTitle">Апрель 2026</span>
-                    <i class="fas fa-chevron-right" style="color:var(--secondary-text)"></i>
+                
+                <!-- ИЗМЕНЕНИЕ 2: Дизайн выбора даты как на фото -->
+                <div class="cal-nav">
+                    <div class="date-select-btn" onclick="openMonthPicker()">
+                        <span id="monthDisplay">Апрель</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="date-select-btn" onclick="openYearPicker()">
+                        <span id="yearDisplay">2026</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
                 </div>
+
                 <div class="cal-grid" id="calendarGrid"></div>
             </div>
 
@@ -343,30 +434,37 @@
         <button class="btn-full" onclick="checkout()">Оформить</button>
     </div>
 
-    <!-- Date Picker Sheet (New) -->
-    <div class="sheet" id="datePickerSheet">
+    <!-- Month Picker Sheet -->
+    <div class="sheet" id="monthPickerSheet">
         <div class="handle"></div>
-        <h3 style="margin-bottom:15px;">Выберите дату</h3>
-        
-        <div style="margin-bottom:10px; font-weight:600; font-size:14px; color:var(--secondary-text);">Месяц</div>
-        <div class="date-picker-grid" id="monthGrid">
-            <!-- Months injected via JS -->
-        </div>
-
-        <div style="margin-bottom:10px; font-weight:600; font-size:14px; color:var(--secondary-text);">Год</div>
-        <div class="year-scroll" id="yearScroll">
-            <!-- Years injected via JS -->
-        </div>
-
-        <button class="btn-full" onclick="applyDateSelection()">Применить</button>
+        <h3 style="margin-bottom:15px;">Выберите месяц</h3>
+        <div class="picker-list-container" id="monthListContainer"></div>
     </div>
 
-    <!-- Add Event Sheet (New) -->
+    <!-- Year Picker Sheet -->
+    <div class="sheet" id="yearPickerSheet">
+        <div class="handle"></div>
+        <h3 style="margin-bottom:15px;">Выберите год</h3>
+        <div class="picker-list-container" id="yearListContainer"></div>
+    </div>
+
+    <!-- Add/Edit Event Sheet -->
     <div class="sheet" id="eventSheet">
         <div class="handle"></div>
-        <h3 style="margin-bottom:15px;">Добавить событие</h3>
-        <p style="margin-bottom:10px; color:var(--secondary-text);" id="eventDateLabel">Дата: ...</p>
-        <input type="text" class="event-input" id="eventNameInput" placeholder="Название события (например, День рождения)" oninput="checkEventInput()">
+        
+        <!-- ИЗМЕНЕНИЕ 3: Заголовок с корзиной -->
+        <div class="event-widget-header">
+            <div class="event-widget-title">Событие</div>
+            <button class="trash-btn" id="deleteEventBtn" onclick="deleteEvent()" style="display:none;">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+
+        <div class="event-date-label" id="eventDateLabel">Дата: ...</div>
+        
+        <!-- Поле ввода -->
+        <input type="text" class="event-input" id="eventNameInput" placeholder="Название события" oninput="checkEventInput()">
+        
         <button class="btn-full" id="saveEventBtn" disabled onclick="saveEvent()">Сохранить</button>
     </div>
 
@@ -387,104 +485,92 @@
         document.getElementById('userUsername').innerText = user.username ? '@'+user.username : '';
 
         // --- CALENDAR LOGIC ---
-        // Текущая дата по ТЗ: 17 Апреля 2026
-        const MOCK_TODAY = new Date(2026, 3, 17); // Месяцы 0-11, 3 = Апрель
+        const MOCK_TODAY = new Date(2026, 3, 17); // 17 Апреля 2026
         
         let currentViewMonth = MOCK_TODAY.getMonth(); // 3 (Апрель)
         let currentViewYear = MOCK_TODAY.getFullYear(); // 2026
         
-        // Хранилище событий: ключ "YYYY-M-D", значение "Текст"
-        let events = {}; 
+        let events = {}; // Хранилище событий: key="Y-M-D", value="Text"
         
-        // Временные переменные для выбора в виджете
-        let tempSelectMonth = currentViewMonth;
-        let tempSelectYear = currentViewYear;
         let selectedEventDay = null;
-
         const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
 
+        function updateCalendarHeader() {
+            document.getElementById('monthDisplay').innerText = monthNames[currentViewMonth];
+            document.getElementById('yearDisplay').innerText = currentViewYear;
+        }
+
         function renderCalendar() {
+            updateCalendarHeader();
             const g = document.getElementById('calendarGrid');
-            const title = document.getElementById('calendarTitle');
-            
-            title.innerText = `${monthNames[currentViewMonth]} ${currentViewYear}`;
             g.innerHTML = '';
 
-            // Дни недели
             ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
                 g.innerHTML += `<div class="d-name">${d}</div>`;
             });
 
-            const firstDayOfMonth = new Date(currentViewYear, currentViewMonth, 1).getDay(); // 0=Вс, 1=Пн
-            // Корректировка, чтобы неделя начиналась с Понедельника (для RU локали)
-            // getDay(): Вс=0, Пн=1... Сб=6. Нам нужно: Пн=0... Вс=6
+            const firstDayOfMonth = new Date(currentViewYear, currentViewMonth, 1).getDay();
             let startOffset = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
 
-            // Пустые ячейки до начала месяца
-            for(let i=0; i<startOffset; i++) {
-                g.innerHTML += `<div></div>`;
-            }
+            for(let i=0; i<startOffset; i++) g.innerHTML += `<div></div>`;
 
             const daysInMonth = new Date(currentViewYear, currentViewMonth + 1, 0).getDate();
 
             for(let d=1; d<=daysInMonth; d++) {
                 let cls = 'd-cell';
                 
-                // Проверка на сегодня (черный круг)
                 if (d === MOCK_TODAY.getDate() && 
                     currentViewMonth === MOCK_TODAY.getMonth() && 
                     currentViewYear === MOCK_TODAY.getFullYear()) {
                     cls += ' today';
                 }
 
-                // Проверка на событие (красный круг)
                 const eventKey = `${currentViewYear}-${currentViewMonth}-${d}`;
                 if (events[eventKey]) {
                     cls += ' event';
                 }
 
-                // Клик по дате
                 g.innerHTML += `<div class="${cls}" onclick="openEventModal(${d})">${d}</div>`;
             }
         }
 
-        // --- DATE PICKER WIDGET ---
-        function openDatePicker() {
-            tempSelectMonth = currentViewMonth;
-            tempSelectYear = currentViewYear;
-            renderDatePickerUI();
-            openModal('datePickerSheet');
-        }
-
-        function renderDatePickerUI() {
-            // Рендер месяцев
-            const mGrid = document.getElementById('monthGrid');
-            mGrid.innerHTML = '';
+        // --- DATE PICKERS (Vertical Lists) ---
+        function openMonthPicker() {
+            const container = document.getElementById('monthListContainer');
+            container.innerHTML = '';
+            
             monthNames.forEach((m, index) => {
                 const div = document.createElement('div');
-                div.className = `dp-item ${index === tempSelectMonth ? 'selected' : ''}`;
+                div.className = `picker-item ${index === currentViewMonth ? 'selected' : ''}`;
                 div.innerText = m;
-                div.onclick = () => { tempSelectMonth = index; renderDatePickerUI(); };
-                mGrid.appendChild(div);
+                div.onclick = () => {
+                    currentViewMonth = index;
+                    renderCalendar();
+                    closeAllModals();
+                };
+                container.appendChild(div);
             });
-
-            // Рендер годов (2026-2030)
-            const yScroll = document.getElementById('yearScroll');
-            yScroll.innerHTML = '';
-            for(let y=2026; y<=2030; y++) {
-                const div = document.createElement('div');
-                div.className = `year-item ${y === tempSelectYear ? 'selected' : ''}`;
-                div.innerText = y;
-                div.onclick = () => { tempSelectYear = y; renderDatePickerUI(); };
-                yScroll.appendChild(div);
-            }
+            
+            openModal('monthPickerSheet');
         }
 
-        function applyDateSelection() {
-            currentViewMonth = tempSelectMonth;
-            currentViewYear = tempSelectYear;
-            renderCalendar();
-            closeAllModals();
+        function openYearPicker() {
+            const container = document.getElementById('yearListContainer');
+            container.innerHTML = '';
+            
+            for(let y=2026; y<=2030; y++) {
+                const div = document.createElement('div');
+                div.className = `picker-item ${y === currentViewYear ? 'selected' : ''}`;
+                div.innerText = y;
+                div.onclick = () => {
+                    currentViewYear = y;
+                    renderCalendar();
+                    closeAllModals();
+                };
+                container.appendChild(div);
+            }
+            
+            openModal('yearPickerSheet');
         }
 
         // --- EVENT WIDGET ---
@@ -493,14 +579,23 @@
             const dateStr = `${day} ${monthNames[currentViewMonth]} ${currentViewYear}`;
             document.getElementById('eventDateLabel').innerText = `Дата: ${dateStr}`;
             
-            // Если событие уже есть, можно предзаполнить (опционально), но по ТЗ просто добавление
-            // Очищаем поле
             const input = document.getElementById('eventNameInput');
-            input.value = '';
-            checkEventInput(); // Блокируем кнопку
+            const deleteBtn = document.getElementById('deleteEventBtn');
+            const eventKey = `${currentViewYear}-${currentViewMonth}-${day}`;
+            
+            // ИЗМЕНЕНИЕ 4: Если есть событие, подставляем текст и показываем корзину
+            if (events[eventKey]) {
+                input.value = events[eventKey];
+                deleteBtn.style.display = 'block';
+            } else {
+                input.value = '';
+                deleteBtn.style.display = 'none';
+            }
+            
+            checkEventInput(); // Проверка активности кнопки сохранения
             
             openModal('eventSheet');
-            setTimeout(() => input.focus(), 300); // Фокус на поле
+            setTimeout(() => input.focus(), 300);
         }
 
         function checkEventInput() {
@@ -514,13 +609,22 @@
             if (!val) return;
 
             const key = `${currentViewYear}-${currentViewMonth}-${selectedEventDay}`;
-            events[key] = val; // Сохраняем событие
+            events[key] = val; 
             
-            renderCalendar(); // Перерисовываем календарь (появится красный круг)
+            renderCalendar(); 
             closeAllModals();
-            
-            // Вибрация успеха
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        // ИЗМЕНЕНИЕ 5: Удаление события
+        function deleteEvent() {
+            const key = `${currentViewYear}-${currentViewMonth}-${selectedEventDay}`;
+            if (events[key]) {
+                delete events[key];
+                renderCalendar();
+                closeAllModals();
+                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
+            }
         }
 
 
@@ -653,7 +757,7 @@
 
         // Init
         renderProducts();
-        renderCalendar(); // Запуск календаря с датой 17.04.2026
+        renderCalendar(); 
         renderOrders();
 
     </script>
