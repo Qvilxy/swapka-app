@@ -4,41 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Flower Shop TMA</title>
-    <!-- Подключение Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Иконки FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            /* Светлая тема (по умолчанию) */
             --bg-color: #f5f5f7;
             --text-color: #000000;
             --secondary-text: #8e8e93;
             --card-bg: #ffffff;
-            --accent-green: #34c759;
-            --nav-bg: rgba(255, 255, 255, 0.7);
-            --nav-border: rgba(0, 0, 0, 0.1);
             --input-bg: #e3e3e8;
-            --modal-bg: rgba(255, 255, 255, 0.95);
-            --shadow: 0 4px 12px rgba(0,0,0,0.05);
-            --tile-placeholder: transparent;
-            
-            /* Переменная для безопасной зоны сверху (может быть установлена Telegram) */
-            --safe-area-top: env(safe-area-inset-top, 0px);
+            --nav-bg: rgba(255, 255, 255, 0.85); /* Более прозрачный для эффекта стекла */
+            --shadow: 0 2px 8px rgba(0,0,0,0.04);
+            --green-tile: #a8e6cf;
         }
 
         body.dark-mode {
-            /* Темная тема */
             --bg-color: #000000;
             --text-color: #ffffff;
             --secondary-text: #98989d;
             --card-bg: #1c1c1e;
-            --nav-bg: rgba(28, 28, 30, 0.7);
-            --nav-border: rgba(255, 255, 255, 0.1);
             --input-bg: #2c2c2e;
-            --modal-bg: rgba(28, 28, 30, 0.95);
-            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --nav-bg: rgba(28, 28, 30, 0.85);
+            --shadow: 0 2px 8px rgba(0,0,0,0.2);
+            --green-tile: #1c3a2a; /* Темно-зеленый для темной темы или прозрачный */
         }
 
         * {
@@ -54,78 +43,66 @@
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
-            /* Telegram обычно сам добавляет padding-top для контента, 
-               но мы добавим наш отступ через .content-wrapper */
+            /* Убираем стандартные отступы браузера */
         }
 
-        /* Обертка для контента каждой вкладки */
-        .content-wrapper {
-            /* Отступ 10px от нижней границы нативной шапки Telegram */
-            padding-top: 10px;
-            padding-bottom: 90px; /* Отступ под навбар */
+        /* Главный контейнер, который сдвигает контент вниз на 10px от нативного хедера */
+        .app-container {
+            padding-top: 10px; 
+            padding-bottom: 100px; /* Место под нижнее меню */
             min-height: 100vh;
         }
 
-        /* --- Header & Common --- */
+        /* --- Headers --- */
         .page-header {
-            padding: 0 16px 15px; /* Убрал верхний паддинг, так как он теперь в content-wrapper */
+            padding: 10px 16px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background-color: var(--bg-color); /* Сливается с фоном */
             position: sticky;
             top: 0;
-            z-index: 100;
-            background-color: var(--bg-color);
-            transition: background-color 0.3s;
-            /* Тень для отделения хедера от контента при скролле */
-            box-shadow: 0 1px 0 var(--nav-border);
+            z-index: 10;
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 28px; /* Чуть крупнее как в iOS */
             font-weight: 700;
-            letter-spacing: 0.5px;
         }
 
         .icon-btn {
             background: none;
             border: none;
-            font-size: 20px;
+            font-size: 22px;
             color: var(--text-color);
             cursor: pointer;
-            padding: 8px;
         }
 
-        /* --- Tabs Logic --- */
+        /* --- Tabs --- */
         .tab-content {
             display: none;
-            animation: fadeIn 0.2s ease-in-out;
         }
         .tab-content.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         /* --- TAB 1: GIFTS --- */
-        .search-container {
-            padding: 0 16px 10px;
+        .search-row {
+            padding: 0 16px 12px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            align-items: center;
         }
 
-        .search-wrapper {
+        .search-box {
             flex-grow: 1;
             position: relative;
         }
 
         .search-input {
             width: 100%;
-            padding: 10px 10px 10px 35px;
-            border-radius: 12px;
+            padding: 10px 10px 10px 38px;
+            border-radius: 10px;
             border: none;
             background-color: var(--input-bg);
             color: var(--text-color);
@@ -135,558 +112,454 @@
 
         .search-icon {
             position: absolute;
-            left: 10px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--secondary-text);
+            font-size: 14px;
         }
 
-        .cart-btn-header {
+        .cart-btn {
             background-color: var(--card-bg);
-            border-radius: 12px;
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: var(--shadow);
             position: relative;
+            border: none;
+            color: var(--text-color);
+            font-size: 18px;
         }
-        
+
         .cart-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            background: red;
+            top: -4px;
+            right: -4px;
+            background: #ff3b30;
             color: white;
             font-size: 10px;
+            font-weight: bold;
             padding: 2px 5px;
             border-radius: 10px;
             display: none;
         }
 
         .filters-row {
-            padding: 0 16px 15px;
+            padding: 0 16px 16px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none; /* Скрыть скроллбар Firefox */
         }
+        .filters-row::-webkit-scrollbar { display: none; } /* Скрыть скроллбар Chrome/Safari */
 
-        .filter-btn {
+        .filter-pill {
             background-color: var(--card-bg);
             color: var(--text-color);
             border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 8px 14px;
+            border-radius: 18px;
             font-size: 14px;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
             box-shadow: var(--shadow);
-            cursor: pointer;
+            white-space: nowrap;
         }
 
         .products-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
             padding: 0 16px;
         }
 
         .product-card {
             background-color: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 14px;
             overflow: hidden;
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
-            position: relative;
         }
 
-        .product-image-placeholder {
+        .tile-image {
             width: 100%;
             aspect-ratio: 1 / 1;
-            background-color: #a8e6cf; /* Зеленый плейсхолдер */
+            background-color: var(--green-tile); /* Зеленая плитка по умолчанию */
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(0,0,0,0.2);
-            font-size: 24px;
         }
         
-        .product-image-placeholder.has-photo {
+        /* Если есть фото, зеленый фон убирается, становится прозрачным/картинкой */
+        .tile-image.has-img {
             background-color: transparent;
         }
         
-        .product-image-placeholder img {
+        .tile-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .product-info {
+        .p-info {
             padding: 10px;
         }
 
-        .product-title {
+        .p-title {
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
-        .product-price {
-            font-size: 14px;
+        .p-price {
+            font-size: 13px;
             color: var(--secondary-text);
+            margin-bottom: 8px;
         }
 
-        .add-to-cart-btn {
-            margin-top: 8px;
+        .add-btn {
             width: 100%;
             padding: 8px;
-            background-color: var(--text-color);
-            color: var(--bg-color);
-            border: none;
+            background-color: var(--bg-color); /* Кнопка под цвет фона или контрастная */
+            color: var(--text-color);
+            border: 1px solid var(--input-bg);
             border-radius: 8px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
         }
+        
+        .add-btn:active {
+            opacity: 0.7;
+        }
 
         /* --- TAB 2: PROFILE --- */
-        .profile-header-block {
+        .profile-top {
             padding: 10px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .user-info {
+        .user-block {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
         .avatar {
-            width: 60px;
-            height: 60px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background-color: #ccc;
             object-fit: cover;
         }
 
-        .user-details h2 {
-            font-size: 18px;
-            margin-bottom: 2px;
-        }
+        .u-name { font-size: 18px; font-weight: 600; }
+        .u-tag { font-size: 14px; color: var(--secondary-text); }
 
-        .user-details p {
-            font-size: 14px;
-            color: var(--secondary-text);
-        }
-
-        .section-card {
+        .info-card {
             background-color: var(--card-bg);
             margin: 0 16px 12px;
-            border-radius: 16px;
+            border-radius: 14px;
             padding: 16px;
             box-shadow: var(--shadow);
         }
 
-        .section-title {
-            font-size: 16px;
+        .card-head {
+            font-size: 15px;
             font-weight: 600;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
+            color: var(--secondary-text); /* Заголовки секций серые как в iOS настройках */
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
         }
+        
+        .card-head i { color: var(--text-color); }
 
-        /* Calendar Styles */
-        .calendar-controls {
+        /* Calendar */
+        .cal-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
-        }
-
-        .month-year-select {
             font-weight: 600;
-            cursor: pointer;
-            padding: 5px;
+            font-size: 16px;
         }
 
-        .calendar-grid {
+        .cal-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 4px;
             text-align: center;
         }
 
-        .day-name {
-            font-size: 12px;
-            color: var(--secondary-text);
-            margin-bottom: 5px;
-        }
-
-        .day-cell {
+        .d-name { font-size: 11px; color: var(--secondary-text); margin-bottom: 6px; }
+        
+        .d-cell {
             aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 50%; /* Круглые даты */
         }
 
-        .day-cell.today {
+        .d-cell.today {
             background-color: var(--text-color);
             color: var(--bg-color);
+            font-weight: 600;
         }
 
-        .day-cell.event {
-            background-color: #ff3b30; /* Красный квадрат */
+        .d-cell.event {
+            background-color: #ff3b30;
             color: white;
-        }
-        
-        .day-cell.empty {
-            pointer-events: none;
+            font-weight: 600;
         }
 
-        /* List Items in Profile */
-        .list-item {
-            padding: 10px 0;
-            border-bottom: 1px solid var(--nav-border);
+        /* Lists in Profile */
+        .list-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--input-bg);
+            font-size: 15px;
         }
-        .list-item:last-child {
-            border-bottom: none;
-        }
-        .item-label {
-            font-size: 14px;
-        }
-        .item-value {
-            font-size: 14px;
-            color: var(--secondary-text);
-            text-align: right;
-            max-width: 60%;
-        }
+        .list-row:last-child { border-bottom: none; }
+        .row-label { color: var(--text-color); }
+        .row-val { color: var(--secondary-text); }
+        .row-action { color: #007aff; }
 
         /* --- TAB 3: COURIER --- */
         .order-card {
             background-color: var(--card-bg);
             margin: 0 16px 16px;
-            border-radius: 16px;
+            border-radius: 14px;
             padding: 16px;
             box-shadow: var(--shadow);
         }
 
-        .order-header {
+        .o-head {
             font-size: 16px;
             font-weight: 700;
             margin-bottom: 12px;
-            border-bottom: 1px solid var(--nav-border);
-            padding-bottom: 8px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--input-bg);
         }
 
-        .order-products-scroll {
+        .o-scroll {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             overflow-x: auto;
             margin-bottom: 12px;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
         }
 
-        .order-product-thumb {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            background-color: #a8e6cf; /* Зеленый плейсхолдер */
+        .o-thumb {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            background-color: var(--green-tile);
             flex-shrink: 0;
         }
-        
-        .order-product-thumb img {
-             width: 100%;
-             height: 100%;
-             object-fit: cover;
-             border-radius: 12px;
-        }
+        .o-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 
-        .order-details p {
-            font-size: 14px;
-            margin-bottom: 4px;
-            line-height: 1.4;
-        }
+        .o-detail { font-size: 14px; margin-bottom: 6px; line-height: 1.3; }
+        .o-detail b { display: block; color: var(--text-color); margin-bottom: 2px; }
+        .o-detail span { color: var(--secondary-text); }
+        .o-phone { color: #007aff !important; font-weight: 500; }
 
-        .order-details strong {
-            color: var(--text-color);
-        }
-        
-        .order-details span {
-            color: var(--secondary-text);
-        }
-
-        .expired {
-            opacity: 0.6;
-        }
-
-        /* --- BOTTOM NAVIGATION (Liquid Glass) --- */
-        .bottom-nav {
+        /* --- BOTTOM NAV --- */
+        .bottom-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 80px;
+            height: 85px;
             background: var(--nav-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--nav-border);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             display: flex;
             justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            padding-bottom: 15px; /* Учет safe area на iPhone */
+            align-items: flex-start; /* Иконки сверху */
+            padding-top: 10px;
+            z-index: 100;
+            border-top: 0.5px solid rgba(128,128,128, 0.1); /* Едва заметная линия */
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            gap: 4px;
             color: var(--secondary-text);
             font-size: 10px;
-            gap: 4px;
-            cursor: pointer;
+            font-weight: 500;
             width: 25%;
-            transition: color 0.2s;
+            cursor: pointer;
         }
 
-        .nav-item i {
-            font-size: 22px;
-            margin-bottom: 2px;
-        }
+        .nav-item i { font-size: 24px; margin-bottom: 2px; transition: transform 0.1s; }
+        .nav-item:active i { transform: scale(0.9); }
 
-        .nav-item.active {
-            color: #007aff; /* Стандартный синий iOS/Telegram */
-        }
+        .nav-item.active { color: #007aff; }
+        .nav-item.active i { font-weight: 900; } /* Жирная иконка для активного */
 
-        /* --- MODALS / WIDGETS --- */
-        .modal-overlay {
+        /* --- MODALS --- */
+        .modal-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4);
-            z-index: 2000;
+            z-index: 200;
             display: none;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.2s;
         }
+        .modal-bg.open { display: block; opacity: 1; }
 
-        .modal-overlay.open {
-            display: block;
-            opacity: 1;
-        }
-
-        .bottom-sheet {
+        .sheet {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--modal-bg);
-            border-radius: 20px 20px 0 0;
+            bottom: 0; left: 0; width: 100%;
+            background: var(--card-bg);
+            border-radius: 16px 16px 0 0;
             padding: 20px;
             transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            z-index: 2001;
-            max-height: 60vh;
+            z-index: 201;
+            max-height: 70vh;
             overflow-y: auto;
         }
+        .sheet.open { transform: translateY(0); }
 
-        .bottom-sheet.open {
-            transform: translateY(0);
+        .handle {
+            width: 36px; height: 4px; background: var(--secondary-text);
+            border-radius: 2px; margin: 0 auto 20px; opacity: 0.3;
         }
 
-        .sheet-handle {
-            width: 40px;
-            height: 5px;
-            background-color: var(--secondary-text);
-            border-radius: 3px;
-            margin: 0 auto 20px;
-            opacity: 0.5;
-        }
-
-        .category-list button {
-            width: 100%;
-            padding: 15px;
-            text-align: left;
-            background: none;
-            border: none;
-            border-bottom: 1px solid var(--nav-border);
-            font-size: 16px;
-            color: var(--text-color);
-        }
-
-        .price-slider-container {
-            padding: 10px 0;
-        }
-        
-        .price-inputs {
-            display: flex;
-            gap: 10px;
+        .btn-full {
+            width: 100%; padding: 14px;
+            background: #007aff; color: white;
+            border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600;
             margin-top: 15px;
         }
         
-        .price-inputs input {
-            width: 50%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--nav-border);
-            background: var(--input-bg);
-            color: var(--text-color);
-        }
-
-        /* Cart Modal Specifics */
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--nav-border);
-        }
-        .cart-total {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: right;
-        }
-        .checkout-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #007aff;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            margin-top: 15px;
+        .cat-btn {
+            width: 100%; padding: 14px;
+            text-align: left; background: none; border: none;
+            border-bottom: 1px solid var(--input-bg);
+            font-size: 16px; color: var(--text-color);
         }
 
     </style>
 </head>
 <body>
 
-    <!-- === TAB 1: GIFTS === -->
-    <div id="tab-gifts" class="tab-content active">
-        <div class="content-wrapper">
+    <div class="app-container">
+        
+        <!-- === TAB 1: GIFTS === -->
+        <div id="tab-gifts" class="tab-content active">
             <header class="page-header">
                 <h1>Цветы</h1>
             </header>
 
-            <div class="search-container">
-                <div class="search-wrapper">
+            <div class="search-row">
+                <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" class="search-input" placeholder="Поиск..." id="searchInput">
                 </div>
-                <button class="cart-btn-header" onclick="openCart()">
+                <button class="cart-btn" onclick="openCart()">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-badge" id="cartBadge">0</span>
                 </button>
             </div>
 
             <div class="filters-row">
-                <button class="filter-btn" onclick="openCategoryModal()">
-                    Категория <i class="fas fa-chevron-down"></i>
+                <button class="filter-pill" onclick="openCategoryModal()">
+                    Категория <i class="fas fa-chevron-down" style="font-size:10px;"></i>
                 </button>
-                <button class="filter-btn" onclick="openPriceModal()">
-                    Цена <i class="fas fa-chevron-down"></i>
+                <button class="filter-pill" onclick="openPriceModal()">
+                    Цена <i class="fas fa-chevron-down" style="font-size:10px;"></i>
                 </button>
             </div>
 
-            <div class="products-grid" id="productsGrid">
-                <!-- Products will be injected here via JS -->
-            </div>
+            <div class="products-grid" id="productsGrid"></div>
         </div>
-    </div>
 
-    <!-- === TAB 2: PROFILE === -->
-    <div id="tab-profile" class="tab-content">
-        <div class="content-wrapper">
-            <header class="page-header">
-                <h1>Профиль</h1>
+        <!-- === TAB 2: PROFILE === -->
+        <div id="tab-profile" class="tab-content">
+            <div class="profile-top">
+                <div class="user-block">
+                    <img src="https://via.placeholder.com/60" alt="" class="avatar" id="userAvatar">
+                    <div>
+                        <div class="u-name" id="userName">Name</div>
+                        <div class="u-tag" id="userUsername">@username</div>
+                    </div>
+                </div>
                 <button class="icon-btn" onclick="toggleTheme()">
                     <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
-            </header>
-
-            <div class="profile-header-block">
-                <div class="user-info">
-                    <img src="https://via.placeholder.com/60" alt="Avatar" class="avatar" id="userAvatar">
-                    <div class="user-details">
-                        <h2 id="userName">Name</h2>
-                        <p id="userUsername">@username</p>
-                    </div>
-                </div>
             </div>
 
-            <div class="section-card">
-                <div class="section-title"><i class="far fa-flag"></i> Важные даты</div>
-                <div class="calendar-controls">
+            <div class="info-card">
+                <div class="card-head"><i class="far fa-flag"></i> Важные даты</div>
+                <div class="cal-nav">
                     <i class="fas fa-chevron-left" style="color:var(--secondary-text)"></i>
-                    <div class="month-year-select" id="currentMonthYear">Март 2026</div>
+                    <span>Март 2026</span>
                     <i class="fas fa-chevron-right" style="color:var(--secondary-text)"></i>
                 </div>
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- Calendar days injected via JS -->
+                <div class="cal-grid" id="calendarGrid"></div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-head"><i class="fas fa-map-marker-alt"></i> Адрес доставки</div>
+                <div class="list-row">
+                    <span class="row-label">Енисейская 33, кв 16</span>
+                </div>
+                <div class="list-row">
+                    <span class="row-action">+ Добавить адрес</span>
                 </div>
             </div>
 
-            <div class="section-card">
-                <div class="section-title"><i class="fas fa-map-marker-alt"></i> Адрес доставки</div>
-                <div class="list-item">
-                    <span class="item-label">Енисейская 33, кв 16</span>
-                </div>
-                <div class="list-item" style="color: #007aff;">
-                    <span class="item-label">+ Добавить адрес</span>
+            <div class="info-card">
+                <div class="card-head"><i class="far fa-credit-card"></i> Оплата</div>
+                <div class="list-row">
+                    <span class="row-label">•••• 4242</span>
+                    <span class="row-val">Visa</span>
                 </div>
             </div>
 
-            <div class="section-card">
-                <div class="section-title"><i class="far fa-credit-card"></i> Способы оплаты</div>
-                <div class="list-item">
-                    <span class="item-label">•••• 4242</span>
-                    <span class="item-value">Visa</span>
-                </div>
-            </div>
-
-            <div class="section-card">
-                <div class="section-title">
-                    <i class="far fa-clock"></i> История заказов 
-                    <span style="margin-left:auto; color: var(--secondary-text);" id="orderCountBadge">0</span>
-                </div>
-                <div id="orderHistoryList">
-                    <!-- History items -->
+            <div class="info-card">
+                <div class="card-head"><i class="far fa-clock"></i> История заказов</div>
+                <div class="list-row">
+                    <span class="row-label">Нет активных заказов</span>
+                    <span class="row-val" id="orderCountBadge">0</span>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- === TAB 3: COURIER === -->
-    <div id="tab-courier" class="tab-content">
-        <div class="content-wrapper">
+        <!-- === TAB 3: COURIER === -->
+        <div id="tab-courier" class="tab-content">
             <header class="page-header">
                 <h1>Заказы</h1>
             </header>
-
-            <div id="courierOrdersList">
-                <!-- Orders injected via JS -->
-            </div>
+            <div id="courierOrdersList"></div>
         </div>
+
     </div>
 
-    <!-- === BOTTOM NAVIGATION === -->
-    <nav class="bottom-nav">
+    <!-- === NAVIGATION === -->
+    <nav class="bottom-bar">
         <div class="nav-item active" onclick="switchTab('gifts', this)">
             <i class="fas fa-gift"></i>
             <span>Подарки</span>
@@ -695,237 +568,157 @@
             <i class="fas fa-user"></i>
             <span>Профиль</span>
         </div>
-        <div class="nav-item" onclick="switchTab('courier', this)" id="navCourier">
+        <div class="nav-item" onclick="switchTab('courier', this)">
             <i class="fas fa-truck"></i>
             <span>Курьер</span>
         </div>
-        <div class="nav-item" onclick="alert('Админ панель в разработке')">
+        <div class="nav-item" onclick="alert('Admin')">
             <i class="fas fa-crown" style="color: gold;"></i>
             <span>Админ</span>
         </div>
     </nav>
 
     <!-- === MODALS === -->
+    <div class="modal-bg" id="modalOverlay" onclick="closeAllModals()"></div>
     
-    <!-- Category Modal -->
-    <div class="modal-overlay" id="categoryOverlay" onclick="closeModals()"></div>
-    <div class="bottom-sheet" id="categorySheet">
-        <div class="sheet-handle"></div>
-        <div class="category-list">
-            <button onclick="filterByCategory('all')">Все</button>
-            <button onclick="filterByCategory('flowers')">Цветы</button>
-            <button onclick="filterByCategory('sweets')">Сладкое</button>
-            <button onclick="filterByCategory('toys')">Игрушки</button>
-        </div>
+    <!-- Category Sheet -->
+    <div class="sheet" id="catSheet">
+        <div class="handle"></div>
+        <button class="cat-btn" onclick="setCat('all')">Все</button>
+        <button class="cat-btn" onclick="setCat('flowers')">Цветы</button>
+        <button class="cat-btn" onclick="setCat('sweets')">Сладкое</button>
+        <button class="cat-btn" onclick="setCat('toys')">Игрушки</button>
     </div>
 
-    <!-- Price Modal -->
-    <div class="modal-overlay" id="priceOverlay" onclick="closeModals()"></div>
-    <div class="bottom-sheet" id="priceSheet">
-        <div class="sheet-handle"></div>
-        <h3>Фильтр по цене</h3>
-        <div class="price-slider-container">
-            <input type="range" min="0" max="10000" value="10000" style="width:100%" oninput="document.getElementById('priceMaxDisplay').innerText = this.value + ' ₽'">
-            <div style="text-align:center; margin-top:5px;" id="priceMaxDisplay">10000 ₽</div>
+    <!-- Price Sheet -->
+    <div class="sheet" id="priceSheet">
+        <div class="handle"></div>
+        <h3 style="margin-bottom:15px;">Цена</h3>
+        <input type="range" style="width:100%" oninput="document.getElementById('pVal').innerText=this.value+' ₽'">
+        <div style="text-align:center; margin:10px 0;" id="pVal">5000 ₽</div>
+        <div style="display:flex; gap:10px;">
+            <input type="number" placeholder="От" style="width:50%; padding:10px; border-radius:8px; border:1px solid var(--input-bg); background:var(--bg-color); color:var(--text-color);">
+            <input type="number" placeholder="До" style="width:50%; padding:10px; border-radius:8px; border:1px solid var(--input-bg); background:var(--bg-color); color:var(--text-color);">
         </div>
-        <div class="price-inputs">
-            <input type="number" placeholder="От">
-            <input type="number" placeholder="До">
-        </div>
-        <button class="checkout-btn" style="margin-top:20px;" onclick="closeModals()">Применить</button>
+        <button class="btn-full" onclick="closeAllModals()">Готово</button>
     </div>
 
-    <!-- Cart Modal -->
-    <div class="modal-overlay" id="cartOverlay" onclick="closeCart()"></div>
-    <div class="bottom-sheet" id="cartSheet">
-        <div class="sheet-handle"></div>
-        <h3>Корзина</h3>
-        <div id="cartItemsContainer"></div>
-        <div class="cart-total" id="cartTotal">Итого: 0 ₽</div>
-        <button class="checkout-btn" onclick="checkout()">Оформить заказ</button>
+    <!-- Cart Sheet -->
+    <div class="sheet" id="cartSheet">
+        <div class="handle"></div>
+        <h3 style="margin-bottom:15px;">Корзина</h3>
+        <div id="cartItems"></div>
+        <div style="text-align:right; font-size:18px; font-weight:bold; margin-top:15px;" id="cartTotal">0 ₽</div>
+        <button class="btn-full" onclick="checkout()">Оформить</button>
     </div>
 
     <script>
-        // --- INITIALIZATION & TELEGRAM SDK ---
         const tg = window.Telegram.WebApp;
-        
-        // Ждем готовности Telegram
+        tg.expand();
         tg.ready();
-        tg.expand(); // Раскрыть на весь экран
 
-        // Данные пользователя из Telegram
-        const user = tg.initDataUnsafe.user || {
-            first_name: "Name",
-            username: "username",
-            photo_url: "https://via.placeholder.com/60"
-        };
-
-        document.getElementById('userName').innerText = user.first_name;
-        document.getElementById('userUsername').innerText = user.username ? '@' + user.username : '';
-        if(user.photo_url) {
-            document.getElementById('userAvatar').src = user.photo_url;
-        }
-
-        // Тема
+        // Theme Init
         if (tg.colorScheme === 'dark') {
             document.body.classList.add('dark-mode');
             document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
         }
 
-        // --- DATA MOCKS ---
+        // User Data
+        const user = tg.initDataUnsafe.user || { first_name: "Name", username: "username" };
+        document.getElementById('userName').innerText = user.first_name;
+        document.getElementById('userUsername').innerText = user.username ? '@'+user.username : '';
+
+        // Mock Data
         const products = [
-            { id: 1, title: "Букет роз", price: 3500, category: "flowers", image: null }, // null = прозрачный/зеленый
-            { id: 2, title: "Мишка Тедди", price: 1200, category: "toys", image: null },
-            { id: 3, title: "Шоколад ручной работы", price: 800, category: "sweets", image: null },
-            { id: 4, title: "Тюльпаны микс", price: 2500, category: "flowers", image: null },
-            { id: 5, title: "Конфеты Рафаэлло", price: 600, category: "sweets", image: null },
-            { id: 6, title: "Зайка плюшевая", price: 1500, category: "toys", image: null },
+            { id: 1, title: "Букет роз", price: 3500, cat: "flowers", img: null },
+            { id: 2, title: "Мишка", price: 1200, cat: "toys", img: null },
+            { id: 3, title: "Шоколад", price: 800, cat: "sweets", img: null },
+            { id: 4, title: "Тюльпаны", price: 2500, cat: "flowers", img: null },
+            { id: 5, title: "Рафаэлло", price: 600, cat: "sweets", img: null },
+            { id: 6, title: "Зайка", price: 1500, cat: "toys", img: null },
         ];
 
         let cart = [];
-        let currentCategory = 'all';
+        let currentCat = 'all';
 
-        // --- RENDER FUNCTIONS ---
-
-        function renderProducts(filterText = '') {
+        // Render Products
+        function renderProducts(q = '') {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
-
-            const filtered = products.filter(p => {
-                const matchesCategory = currentCategory === 'all' || p.category === currentCategory;
-                const matchesSearch = p.title.toLowerCase().includes(filterText.toLowerCase());
-                return matchesCategory && matchesSearch;
-            });
-
-            filtered.forEach(product => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
+            
+            products.filter(p => {
+                return (currentCat === 'all' || p.cat === currentCat) && 
+                       p.title.toLowerCase().includes(q.toLowerCase());
+            }).forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'product-card';
+                const imgHtml = p.img 
+                    ? `<div class="tile-image has-img"><img src="${p.img}"></div>` 
+                    : `<div class="tile-image"><i class="fas fa-image" style="opacity:0.3"></i></div>`;
                 
-                // Логика отображения картинки/плейсхолдера
-                let imageHtml = '';
-                if (product.image) {
-                    imageHtml = `<div class="product-image-placeholder has-photo"><img src="${product.image}" alt="${product.title}"></div>`;
-                } else {
-                    // Если нет фото, плитка прозрачная (фон body просвечивает), но можно добавить иконку для красоты
-                    imageHtml = `<div class="product-image-placeholder"><i class="fas fa-image"></i></div>`;
-                }
-
-                card.innerHTML = `
-                    ${imageHtml}
-                    <div class="product-info">
-                        <div class="product-title">${product.title}</div>
-                        <div class="product-price">${product.price} ₽</div>
-                        <button class="add-to-cart-btn" onclick="addToCart(${product.id})">В корзину</button>
+                div.innerHTML = `
+                    ${imgHtml}
+                    <div class="p-info">
+                        <div class="p-title">${p.title}</div>
+                        <div class="p-price">${p.price} ₽</div>
+                        <button class="add-btn" onclick="addToCart(${p.id})">В корзину</button>
                     </div>
                 `;
-                grid.appendChild(card);
+                grid.appendChild(div);
             });
         }
 
-        function renderCalendar() {
-            const grid = document.getElementById('calendarGrid');
-            grid.innerHTML = '';
+        // Render Calendar
+        function renderCal() {
+            const g = document.getElementById('calendarGrid');
+            ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
+                g.innerHTML += `<div class="d-name">${d}</div>`;
+            });
+            // Empty slots for March 2026 start (Sun)
+            for(let i=0; i<6; i++) g.innerHTML += `<div></div>`;
             
-            const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-            daysOfWeek.forEach(day => {
-                const el = document.createElement('div');
-                el.className = 'day-name';
-                el.innerText = day;
-                grid.appendChild(el);
-            });
-
-            // Симуляция марта 2026
-            // 1 марта 2026 - Воскресенье. Значит первые 6 ячеек пустые (Пн-Сб)
-            for(let i=0; i<6; i++) {
-                const empty = document.createElement('div');
-                empty.className = 'day-cell empty';
-                grid.appendChild(empty);
-            }
-
-            const today = 17; // По скриншоту сегодня 16, но в ТЗ время 2026 год. Пусть будет 17 как на часах? На скриншоте профиля выделено 16 черным.
-            const eventDay = 25; // Красный квадрат
-
-            for (let i = 1; i <= 31; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'day-cell';
-                cell.innerText = i;
-                
-                if (i === 16) cell.classList.add('today'); // Черный квадрат
-                if (i === 25) cell.classList.add('event'); // Красный квадрат
-                
-                grid.appendChild(cell);
+            for(let i=1; i<=31; i++) {
+                let cls = 'd-cell';
+                if(i===16) cls += ' today';
+                if(i===25) cls += ' event';
+                g.innerHTML += `<div class="${cls}">${i}</div>`;
             }
         }
 
-        function renderCourierOrders() {
-            const container = document.getElementById('courierOrdersList');
-            container.innerHTML = '';
-
-            // Моковые заказы
+        // Render Courier Orders
+        function renderOrders() {
+            const c = document.getElementById('courierOrdersList');
             const orders = [
-                {
-                    id: 101,
-                    date: "25 марта 15:00",
-                    address: "ул. Ленина 1, кв 5",
-                    phone: "+79000000000",
-                    items: [1, 2], // IDs товаров
-                    expired: false
-                },
-                {
-                    id: 102,
-                    date: "25 марта 18:30",
-                    address: "пр. Мира 10",
-                    phone: "+79991112233",
-                    items: [3],
-                    expired: true // Просрочен для примера
-                }
+                { date: "25 марта 15:00", addr: "Ленина 1", phone: "+7900...", items: [1,2] },
+                { date: "25 марта 18:30", addr: "Мира 10", phone: "+7999...", items: [3], expired: true }
             ];
 
-            orders.forEach(order => {
-                const card = document.createElement('div');
-                card.className = `order-card ${order.expired ? 'expired' : ''}`;
-                
-                let itemsHtml = '';
-                order.items.forEach(itemId => {
-                    const prod = products.find(p => p.id === itemId);
-                    if(prod) {
-                         // Если есть фото - показываем, иначе зеленый квадрат
-                         const bgStyle = prod.image ? `background-image: url(${prod.image}); background-size: cover;` : 'background-color: #a8e6cf;';
-                         itemsHtml += `<div class="order-product-thumb" style="${bgStyle}"></div>`;
-                    }
-                });
+            orders.forEach(o => {
+                let thumbs = o.items.map(id => {
+                    const p = products.find(x=>x.id===id);
+                    return p.img 
+                        ? `<div class="o-thumb"><img src="${p.img}"></div>` 
+                        : `<div class="o-thumb"></div>`;
+                }).join('');
 
-                card.innerHTML = `
-                    <div class="order-header">Содержимое</div>
-                    <div class="order-products-scroll">
-                        ${itemsHtml}
-                    </div>
-                    <div class="order-details">
-                        <p><strong>Адрес доставки:</strong><br><span>${order.address}</span></p>
-                        <p><strong>Дата и время:</strong><br><span>${order.date}</span></p>
-                        <p><strong>Номер телефона клиента:</strong><br><span style="color:#007aff">${order.phone}</span></p>
+                c.innerHTML += `
+                    <div class="order-card" style="${o.expired?'opacity:0.5':''}">
+                        <div class="o-head">Содержимое</div>
+                        <div class="o-scroll">${thumbs}</div>
+                        <div class="o-detail"><b>Адрес:</b> <span>${o.addr}</span></div>
+                        <div class="o-detail"><b>Дата:</b> <span>${o.date}</span></div>
+                        <div class="o-detail"><b>Телефон:</b> <span class="o-phone">${o.phone}</span></div>
                     </div>
                 `;
-                container.appendChild(card);
             });
         }
 
-        // --- LOGIC FUNCTIONS ---
-
-        function switchTab(tabName, navElement) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            // Show target tab
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            
-            // Update Nav Icons
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            navElement.classList.add('active');
-
-            // Special logic for Courier tab visibility could be added here based on user role
-            if(tabName === 'courier') {
-                // В реальном приложении проверка роли
-            }
+        // Logic
+        function switchTab(name, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-'+name).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
         }
 
         function toggleTheme() {
@@ -933,99 +726,59 @@
             const icon = document.getElementById('themeIcon');
             if(document.body.classList.contains('dark-mode')) {
                 icon.classList.replace('fa-moon', 'fa-sun');
-                tg.HapticFeedback.notificationOccurred('success');
             } else {
                 icon.classList.replace('fa-sun', 'fa-moon');
             }
         }
 
-        // Search
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            renderProducts(e.target.value);
-        });
+        document.getElementById('searchInput').addEventListener('input', e => renderProducts(e.target.value));
 
-        // Filters
-        function openCategoryModal() {
-            document.getElementById('categoryOverlay').classList.add('open');
-            document.getElementById('categorySheet').classList.add('open');
+        // Modals
+        function openModal(id) {
+            document.getElementById('modalOverlay').classList.add('open');
+            document.getElementById(id).classList.add('open');
         }
-
-        function openPriceModal() {
-            document.getElementById('priceOverlay').classList.add('open');
-            document.getElementById('priceSheet').classList.add('open');
+        function closeAllModals() {
+            document.getElementById('modalOverlay').classList.remove('open');
+            document.querySelectorAll('.sheet').forEach(s => s.classList.remove('open'));
         }
+        function openCategoryModal() { openModal('catSheet'); }
+        function openPriceModal() { openModal('priceSheet'); }
+        function setCat(c) { currentCat = c; renderProducts(); closeAllModals(); }
 
-        function closeModals() {
-            document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('open'));
-            document.querySelectorAll('.bottom-sheet').forEach(el => el.classList.remove('open'));
-        }
-
-        function filterByCategory(cat) {
-            currentCategory = cat;
-            renderProducts(document.getElementById('searchInput').value);
-            closeModals();
-        }
-
-        // Cart Logic
+        // Cart
         function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            cart.push(product);
-            updateCartUI();
+            cart.push(products.find(p=>p.id===id));
+            updateCart();
             tg.HapticFeedback.selectionChanged();
         }
-
-        function updateCartUI() {
-            const badge = document.getElementById('cartBadge');
-            badge.innerText = cart.length;
-            badge.style.display = cart.length > 0 ? 'block' : 'none';
-
-            const container = document.getElementById('cartItemsContainer');
-            container.innerHTML = '';
-            let total = 0;
-
-            cart.forEach((item, index) => {
-                total += item.price;
-                const div = document.createElement('div');
-                div.className = 'cart-item';
-                div.innerHTML = `
-                    <span>${item.title}</span>
-                    <span>${item.price} ₽ <i class="fas fa-trash" style="color:red; margin-left:10px;" onclick="removeFromCart(${index})"></i></span>
+        function updateCart() {
+            document.getElementById('cartBadge').innerText = cart.length;
+            document.getElementById('cartBadge').style.display = cart.length ? 'block' : 'none';
+            
+            const list = document.getElementById('cartItems');
+            list.innerHTML = '';
+            let sum = 0;
+            cart.forEach((item, idx) => {
+                sum += item.price;
+                list.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--input-bg);">
+                        <span>${item.title}</span>
+                        <span>${item.price} ₽ <i class="fas fa-times" style="color:red; margin-left:10px;" onclick="rmFromCart(${idx})"></i></span>
+                    </div>
                 `;
-                container.appendChild(div);
             });
-
-            document.getElementById('cartTotal').innerText = `Итого: ${total} ₽`;
-            document.getElementById('orderCountBadge').innerText = cart.length; // Обновляем счетчик в профиле для демо
+            document.getElementById('cartTotal').innerText = sum + ' ₽';
+            document.getElementById('orderCountBadge').innerText = cart.length;
         }
+        function rmFromCart(idx) { cart.splice(idx,1); updateCart(); }
+        function openCart() { openModal('cartSheet'); }
+        function checkout() { alert('Заказ оформлен'); cart=[]; updateCart(); closeAllModals(); }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        function openCart() {
-            document.getElementById('cartOverlay').classList.add('open');
-            document.getElementById('cartSheet').classList.add('open');
-        }
-
-        function closeCart() {
-            document.getElementById('cartOverlay').classList.remove('open');
-            document.getElementById('cartSheet').classList.remove('open');
-        }
-
-        function checkout() {
-            if(cart.length === 0) return;
-            alert('Заказ оформлен! (Демо)');
-            cart = [];
-            updateCartUI();
-            closeCart();
-            // Здесь можно отправить данные боту через tg.sendData
-        }
-
-        // --- STARTUP ---
+        // Init
         renderProducts();
-        renderCalendar();
-        renderCourierOrders();
+        renderCal();
+        renderOrders();
 
     </script>
 </body>
