@@ -19,7 +19,6 @@
             --blue-accent: #007aff;
             --border-color: #d1d1d6;
             
-            /* Nav Colors */
             --nav-container-bg: #ffffff;
             --nav-indicator-bg: #e5e5ea;
             --nav-text-inactive: #000000;
@@ -47,17 +46,14 @@
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            user-select: none; /* Запрет выделения текста */
+            user-select: none;
             -webkit-user-select: none;
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
-            overflow-x: hidden;
-            /* Важно для предотвращения скролла всего боди при драге */
-            touch-action: pan-y; 
+        /* ВАЖНО: Блокируем скролл всего боди, если идет драг */
+        body.no-scroll {
+            overflow: hidden;
+            height: 100vh;
         }
 
         .app-container {
@@ -161,14 +157,13 @@
             border-radius: 100px;
             z-index: 1;
             cursor: grab;
-            /* Анимация только когда мы НЕ тащим его */
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
             will-change: transform, width;
         }
         
         .nav-indicator.dragging {
             cursor: grabbing;
-            transition: none; /* Отключаем анимацию при драге для мгновенной реакции */
+            transition: none; /* Отключаем анимацию при драге */
             background-color: #d1d1d6;
         }
 
@@ -442,7 +437,7 @@
             });
         }
 
-        // --- NAVIGATION LOGIC WITH PHYSICS (FIXED) ---
+        // --- NAVIGATION LOGIC WITH PHYSICS (FIXED SCROLL ISSUE) ---
         let currentTabIndex = 0;
         const indicator = document.getElementById('navIndicator');
         const navItems = document.querySelectorAll('.nav-item');
@@ -452,7 +447,6 @@
         let startX = 0;
         let currentTranslateX = 0;
 
-        // Функция позиционирования индикатора по центру кнопки
         function updateIndicatorPosition(index, animate = true) {
             const targetItem = navItems[index];
             const itemLeft = targetItem.offsetLeft;
@@ -469,7 +463,7 @@
             
             indicator.style.width = `${indicatorWidth}px`;
             indicator.style.transform = `translateX(${newLeft}px)`;
-            currentTranslateX = newLeft; // Запоминаем текущую позицию X
+            currentTranslateX = newLeft; 
 
             navItems.forEach((el, i) => {
                 if (i === index) el.classList.add('active');
@@ -495,45 +489,47 @@
         window.addEventListener('load', () => updateIndicatorPosition(0, false));
         window.addEventListener('resize', () => updateIndicatorPosition(currentTabIndex, false));
 
-        // --- DRAG AND DROP PHYSICS (HARD FIXED) ---
+        // --- DRAG AND DROP PHYSICS (SCROLL FIX) ---
         
         indicator.addEventListener('touchstart', (e) => {
             isDragging = true;
             startX = e.touches[0].clientX;
             indicator.classList.add('dragging');
-            // Блокируем переходы CSS
             indicator.style.transition = 'none';
+            
+            // БЛОКИРУЕМ СКРОЛЛ СТРАНИЦЫ
+            document.body.classList.add('no-scroll');
         }, {passive: false});
 
         document.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
             
-            // ВАЖНО: Предотвращаем скролл страницы и другие действия
+            // КРИТИЧЕСКИ ВАЖНО: preventDefault блокирует нативный скролл браузера
             e.preventDefault(); 
             
             const x = e.touches[0].clientX;
             const diff = x - startX;
             
-            // Двигаем индикатор ровно за пальцем относительно начальной позиции
             let newPos = currentTranslateX + diff;
             
-            // Ограничители, чтобы не улетел в космос (мягкие границы)
+            // Ограничители
             const maxRight = navContainer.offsetWidth - indicator.offsetWidth;
             if (newPos < -50) newPos = -50;
             if (newPos > maxRight + 50) newPos = maxRight + 50;
 
             indicator.style.transform = `translateX(${newPos}px)`;
-        }, {passive: false}); // passive: false критически важен для работы preventDefault
+        }, {passive: false}); // passive: false разрешает использовать preventDefault
 
         document.addEventListener('touchend', (e) => {
             if (!isDragging) return;
             isDragging = false;
             indicator.classList.remove('dragging');
             
-            // Включаем анимацию обратно для магнита
+            // РАЗРЕШАЕМ СКРОЛЛ ОБРАТНО
+            document.body.classList.remove('no-scroll');
+            
             indicator.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease';
             
-            // Вычисляем, где сейчас центр индикатора
             const style = window.getComputedStyle(indicator);
             const matrix = new WebKitCSSMatrix(style.transform);
             const currentLeft = matrix.m41;
@@ -542,7 +538,6 @@
             let nearestIndex = 0;
             let minDiff = Infinity;
 
-            // Ищем ближайшую кнопку
             navItems.forEach((item, index) => {
                 const itemCenter = item.offsetLeft + (item.offsetWidth / 2);
                 const diff = Math.abs(indicatorCenter - itemCenter);
@@ -552,7 +547,6 @@
                 }
             });
             
-            // Переключаем таб и примагничиваем индикатор
             switchTabByIndex(nearestIndex);
         });
 
