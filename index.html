@@ -22,7 +22,10 @@
             --input-bg: #e3e3e8;
             --modal-bg: rgba(255, 255, 255, 0.95);
             --shadow: 0 4px 12px rgba(0,0,0,0.05);
-            --tile-placeholder: transparent; /* Прозрачные плитки по ТЗ */
+            --tile-placeholder: transparent;
+            
+            /* Переменная для безопасной зоны сверху (может быть установлена Telegram) */
+            --safe-area-top: env(safe-area-inset-top, 0px);
         }
 
         body.dark-mode {
@@ -50,21 +53,32 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
-            padding-bottom: 90px; /* Отступ под навбар */
             overflow-x: hidden;
+            /* Telegram обычно сам добавляет padding-top для контента, 
+               но мы добавим наш отступ через .content-wrapper */
+        }
+
+        /* Обертка для контента каждой вкладки */
+        .content-wrapper {
+            /* Отступ 10px от нижней границы нативной шапки Telegram */
+            padding-top: 10px;
+            padding-bottom: 90px; /* Отступ под навбар */
+            min-height: 100vh;
         }
 
         /* --- Header & Common --- */
         .page-header {
-            padding: 15px 16px;
+            padding: 0 16px 15px; /* Убрал верхний паддинг, так как он теперь в content-wrapper */
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            background-color: var(--bg-color); /* Чтобы контент не просвечивал при скролле */
+            background-color: var(--bg-color);
             transition: background-color 0.3s;
+            /* Тень для отделения хедера от контента при скролле */
+            box-shadow: 0 1px 0 var(--nav-border);
         }
 
         h1 {
@@ -189,16 +203,10 @@
             position: relative;
         }
 
-        /* Зеленые плитки становятся прозрачными, если нет фото -> делаем фон карточки прозрачным, но оставляем тень/рамку или просто пустое место? 
-           По ТЗ: "Все зеленые плитки если там нет фото, то они становятся прозрачными". 
-           Интерпретация: Если есть фото - показываем фото. Если нет - блок прозрачный (виден фон приложения). 
-           Но чтобы карточка не исчезла совсем, оставим минимальную высоту или рамку, если нужно. 
-           На скриншоте просто цветные блоки. Сделаем так: если нет картинки, фон блока = transparent. */
-        
         .product-image-placeholder {
             width: 100%;
             aspect-ratio: 1 / 1;
-            background-color: #a8e6cf; /* Тот самый зеленый с фото */
+            background-color: #a8e6cf; /* Зеленый плейсхолдер */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -461,10 +469,6 @@
         .nav-item.active {
             color: #007aff; /* Стандартный синий iOS/Telegram */
         }
-        
-        .nav-item.admin-active {
-             color: #ffcc00; /* Золотой для админа, если нужно, но в ТЗ не указано, оставим синим или стандартным */
-        }
 
         /* --- MODALS / WIDGETS --- */
         .modal-overlay {
@@ -575,103 +579,109 @@
 
     <!-- === TAB 1: GIFTS === -->
     <div id="tab-gifts" class="tab-content active">
-        <header class="page-header">
-            <h1>Цветы</h1>
-        </header>
+        <div class="content-wrapper">
+            <header class="page-header">
+                <h1>Цветы</h1>
+            </header>
 
-        <div class="search-container">
-            <div class="search-wrapper">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Поиск..." id="searchInput">
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Поиск..." id="searchInput">
+                </div>
+                <button class="cart-btn-header" onclick="openCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </button>
             </div>
-            <button class="cart-btn-header" onclick="openCart()">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-badge" id="cartBadge">0</span>
-            </button>
-        </div>
 
-        <div class="filters-row">
-            <button class="filter-btn" onclick="openCategoryModal()">
-                Категория <i class="fas fa-chevron-down"></i>
-            </button>
-            <button class="filter-btn" onclick="openPriceModal()">
-                Цена <i class="fas fa-chevron-down"></i>
-            </button>
-        </div>
+            <div class="filters-row">
+                <button class="filter-btn" onclick="openCategoryModal()">
+                    Категория <i class="fas fa-chevron-down"></i>
+                </button>
+                <button class="filter-btn" onclick="openPriceModal()">
+                    Цена <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
 
-        <div class="products-grid" id="productsGrid">
-            <!-- Products will be injected here via JS -->
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be injected here via JS -->
+            </div>
         </div>
     </div>
 
     <!-- === TAB 2: PROFILE === -->
     <div id="tab-profile" class="tab-content">
-        <header class="page-header">
-            <h1>Профиль</h1>
-            <button class="icon-btn" onclick="toggleTheme()">
-                <i class="fas fa-moon" id="themeIcon"></i>
-            </button>
-        </header>
+        <div class="content-wrapper">
+            <header class="page-header">
+                <h1>Профиль</h1>
+                <button class="icon-btn" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+            </header>
 
-        <div class="profile-header-block">
-            <div class="user-info">
-                <img src="https://via.placeholder.com/60" alt="Avatar" class="avatar" id="userAvatar">
-                <div class="user-details">
-                    <h2 id="userName">Name</h2>
-                    <p id="userUsername">@username</p>
+            <div class="profile-header-block">
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/60" alt="Avatar" class="avatar" id="userAvatar">
+                    <div class="user-details">
+                        <h2 id="userName">Name</h2>
+                        <p id="userUsername">@username</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="section-card">
-            <div class="section-title"><i class="far fa-flag"></i> Важные даты</div>
-            <div class="calendar-controls">
-                <i class="fas fa-chevron-left" style="color:var(--secondary-text)"></i>
-                <div class="month-year-select" id="currentMonthYear">Март 2026</div>
-                <i class="fas fa-chevron-right" style="color:var(--secondary-text)"></i>
+            <div class="section-card">
+                <div class="section-title"><i class="far fa-flag"></i> Важные даты</div>
+                <div class="calendar-controls">
+                    <i class="fas fa-chevron-left" style="color:var(--secondary-text)"></i>
+                    <div class="month-year-select" id="currentMonthYear">Март 2026</div>
+                    <i class="fas fa-chevron-right" style="color:var(--secondary-text)"></i>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar days injected via JS -->
+                </div>
             </div>
-            <div class="calendar-grid" id="calendarGrid">
-                <!-- Calendar days injected via JS -->
-            </div>
-        </div>
 
-        <div class="section-card">
-            <div class="section-title"><i class="fas fa-map-marker-alt"></i> Адрес доставки</div>
-            <div class="list-item">
-                <span class="item-label">Енисейская 33, кв 16</span>
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-map-marker-alt"></i> Адрес доставки</div>
+                <div class="list-item">
+                    <span class="item-label">Енисейская 33, кв 16</span>
+                </div>
+                <div class="list-item" style="color: #007aff;">
+                    <span class="item-label">+ Добавить адрес</span>
+                </div>
             </div>
-            <div class="list-item" style="color: #007aff;">
-                <span class="item-label">+ Добавить адрес</span>
-            </div>
-        </div>
 
-        <div class="section-card">
-            <div class="section-title"><i class="far fa-credit-card"></i> Способы оплаты</div>
-            <div class="list-item">
-                <span class="item-label">•••• 4242</span>
-                <span class="item-value">Visa</span>
+            <div class="section-card">
+                <div class="section-title"><i class="far fa-credit-card"></i> Способы оплаты</div>
+                <div class="list-item">
+                    <span class="item-label">•••• 4242</span>
+                    <span class="item-value">Visa</span>
+                </div>
             </div>
-        </div>
 
-        <div class="section-card">
-            <div class="section-title">
-                <i class="far fa-clock"></i> История заказов 
-                <span style="margin-left:auto; color: var(--secondary-text);" id="orderCountBadge">0</span>
-            </div>
-            <div id="orderHistoryList">
-                <!-- History items -->
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="far fa-clock"></i> История заказов 
+                    <span style="margin-left:auto; color: var(--secondary-text);" id="orderCountBadge">0</span>
+                </div>
+                <div id="orderHistoryList">
+                    <!-- History items -->
+                </div>
             </div>
         </div>
     </div>
 
     <!-- === TAB 3: COURIER === -->
     <div id="tab-courier" class="tab-content">
-        <header class="page-header">
-            <h1>Заказы</h1>
-        </header>
+        <div class="content-wrapper">
+            <header class="page-header">
+                <h1>Заказы</h1>
+            </header>
 
-        <div id="courierOrdersList">
-            <!-- Orders injected via JS -->
+            <div id="courierOrdersList">
+                <!-- Orders injected via JS -->
+            </div>
         </div>
     </div>
 
@@ -738,6 +748,9 @@
     <script>
         // --- INITIALIZATION & TELEGRAM SDK ---
         const tg = window.Telegram.WebApp;
+        
+        // Ждем готовности Telegram
+        tg.ready();
         tg.expand(); // Раскрыть на весь экран
 
         // Данные пользователя из Telegram
