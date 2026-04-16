@@ -14,9 +14,10 @@
             --secondary-text: #8e8e93;
             --card-bg: #ffffff;
             --input-bg: #e3e3e8;
-            --nav-bg: rgba(255, 255, 255, 0.85); /* Более прозрачный для эффекта стекла */
+            --nav-bg: rgba(255, 255, 255, 0.85);
             --shadow: 0 2px 8px rgba(0,0,0,0.04);
             --green-tile: #a8e6cf;
+            --blue-accent: #007aff;
         }
 
         body.dark-mode {
@@ -27,7 +28,7 @@
             --input-bg: #2c2c2e;
             --nav-bg: rgba(28, 28, 30, 0.85);
             --shadow: 0 2px 8px rgba(0,0,0,0.2);
-            --green-tile: #1c3a2a; /* Темно-зеленый для темной темы или прозрачный */
+            --green-tile: #1c3a2a;
         }
 
         * {
@@ -43,267 +44,71 @@
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
-            /* Убираем стандартные отступы браузера */
         }
 
-        /* Главный контейнер, который сдвигает контент вниз на 10px от нативного хедера */
+        /* ГЛАВНОЕ ИЗМЕНЕНИЕ: Отступ 120px сверху */
         .app-container {
-            padding-top: 10px; 
-            padding-bottom: 100px; /* Место под нижнее меню */
+            padding-top: 120px; 
+            padding-bottom: 100px;
             min-height: 100vh;
         }
 
         /* --- Headers --- */
         .page-header {
-            padding: 10px 16px 15px;
+            padding: 0 16px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: var(--bg-color); /* Сливается с фоном */
+            background-color: var(--bg-color);
             position: sticky;
             top: 0;
             z-index: 10;
         }
 
-        h1 {
-            font-size: 28px; /* Чуть крупнее как в iOS */
-            font-weight: 700;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            color: var(--text-color);
-            cursor: pointer;
-        }
+        h1 { font-size: 28px; font-weight: 700; }
+        .icon-btn { background: none; border: none; font-size: 22px; color: var(--text-color); cursor: pointer; }
 
         /* --- Tabs --- */
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         /* --- TAB 1: GIFTS --- */
-        .search-row {
-            padding: 0 16px 12px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .search-box {
-            flex-grow: 1;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 10px 10px 38px;
-            border-radius: 10px;
-            border: none;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            font-size: 16px;
-            outline: none;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--secondary-text);
-            font-size: 14px;
-        }
-
-        .cart-btn {
-            background-color: var(--card-bg);
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            position: relative;
-            border: none;
-            color: var(--text-color);
-            font-size: 18px;
-        }
-
-        .cart-badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            background: #ff3b30;
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 5px;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .filters-row {
-            padding: 0 16px 16px;
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            scrollbar-width: none; /* Скрыть скроллбар Firefox */
-        }
-        .filters-row::-webkit-scrollbar { display: none; } /* Скрыть скроллбар Chrome/Safari */
-
-        .filter-pill {
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            border: none;
-            padding: 8px 14px;
-            border-radius: 18px;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: var(--shadow);
-            white-space: nowrap;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding: 0 16px;
-        }
-
-        .product-card {
-            background-color: var(--card-bg);
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tile-image {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background-color: var(--green-tile); /* Зеленая плитка по умолчанию */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .search-row { padding: 0 16px 12px; display: flex; gap: 12px; align-items: center; }
+        .search-box { flex-grow: 1; position: relative; }
+        .search-input { width: 100%; padding: 10px 10px 10px 38px; border-radius: 10px; border: none; background-color: var(--input-bg); color: var(--text-color); font-size: 16px; outline: none; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--secondary-text); font-size: 14px; }
         
-        /* Если есть фото, зеленый фон убирается, становится прозрачным/картинкой */
-        .tile-image.has-img {
-            background-color: transparent;
-        }
-        
-        .tile-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .cart-btn { background-color: var(--card-bg); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); border: none; color: var(--text-color); font-size: 18px; position: relative; }
+        .cart-badge { position: absolute; top: -4px; right: -4px; background: #ff3b30; color: white; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 10px; display: none; }
 
-        .p-info {
-            padding: 10px;
-        }
+        .filters-row { padding: 0 16px 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+        .filters-row::-webkit-scrollbar { display: none; }
+        .filter-pill { background-color: var(--card-bg); color: var(--text-color); border: none; padding: 8px 14px; border-radius: 18px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow); white-space: nowrap; }
 
-        .p-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .p-price {
-            font-size: 13px;
-            color: var(--secondary-text);
-            margin-bottom: 8px;
-        }
-
-        .add-btn {
-            width: 100%;
-            padding: 8px;
-            background-color: var(--bg-color); /* Кнопка под цвет фона или контрастная */
-            color: var(--text-color);
-            border: 1px solid var(--input-bg);
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .add-btn:active {
-            opacity: 0.7;
-        }
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
+        .product-card { background-color: var(--card-bg); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+        .tile-image { width: 100%; aspect-ratio: 1 / 1; background-color: var(--green-tile); display: flex; align-items: center; justify-content: center; }
+        .tile-image.has-img { background-color: transparent; }
+        .tile-image img { width: 100%; height: 100%; object-fit: cover; }
+        .p-info { padding: 10px; }
+        .p-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+        .p-price { font-size: 13px; color: var(--secondary-text); margin-bottom: 8px; }
+        .add-btn { width: 100%; padding: 8px; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--input-bg); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
         /* --- TAB 2: PROFILE --- */
-        .profile-top {
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .user-block {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background-color: #ccc;
-            object-fit: cover;
-        }
-
+        .profile-top { padding: 0 16px 10px; display: flex; align-items: center; justify-content: space-between; }
+        .user-block { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 56px; height: 56px; border-radius: 50%; background-color: #ccc; object-fit: cover; }
         .u-name { font-size: 18px; font-weight: 600; }
         .u-tag { font-size: 14px; color: var(--secondary-text); }
 
-        .info-card {
-            background-color: var(--card-bg);
-            margin: 0 16px 12px;
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-        }
+        .info-card { background-color: var(--card-bg); margin: 0 16px 12px; border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
+        .card-head { font-size: 12px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--secondary-text); text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-head i { color: var(--text-color); font-size: 14px; }
 
-        .card-head {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--secondary-text); /* Заголовки секций серые как в iOS настройках */
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-        }
-        
-        .card-head i { color: var(--text-color); }
-
-        /* Calendar */
-        .cal-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .cal-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            text-align: center;
-        }
-
+        /* Calendar Specifics */
+        .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 600; font-size: 16px; cursor: pointer; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
         .d-name { font-size: 11px; color: var(--secondary-text); margin-bottom: 6px; }
         
         .d-cell {
@@ -312,154 +117,79 @@
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            border-radius: 50%; /* Круглые даты */
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
         }
 
+        /* Черный круг для сегодня */
         .d-cell.today {
             background-color: var(--text-color);
             color: var(--bg-color);
             font-weight: 600;
         }
 
+        /* Красный круг для события */
         .d-cell.event {
             background-color: #ff3b30;
             color: white;
             font-weight: 600;
         }
-
-        /* Lists in Profile */
-        .list-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--input-bg);
-            font-size: 15px;
+        
+        /* Если день и сегодня, и событие (приоритет у события или смешивание? Обычно событие важнее визуально, но сделаем красный) */
+        .d-cell.today.event {
+            background-color: #ff3b30;
+            color: white;
         }
+
+        .list-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--input-bg); font-size: 15px; }
         .list-row:last-child { border-bottom: none; }
         .row-label { color: var(--text-color); }
         .row-val { color: var(--secondary-text); }
-        .row-action { color: #007aff; }
+        .row-action { color: var(--blue-accent); }
 
         /* --- TAB 3: COURIER --- */
-        .order-card {
-            background-color: var(--card-bg);
-            margin: 0 16px 16px;
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .o-head {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--input-bg);
-        }
-
-        .o-scroll {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            margin-bottom: 12px;
-            padding-bottom: 4px;
-        }
-
-        .o-thumb {
-            width: 70px;
-            height: 70px;
-            border-radius: 10px;
-            background-color: var(--green-tile);
-            flex-shrink: 0;
-        }
+        .order-card { background-color: var(--card-bg); margin: 0 16px 16px; border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
+        .o-head { font-size: 16px; font-weight: 700; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--input-bg); }
+        .o-scroll { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
+        .o-thumb { width: 70px; height: 70px; border-radius: 10px; background-color: var(--green-tile); flex-shrink: 0; }
         .o-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
-
         .o-detail { font-size: 14px; margin-bottom: 6px; line-height: 1.3; }
         .o-detail b { display: block; color: var(--text-color); margin-bottom: 2px; }
         .o-detail span { color: var(--secondary-text); }
-        .o-phone { color: #007aff !important; font-weight: 500; }
+        .o-phone { color: var(--blue-accent) !important; font-weight: 500; }
 
         /* --- BOTTOM NAV --- */
-        .bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 85px;
-            background: var(--nav-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start; /* Иконки сверху */
-            padding-top: 10px;
-            z-index: 100;
-            border-top: 0.5px solid rgba(128,128,128, 0.1); /* Едва заметная линия */
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--secondary-text);
-            font-size: 10px;
-            font-weight: 500;
-            width: 25%;
-            cursor: pointer;
-        }
-
+        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: var(--nav-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; justify-content: space-around; align-items: flex-start; padding-top: 10px; z-index: 100; border-top: 0.5px solid rgba(128,128,128, 0.1); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--secondary-text); font-size: 10px; font-weight: 500; width: 25%; cursor: pointer; }
         .nav-item i { font-size: 24px; margin-bottom: 2px; transition: transform 0.1s; }
         .nav-item:active i { transform: scale(0.9); }
+        .nav-item.active { color: var(--blue-accent); }
+        .nav-item.active i { font-weight: 900; }
 
-        .nav-item.active { color: #007aff; }
-        .nav-item.active i { font-weight: 900; } /* Жирная иконка для активного */
-
-        /* --- MODALS --- */
-        .modal-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4);
-            z-index: 200;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
+        /* --- MODALS & SHEETS --- */
+        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 200; display: none; opacity: 0; transition: opacity 0.2s; }
         .modal-bg.open { display: block; opacity: 1; }
 
-        .sheet {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            background: var(--card-bg);
-            border-radius: 16px 16px 0 0;
-            padding: 20px;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            z-index: 201;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
+        .sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); border-radius: 16px 16px 0 0; padding: 20px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 201; max-height: 70vh; overflow-y: auto; }
         .sheet.open { transform: translateY(0); }
+        .handle { width: 36px; height: 4px; background: var(--secondary-text); border-radius: 2px; margin: 0 auto 20px; opacity: 0.3; }
 
-        .handle {
-            width: 36px; height: 4px; background: var(--secondary-text);
-            border-radius: 2px; margin: 0 auto 20px; opacity: 0.3;
-        }
-
-        .btn-full {
-            width: 100%; padding: 14px;
-            background: #007aff; color: white;
-            border: none; border-radius: 12px;
-            font-size: 16px; font-weight: 600;
-            margin-top: 15px;
-        }
+        /* Date Picker Widget Styles */
+        .date-picker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .dp-item { padding: 12px; background: var(--input-bg); border-radius: 8px; text-align: center; font-weight: 500; cursor: pointer; }
+        .dp-item.selected { background: var(--blue-accent); color: white; }
         
-        .cat-btn {
-            width: 100%; padding: 14px;
-            text-align: left; background: none; border: none;
-            border-bottom: 1px solid var(--input-bg);
-            font-size: 16px; color: var(--text-color);
-        }
+        .year-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
+        .year-item { padding: 10px 20px; background: var(--input-bg); border-radius: 20px; white-space: nowrap; cursor: pointer; }
+        .year-item.selected { background: var(--blue-accent); color: white; }
+
+        /* Event Input Widget */
+        .event-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--input-bg); background: var(--bg-color); color: var(--text-color); font-size: 16px; margin-bottom: 15px; outline: none; }
+        .btn-full { width: 100%; padding: 14px; background: var(--blue-accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; margin-top: 5px; cursor: pointer; opacity: 1; transition: opacity 0.2s; }
+        .btn-full:disabled { background: var(--input-bg); color: var(--secondary-text); cursor: not-allowed; opacity: 0.7; }
+        
+        .cat-btn { width: 100%; padding: 14px; text-align: left; background: none; border: none; border-bottom: 1px solid var(--input-bg); font-size: 16px; color: var(--text-color); }
 
     </style>
 </head>
@@ -513,9 +243,10 @@
 
             <div class="info-card">
                 <div class="card-head"><i class="far fa-flag"></i> Важные даты</div>
-                <div class="cal-nav">
+                <!-- Клик по этому блоку открывает виджет выбора даты -->
+                <div class="cal-nav" onclick="openDatePicker()">
                     <i class="fas fa-chevron-left" style="color:var(--secondary-text)"></i>
-                    <span>Март 2026</span>
+                    <span id="calendarTitle">Апрель 2026</span>
                     <i class="fas fa-chevron-right" style="color:var(--secondary-text)"></i>
                 </div>
                 <div class="cal-grid" id="calendarGrid"></div>
@@ -612,6 +343,33 @@
         <button class="btn-full" onclick="checkout()">Оформить</button>
     </div>
 
+    <!-- Date Picker Sheet (New) -->
+    <div class="sheet" id="datePickerSheet">
+        <div class="handle"></div>
+        <h3 style="margin-bottom:15px;">Выберите дату</h3>
+        
+        <div style="margin-bottom:10px; font-weight:600; font-size:14px; color:var(--secondary-text);">Месяц</div>
+        <div class="date-picker-grid" id="monthGrid">
+            <!-- Months injected via JS -->
+        </div>
+
+        <div style="margin-bottom:10px; font-weight:600; font-size:14px; color:var(--secondary-text);">Год</div>
+        <div class="year-scroll" id="yearScroll">
+            <!-- Years injected via JS -->
+        </div>
+
+        <button class="btn-full" onclick="applyDateSelection()">Применить</button>
+    </div>
+
+    <!-- Add Event Sheet (New) -->
+    <div class="sheet" id="eventSheet">
+        <div class="handle"></div>
+        <h3 style="margin-bottom:15px;">Добавить событие</h3>
+        <p style="margin-bottom:10px; color:var(--secondary-text);" id="eventDateLabel">Дата: ...</p>
+        <input type="text" class="event-input" id="eventNameInput" placeholder="Название события (например, День рождения)" oninput="checkEventInput()">
+        <button class="btn-full" id="saveEventBtn" disabled onclick="saveEvent()">Сохранить</button>
+    </div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
@@ -628,7 +386,145 @@
         document.getElementById('userName').innerText = user.first_name;
         document.getElementById('userUsername').innerText = user.username ? '@'+user.username : '';
 
-        // Mock Data
+        // --- CALENDAR LOGIC ---
+        // Текущая дата по ТЗ: 17 Апреля 2026
+        const MOCK_TODAY = new Date(2026, 3, 17); // Месяцы 0-11, 3 = Апрель
+        
+        let currentViewMonth = MOCK_TODAY.getMonth(); // 3 (Апрель)
+        let currentViewYear = MOCK_TODAY.getFullYear(); // 2026
+        
+        // Хранилище событий: ключ "YYYY-M-D", значение "Текст"
+        let events = {}; 
+        
+        // Временные переменные для выбора в виджете
+        let tempSelectMonth = currentViewMonth;
+        let tempSelectYear = currentViewYear;
+        let selectedEventDay = null;
+
+        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+
+        function renderCalendar() {
+            const g = document.getElementById('calendarGrid');
+            const title = document.getElementById('calendarTitle');
+            
+            title.innerText = `${monthNames[currentViewMonth]} ${currentViewYear}`;
+            g.innerHTML = '';
+
+            // Дни недели
+            ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
+                g.innerHTML += `<div class="d-name">${d}</div>`;
+            });
+
+            const firstDayOfMonth = new Date(currentViewYear, currentViewMonth, 1).getDay(); // 0=Вс, 1=Пн
+            // Корректировка, чтобы неделя начиналась с Понедельника (для RU локали)
+            // getDay(): Вс=0, Пн=1... Сб=6. Нам нужно: Пн=0... Вс=6
+            let startOffset = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+
+            // Пустые ячейки до начала месяца
+            for(let i=0; i<startOffset; i++) {
+                g.innerHTML += `<div></div>`;
+            }
+
+            const daysInMonth = new Date(currentViewYear, currentViewMonth + 1, 0).getDate();
+
+            for(let d=1; d<=daysInMonth; d++) {
+                let cls = 'd-cell';
+                
+                // Проверка на сегодня (черный круг)
+                if (d === MOCK_TODAY.getDate() && 
+                    currentViewMonth === MOCK_TODAY.getMonth() && 
+                    currentViewYear === MOCK_TODAY.getFullYear()) {
+                    cls += ' today';
+                }
+
+                // Проверка на событие (красный круг)
+                const eventKey = `${currentViewYear}-${currentViewMonth}-${d}`;
+                if (events[eventKey]) {
+                    cls += ' event';
+                }
+
+                // Клик по дате
+                g.innerHTML += `<div class="${cls}" onclick="openEventModal(${d})">${d}</div>`;
+            }
+        }
+
+        // --- DATE PICKER WIDGET ---
+        function openDatePicker() {
+            tempSelectMonth = currentViewMonth;
+            tempSelectYear = currentViewYear;
+            renderDatePickerUI();
+            openModal('datePickerSheet');
+        }
+
+        function renderDatePickerUI() {
+            // Рендер месяцев
+            const mGrid = document.getElementById('monthGrid');
+            mGrid.innerHTML = '';
+            monthNames.forEach((m, index) => {
+                const div = document.createElement('div');
+                div.className = `dp-item ${index === tempSelectMonth ? 'selected' : ''}`;
+                div.innerText = m;
+                div.onclick = () => { tempSelectMonth = index; renderDatePickerUI(); };
+                mGrid.appendChild(div);
+            });
+
+            // Рендер годов (2026-2030)
+            const yScroll = document.getElementById('yearScroll');
+            yScroll.innerHTML = '';
+            for(let y=2026; y<=2030; y++) {
+                const div = document.createElement('div');
+                div.className = `year-item ${y === tempSelectYear ? 'selected' : ''}`;
+                div.innerText = y;
+                div.onclick = () => { tempSelectYear = y; renderDatePickerUI(); };
+                yScroll.appendChild(div);
+            }
+        }
+
+        function applyDateSelection() {
+            currentViewMonth = tempSelectMonth;
+            currentViewYear = tempSelectYear;
+            renderCalendar();
+            closeAllModals();
+        }
+
+        // --- EVENT WIDGET ---
+        function openEventModal(day) {
+            selectedEventDay = day;
+            const dateStr = `${day} ${monthNames[currentViewMonth]} ${currentViewYear}`;
+            document.getElementById('eventDateLabel').innerText = `Дата: ${dateStr}`;
+            
+            // Если событие уже есть, можно предзаполнить (опционально), но по ТЗ просто добавление
+            // Очищаем поле
+            const input = document.getElementById('eventNameInput');
+            input.value = '';
+            checkEventInput(); // Блокируем кнопку
+            
+            openModal('eventSheet');
+            setTimeout(() => input.focus(), 300); // Фокус на поле
+        }
+
+        function checkEventInput() {
+            const val = document.getElementById('eventNameInput').value.trim();
+            const btn = document.getElementById('saveEventBtn');
+            btn.disabled = val.length === 0;
+        }
+
+        function saveEvent() {
+            const val = document.getElementById('eventNameInput').value.trim();
+            if (!val) return;
+
+            const key = `${currentViewYear}-${currentViewMonth}-${selectedEventDay}`;
+            events[key] = val; // Сохраняем событие
+            
+            renderCalendar(); // Перерисовываем календарь (появится красный круг)
+            closeAllModals();
+            
+            // Вибрация успеха
+            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        }
+
+
+        // --- PRODUCTS & CART (Standard Logic) ---
         const products = [
             { id: 1, title: "Букет роз", price: 3500, cat: "flowers", img: null },
             { id: 2, title: "Мишка", price: 1200, cat: "toys", img: null },
@@ -641,7 +537,6 @@
         let cart = [];
         let currentCat = 'all';
 
-        // Render Products
         function renderProducts(q = '') {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
@@ -668,24 +563,6 @@
             });
         }
 
-        // Render Calendar
-        function renderCal() {
-            const g = document.getElementById('calendarGrid');
-            ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
-                g.innerHTML += `<div class="d-name">${d}</div>`;
-            });
-            // Empty slots for March 2026 start (Sun)
-            for(let i=0; i<6; i++) g.innerHTML += `<div></div>`;
-            
-            for(let i=1; i<=31; i++) {
-                let cls = 'd-cell';
-                if(i===16) cls += ' today';
-                if(i===25) cls += ' event';
-                g.innerHTML += `<div class="${cls}">${i}</div>`;
-            }
-        }
-
-        // Render Courier Orders
         function renderOrders() {
             const c = document.getElementById('courierOrdersList');
             const orders = [
@@ -713,7 +590,6 @@
             });
         }
 
-        // Logic
         function switchTab(name, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-'+name).classList.add('active');
@@ -733,7 +609,7 @@
 
         document.getElementById('searchInput').addEventListener('input', e => renderProducts(e.target.value));
 
-        // Modals
+        // Modals Generic
         function openModal(id) {
             document.getElementById('modalOverlay').classList.add('open');
             document.getElementById(id).classList.add('open');
@@ -750,7 +626,7 @@
         function addToCart(id) {
             cart.push(products.find(p=>p.id===id));
             updateCart();
-            tg.HapticFeedback.selectionChanged();
+            if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
         }
         function updateCart() {
             document.getElementById('cartBadge').innerText = cart.length;
@@ -777,7 +653,7 @@
 
         // Init
         renderProducts();
-        renderCal();
+        renderCalendar(); // Запуск календаря с датой 17.04.2026
         renderOrders();
 
     </script>
