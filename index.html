@@ -1,608 +1,3571 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flower Shop TMA</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Swapka</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f2f2f7;
+      --text-primary: #000000;
+      --text-secondary: #8e8e93;
+      --border-color: #e5e5ea;
+      --shadow: 0 4px 16px rgba(0,0,0,0.08);
+      --card-bg: #ffffff;
+      --search-bg: #ffffff;
+      --chat-pill-bg: #f9f9f9;
+      /* FIX: Removed white background from nav variables, kept blur/shadow */
+      --glass-bg: rgba(255, 255, 255, 0.0); 
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      --indicator-bg: #d0d0d0;
+      --indicator-glow: rgba(208, 208, 208, 0.5);
+      --icon-inactive: #8e8e93;
+      --icon-active: #007AFF;
+      --chat-header-bg: rgba(249, 249, 249, 0.85);
+      --star-empty: #c7c7cc;
+      --star-filled: #FFD60A;
+      --header-height: 102px;
+      --danger-color: #FF3B30;
+      --warning-color: #FF9500;
+      --rating-blue: #007AFF;
+      --btn-blue: #007AFF;
+      --favorite-color: #FF2D55;
+      --toast-green: #34C759;
+      
+      /* New Color for Write Button */
+      --write-btn-green: #34C759; 
+    }
+
+    .dark-theme {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2c2c2e;
+      --text-primary: #ffffff;
+      --text-secondary: #8e8e93;
+      --border-color: #3a3a3c;
+      --shadow: 0 4px 16px rgba(0,0,0,0.4);
+      --card-bg: #2c2c2e;
+      --search-bg: #2c2c2e;
+      --chat-pill-bg: #3a3a3c;
+      /* FIX: Dark theme nav bg also transparent */
+      --glass-bg: rgba(30, 30, 30, 0.0);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      --indicator-bg: #4a4a4a;
+      --indicator-glow: rgba(74, 74, 74, 0.5);
+      --icon-inactive: #8e8e93;
+      --icon-active: #0A84FF;
+      --chat-header-bg: rgba(44, 44, 46, 0.85);
+      --star-empty: #48484a;
+      --star-filled: #FFD60A;
+      --rating-blue: #0A84FF;
+      --btn-blue: #0A84FF;
+      --favorite-color: #FF375F;
+      --warning-color: #FF9F0A;
+      --toast-green: #30D158;
+      --write-btn-green: #30D158;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      transition: background 0.3s, color 0.3s;
+      user-select: none;
+      -webkit-user-select: none;
+      max-width: 430px;
+      margin: 0 auto;
+      position: relative;
+      box-shadow: 0 0 50px rgba(0,0,0,0.1);
+    }
+
+    @media (min-width: 431px) {
+      body {
+        border-left: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        background: var(--bg-primary);
+      }
+      html {
+        background: #e5e5ea;
+      }
+      .dark-theme html {
+        background: #1a0b2e; 
+      }
+    }
+
+    /* --- HEADER --- */
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: var(--header-height);
+      background: linear-gradient(90deg, 
+        #8A2BE2 0%, 
+        #FFD60A 25%, 
+        #007AFF 50%, 
+        #FFFFFF 75%, 
+        #FF00FF 100%,
+        #8A2BE2 100% 
+      );
+      background-size: 400% 100%;
+      animation: gradientFlow 15s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center; 
+      pointer-events: none;
+      overflow: hidden;
+      max-width: 430px;
+      margin: 0 auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding-top: env(safe-area-inset-top); 
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .header-logo {
+      width: 160px;
+      height: auto;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+      z-index: 2;
+      pointer-events: auto;
+      margin-top: 0;
+      transform: translateY(-5px);
+    }
+
+    .main-content {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      bottom: 90px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      will-change: scroll-position;
+      max-width: 430px;
+      margin: 0 auto;
+      background: var(--bg-primary);
+    }
+
+    .page {
+      display: none;
+      min-height: 100%;
+      padding-bottom: 20px;
+      opacity: 0;
+      transform: translateY(10px);
+      position: relative;
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- SEARCH & ADS --- */
+    .search-container {
+      padding: 12px 16px;
+      background: var(--bg-primary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      transition: background 0.3s;
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: var(--search-bg);
+      border-radius: 100px;
+      padding: 10px 14px;
+      box-shadow: 0 3px 18px rgba(0,0,0,0.12);
+      transition: box-shadow 0.2s, background 0.3s;
+      flex: 1;
+    }
+
+    .search-bar:focus-within {
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    }
+
+    .search-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    .search-icon svg {
+      width: 100%;
+      height: 100%;
+      stroke: var(--icon-inactive);
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .search-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
+      color: var(--text-primary);
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .search-input::placeholder { color: #C8C8C8; }
+    .dark-theme .search-input::placeholder { color: #6b6b6b; }
+
+    .fav-search-btn {
+      background: var(--search-bg);
+      border: none;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 18px rgba(0,0,0,0.12);
+      transition: transform 0.2s, background 0.3s;
+      flex-shrink: 0;
+    }
+    .fav-search-btn:active { transform: scale(0.9); }
+    .fav-search-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--favorite-color);
+      stroke-width: 2;
+      fill: var(--favorite-color); /* Filled heart for search button */
+    }
+
+    .ads-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 10px 16px;
+    }
+
+    .ad-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, background 0.3s;
+      cursor: pointer;
+      will-change: transform;
+      position: relative;
+    }
+
+    .ad-card:active { transform: scale(0.97); }
+
+    .ad-image-container {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ad-image-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: var(--text-secondary);
+    }
+
+    .ad-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ad-info { padding: 10px; }
+
+    .ad-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ad-price {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+      transform: translateY(-2px);
+    }
+
+    .ad-city {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* --- MESSAGES --- */
+    .messages-list { padding: 16px; }
     
-    <style>
-        :root {
-            --bg-color: #f5f5f7;
-            --text-color: #000000;
-            --secondary-text: #8e8e93;
-            --card-bg: #ffffff;
-            --input-bg: #e3e3e8;
-            --shadow: 0 2px 8px rgba(0,0,0,0.04);
-            --green-tile: #a8e6cf;
-            --blue-accent: #007aff;
-            --border-color: #d1d1d6;
-            
-            --nav-container-bg: #ffffff;
-            --nav-indicator-bg: #e5e5ea;
-            --nav-text-inactive: #000000;
-            --nav-text-active: #007aff;
-        }
+    .message-item-wrapper {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 12px;
+      border-radius: 100px;
+    }
+    
+    .message-delete-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 120px;
+      background: rgba(255, 59, 48, 0.65);
+      border-radius: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.3s;
+      gap: 4px;
+    }
+    
+    .message-delete-bg.visible {
+      opacity: 1;
+    }
+    
+    .message-delete-bg svg {
+      width: 28px;
+      height: 28px;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    
+    .message-delete-bg span {
+      font-size: 12px;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .message-delete-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 120px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
+      display: none;
+    }
+    
+    .message-delete-btn.visible {
+      display: block;
+    }
 
-        body.dark-mode {
-            --bg-color: #000000;
-            --text-color: #ffffff;
-            --secondary-text: #98989d;
-            --card-bg: #1c1c1e;
-            --input-bg: #2c2c2e;
-            --shadow: 0 2px 8px rgba(0,0,0,0.2);
-            --green-tile: #1c3a2a;
-            --border-color: #3a3a3c;
-            
-            --nav-container-bg: #1c1c1e;
-            --nav-indicator-bg: #3a3a3c;
-            --nav-text-inactive: #ffffff;
-        }
+    .message-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      padding-right: 20px;
+      background: var(--chat-pill-bg);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: transform 0.2s ease-out, background 0.2s;
+      position: relative;
+      z-index: 2;
+      touch-action: pan-y;
+      box-shadow: none;
+    }
+    
+    .message-item.swiping {
+      transition: none;
+    }
+    
+    .message-item:hover { background: var(--bg-secondary); }
+    
+    .message-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      margin-right: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: var(--bg-secondary);
+    }
+    
+    .message-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .message-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .message-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .message-preview {
+      font-size: 14px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    
+    .unread-badge {
+      width: 24px;
+      height: 24px;
+      background: #FF3B30;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-left: 12px;
+      line-height: 1;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            -webkit-user-select: none;
-        }
+    /* --- CHAT SCREEN --- */
+    .chat-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      z-index: 150;
+      display: none;
+      flex-direction: column;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+    .chat-screen.active { display: flex; }
 
-        .app-container {
-            padding-top: 100px; 
-            padding-bottom: 120px;
-            min-height: 100vh;
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch;
-        }
+    .chat-screen.active ~ .bottom-nav {
+      display: none !important;
+    }
+    
+    .chat-header-pill-container {
+      position: absolute;
+      top: 90px;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      pointer-events: none;
+    }
 
-        /* --- Headers --- */
-        .page-header {
-            padding: 0 16px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: transparent;
-        }
-        
-        h1 { font-size: 28px; font-weight: 700; }
-        .icon-btn { background: none; border: none; font-size: 22px; color: var(--text-color); cursor: pointer; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.2s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .chat-profile-pill {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      background: var(--chat-header-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 100px;
+      padding: 10px 24px 10px 10px; 
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15), 0 2px 5px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+      margin: 0 auto; 
+      max-width: 90%; 
+    }
+    
+    .chat-profile-pill:active {
+      transform: scale(0.98);
+      background: var(--bg-secondary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
 
-        /* --- TAB 1: GIFTS --- */
-        .search-row { padding: 0 16px 12px; display: flex; gap: 12px; align-items: center; }
-        .search-box { flex-grow: 1; position: relative; }
-        .search-input { width: 100%; padding: 10px 10px 10px 38px; border-radius: 10px; border: none; background-color: var(--input-bg); color: var(--text-color); font-size: 16px; outline: none; }
-        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--secondary-text); font-size: 14px; }
-        .cart-btn { background-color: var(--card-bg); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); border: none; color: var(--text-color); font-size: 18px; position: relative; }
-        .cart-badge { position: absolute; top: -4px; right: -4px; background: #ff3b30; color: white; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 10px; display: none; }
-        .filters-row { padding: 0 16px 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-        .filters-row::-webkit-scrollbar { display: none; }
-        .filter-pill { background-color: var(--card-bg); color: var(--text-color); border: none; padding: 8px 14px; border-radius: 18px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow); white-space: nowrap; }
-        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
-        .product-card { background-color: var(--card-bg); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
-        .tile-image { width: 100%; aspect-ratio: 1 / 1; background-color: var(--green-tile); display: flex; align-items: center; justify-content: center; }
-        .tile-image.has-img { background-color: transparent; }
-        .tile-image img { width: 100%; height: 100%; object-fit: cover; }
-        .p-info { padding: 10px; }
-        .p-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-        .p-price { font-size: 13px; color: var(--secondary-text); margin-bottom: 8px; }
-        .add-btn { width: 100%; padding: 8px; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--input-bg); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .chat-pill-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      margin-right: 14px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .chat-pill-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-        /* --- TAB 2: PROFILE --- */
-        .profile-top { padding: 0 16px 10px; display: flex; align-items: center; justify-content: space-between; }
-        .user-block { display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 56px; height: 56px; border-radius: 50%; background-color: #ccc; object-fit: cover; }
-        .u-name { font-size: 18px; font-weight: 600; }
-        .u-tag { font-size: 14px; color: var(--secondary-text); }
-        .info-card { background-color: var(--card-bg); margin: 0 16px 12px; border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
-        .card-head { font-size: 12px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--secondary-text); text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-head i { color: var(--text-color); font-size: 14px; }
-        
-        .cal-nav { display: flex; justify-content: center; gap: 12px; margin-bottom: 15px; }
-        .date-select-btn { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 8px 12px; font-size: 17px; font-weight: 500; color: var(--text-color); display: flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .date-select-btn i { font-size: 12px; color: var(--secondary-text); }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-        .d-name { font-size: 11px; color: var(--secondary-text); margin-bottom: 6px; }
-        .d-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 50%; cursor: pointer; }
-        .d-cell.today { background-color: var(--text-color); color: var(--bg-color); font-weight: 600; }
-        .d-cell.event { background-color: #ff3b30; color: white; font-weight: 600; }
-        .list-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--input-bg); font-size: 15px; }
-        .list-row:last-child { border-bottom: none; }
-        .row-label { color: var(--text-color); }
-        .row-val { color: var(--secondary-text); }
-        .row-action { color: var(--blue-accent); }
+    .chat-pill-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-        /* --- TAB 3: COURIER --- */
-        .order-card { background-color: var(--card-bg); margin: 0 16px 16px; border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
-        .o-head { font-size: 16px; font-weight: 700; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--input-bg); }
-        .o-scroll { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
-        .o-thumb { width: 70px; height: 70px; border-radius: 10px; background-color: var(--green-tile); flex-shrink: 0; }
-        .o-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
-        .o-detail { font-size: 14px; margin-bottom: 6px; line-height: 1.3; }
-        .o-detail b { display: block; color: var(--text-color); margin-bottom: 2px; }
-        .o-detail span { color: var(--secondary-text); }
-        .o-phone { color: var(--blue-accent) !important; font-weight: 500; }
+    .chat-pill-name {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        /* --- NAVIGATION --- */
-        .nav-wrapper {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 32px);
-            max-width: 400px;
-            z-index: 1000;
-            pointer-events: none;
-        }
+    .chat-pill-status {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .chat-pill-status.online {
+      color: #34C759;
+      font-weight: 500;
+    }
 
-        .nav-container {
-            background-color: var(--nav-container-bg);
-            border-radius: 100px;
-            padding: 6px;
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
-            pointer-events: auto;
-            backdrop-filter: blur(10px);
-        }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 180px 16px calc(20px + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      background: var(--bg-primary);
+      scroll-behavior: smooth;
+      position: relative;
+    }
 
-        .nav-indicator {
-            position: absolute;
-            top: 6px;
-            bottom: 6px;
-            background-color: var(--nav-indicator-bg);
-            border-radius: 100px;
-            z-index: 1;
-            cursor: grab;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
-            will-change: transform, width;
-            touch-action: none;
-        }
-        
-        /* СТИЛЬ ДЛЯ КОПИИ ИНДИКАТОРА ПРИ ПЕРЕТАСКИВАНИИ */
-        .nav-indicator.clone {
-            position: fixed;
-            z-index: 99999; /* Поверх ВСЕГО */
-            pointer-events: none; /* Чтобы события шли сквозь него, если нужно, но мы слушаем document */
-            opacity: 0.9;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: none; /* Никакой анимации при драге */
-        }
+    .chat-message {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 15px;
+      line-height: 1.4;
+      word-wrap: break-word;
+      position: relative;
+      animation: messagePopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      user-select: text;
+      -webkit-user-select: text;
+    }
 
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 0;
-            z-index: 2;
-            cursor: pointer;
-            transition: color 0.2s;
-            color: var(--nav-text-inactive);
-            position: relative;
-        }
+    @keyframes messagePopIn {
+      from { opacity: 0; transform: scale(0.9) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    
+    .chat-message img {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-top: 4px;
+      display: block;
+    }
 
-        .nav-item i { font-size: 22px; margin-bottom: 4px; transition: transform 0.2s; }
-        .nav-item span { font-size: 11px; font-weight: 500; }
-        .nav-item.active { color: var(--nav-text-active); }
-        .nav-item.active i { transform: scale(1.1); }
+    .chat-message.received {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .chat-message.sent {
+      background: #007AFF;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-message-time {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 4px;
+      text-align: right;
+    }
+    
+    /* --- NEW CHAT INPUT STYLE (Blue Background) --- */
+    .chat-input-area {
+      padding: 10px 16px;
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      background: transparent; 
+      border-top: none;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
 
-        /* --- MODALS --- */
-        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 200; display: none; opacity: 0; transition: opacity 0.2s; }
-        .modal-bg.open { display: block; opacity: 1; }
-        .sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); border-radius: 16px 16px 0 0; padding: 20px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 201; max-height: 70vh; overflow-y: auto; }
-        .sheet.open { transform: translateY(0); }
-        .handle { width: 36px; height: 4px; background: var(--secondary-text); border-radius: 2px; margin: 0 auto 20px; opacity: 0.3; }
-        
-        .event-widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .event-widget-title { font-size: 18px; font-weight: 600; }
-        .trash-btn { background: none; border: none; color: #ff3b30; font-size: 20px; cursor: pointer; padding: 5px; }
-        .event-date-label { color: var(--secondary-text); font-size: 14px; margin-bottom: 10px; }
-        .event-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--input-bg); background: var(--bg-color); color: var(--text-color); font-size: 16px; margin-bottom: 15px; outline: none; }
-        .btn-full { width: 100%; padding: 14px; background: var(--blue-accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; margin-top: 5px; cursor: pointer; opacity: 1; transition: opacity 0.2s; }
-        .btn-full:disabled { background: var(--input-bg); color: var(--secondary-text); cursor: not-allowed; opacity: 0.7; }
-        .cat-btn { width: 100%; padding: 14px; text-align: left; background: none; border: none; border-bottom: 1px solid var(--input-bg); font-size: 16px; color: var(--text-color); }
-        .picker-list-container { display: flex; flex-direction: column; gap: 8px; max-height: 40vh; overflow-y: auto; padding-right: 5px; }
-        .picker-item { padding: 14px; background: var(--bg-color); border-radius: 10px; text-align: center; font-size: 16px; font-weight: 500; cursor: pointer; border: 1px solid transparent; }
-        .picker-item.selected { background: var(--blue-accent); color: white; border-color: var(--blue-accent); }
+    .chat-input-wrapper-complex {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      background: #E5F1FF;
+      border-radius: 24px;
+      padding: 6px;
+      min-height: 44px;
+    }
+    .dark-theme .chat-input-wrapper-complex {
+      background: #1C2C3F;
+    }
 
-    </style>
+    .chat-add-photo-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-active);
+      transition: transform 0.1s;
+      flex-shrink: 0;
+    }
+    .chat-add-photo-btn:active { transform: scale(0.9); }
+    .chat-add-photo-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 8px 4px;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      outline: none;
+      color: var(--text-primary);
+      resize: none;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    .chat-send-btn {
+      background: #007AFF;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+      flex-shrink: 0;
+      margin-left: 4px;
+      margin-bottom: 4px;
+    }
+    .chat-send-btn:active { transform: scale(0.9); }
+    .chat-send-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+      margin-left: 2px;
+    }
+    
+    .attached-photo-preview {
+      display: flex;
+      align-items: center;
+      background: #E5F1FF;
+      border-radius: 24px;
+      padding: 6px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .dark-theme .attached-photo-preview {
+      background: #1C2C3F;
+    }
+
+    .attached-photo-thumb {
+      height: 50px;
+      width: 50px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .attached-photo-thumb img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+    
+    .remove-attachment-btn {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: white;
+      z-index: 10;
+    }
+    .remove-attachment-btn svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      stroke-width: 3;
+    }
+
+
+    .empty-state {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      pointer-events: none;
+    }
+    
+    #myAdsEmpty {
+      transform: translateY(calc(-50% + 80px));
+    }
+    
+    .empty-state-text {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* --- PROFILE --- */
+    .profile-moon-wrapper {
+      position: relative; height: 50px; display: flex;
+      justify-content: flex-end; align-items: center; padding: 0 16px; z-index: 10;
+    }
+    
+    .moon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      transition: transform 0.3s;
+      pointer-events: auto;
+      z-index: 1001;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+    }
+    
+    .moon-btn svg {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.3s ease;
+    }
+    
+    .moon-btn svg path,
+    .moon-btn svg circle {
+      fill: var(--text-primary);
+    }
+    
+    .moon-btn svg line {
+      stroke: var(--text-primary);
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    .moon-btn:active { transform: scale(0.85); }
+    .moon-btn:active svg { transform: rotate(15deg); }
+    
+    .profile-user-info { 
+      padding: 20px 16px; 
+      text-align: center; 
+    }
+    
+    .profile-avatar {
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px;
+      display: block; background: var(--bg-secondary);
+    }
+    .profile-avatar-placeholder {
+      width: 80px; height: 80px; border-radius: 50%; background: var(--bg-secondary);
+      margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 36px;
+    }
+    .profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); }
+    
+    .profile-username { 
+      font-size: 15px; 
+      color: var(--text-secondary); 
+      margin-top: 4px; 
+      transform: translateY(-5px); 
+      display: none;
+    }
+    
+    .profile-rating { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      gap: 6px; 
+      margin-top: 8px; 
+      font-size: 20px; 
+      transform: translateY(-10px); 
+    }
+
+    .rating-label-btn {
+      font-size: 14px;
+      color: var(--rating-blue);
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .rating-label-btn:active {
+      background: rgba(0, 122, 255, 0.1);
+    }
+    
+    .profile-rating svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--star-empty);
+    }
+    .profile-rating svg.filled {
+      fill: var(--star-filled);
+    }
+    .profile-rating svg.half-filled {
+       fill: url(#half-star-gradient);
+    }
+
+    .create-ad-btn {
+      display: block; margin: 0 auto 20px; padding: 14px 15px; width: fit-content; min-width: 200px;
+      background: #007AFF;
+      color: #ffffff;
+      border: none; border-radius: 100px; font-size: 17px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: transform 0.2s, opacity 0.2s;
+      box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+      transform: translateY(-5px);
+    }
+    .create-ad-btn:active { transform: scale(0.97) translateY(-5px); opacity: 0.9; }
+
+    .dark-theme .create-ad-btn {
+      background: #0A84FF;
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(10, 132, 255, 0.4);
+    }
+
+    .my-ads-title { 
+      font-size: 18px; 
+      font-weight: 700; 
+      padding: 0 16px 12px; 
+      color: var(--text-primary); 
+      transform: translateY(-5px);
+    }
+    
+    .my-ads-grid-wrapper { 
+      transform: translateY(-8px);
+    }
+
+    /* --- BOTTOM NAV --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: auto;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      padding-top: 8px;
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      will-change: transform;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    .bottom-nav.hidden { transform: translateY(150%); }
+
+    .nav-pill {
+      pointer-events: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 90%;
+      max-width: 380px;
+      height: 64px;
+      
+      /* FIX: Using updated transparent glass-bg variable */
+      background: var(--glass-bg);
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
+      
+      border-radius: 32px;
+      padding: 0 8px;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .nav-indicator {
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 8px;
+      width: calc(33.33% - 8px); /* Default for 3 items, adjusted via JS */
+      
+      background: var(--indicator-bg);
+      border-radius: 24px;
+      z-index: 1;
+      
+      will-change: transform, width, border-radius, scale;
+      transform: translateZ(0) scale(1);
+      transform-origin: center center;
+      
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.3s ease;
+      
+      box-shadow: 0 4px 20px var(--indicator-glow);
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .nav-indicator::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .dark-theme .nav-indicator::after {
+      background: transparent;
+      opacity: 0;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      border-radius: 24px;
+      cursor: pointer;
+      z-index: 2;
+      position: relative;
+      border: none;
+      background: transparent;
+      gap: 2px;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s;
+    }
+
+    .nav-item.active { background: transparent; box-shadow: none; }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    
+    .nav-icon svg {
+      width: 100%;
+      height: 100%;
+      stroke: var(--icon-inactive);
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .nav-item.active .nav-icon svg {
+      stroke: var(--icon-active);
+      transform: scale(1.1);
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 2;
+      opacity: 0.8;
+    }
+
+    .nav-item.active .nav-label {
+      color: var(--icon-active);
+      font-weight: 700;
+      opacity: 1;
+    }
+
+    /* --- MODALS --- */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5); z-index: 200; display: none;
+      align-items: flex-end; justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: var(--bg-primary); width: 100%; max-height: 92vh;
+      border-radius: 20px 20px 0 0; padding: 20px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      overflow-y: auto; animation: slideUp 0.3s ease;
+      position: relative;
+      touch-action: pan-y; 
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block; }
+    .form-input {
+      width: 100%; padding: 12px 16px; border: 2px solid var(--border-color); border-radius: 12px;
+      font-size: 16px; color: var(--text-primary); background: var(--bg-secondary); font-family: inherit; outline: none;
+    }
+    .photos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .photo-slot {
+      aspect-ratio: 1; border: 2px dashed var(--border-color); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; background: var(--bg-secondary);
+    }
+    .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-slot .add-icon { font-size: 28px; color: var(--text-secondary); }
+    .photo-slot .remove-btn {
+      position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white; border: none;
+      border-radius: 50%; width: 22px; height: 22px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .submit-btn {
+      width: auto; margin: 10px auto 0; display: block; padding: 16px 15px; background: #000000; color: #ffffff;
+      border: none; border-radius: 100px; font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* --- REVIEWS MODAL --- */
+    .reviews-modal {
+      position: fixed; 
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 300;
+      display: none; 
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    
+    .reviews-modal.active { 
+      display: flex; 
+    }
+
+    .reviews-content-wrapper {
+      background: var(--bg-primary);
+      width: 100%; 
+      /* FIX: Fixed height similar to Create Ad modal but taller */
+      max-height: 75vh;
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      overflow-y: auto; 
+      animation: slideUp 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      touch-action: pan-y;
+    }
+
+    .reviews-header { 
+      display: flex; 
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px; 
+      text-align: center;
+    }
+    
+    .reviews-title { 
+      font-size: 24px; 
+      font-weight: 800; 
+      color: var(--text-primary); 
+      margin-bottom: 4px;
+    }
+
+    .reviews-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .reviews-list {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 16px;
+      padding-right: 4px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .reviews-list::-webkit-scrollbar { 
+      width: 0px;
+      background: transparent;
+    }
+    
+    .review-item-wrapper {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 12px;
+      border-radius: 20px;
+    }
+    
+    .review-delete-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 140px;
+      background: rgba(255, 59, 48, 0.85);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.3s;
+      gap: 10px;
+      padding: 0 10px;
+    }
+    
+    .review-delete-bg.visible {
+      opacity: 1;
+    }
+    
+    .review-action-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      width: 50px;
+    }
+    
+    .review-action-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      margin-bottom: 4px;
+    }
+
+    .review-delete-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 140px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
+      display: none;
+    }
+    
+    .review-delete-btn.visible {
+      display: block;
+    }
+    
+    .review-item {
+      background: var(--bg-secondary);
+      padding: 14px 20px;
+      border-radius: 20px;
+      position: relative;
+      z-index: 2;
+      transition: transform 0.2s ease-out;
+      touch-action: pan-y;
+      display: flex;
+      flex-direction: column;
+      min-height: 80px;
+    }
+    
+    .review-item.swiping {
+      transition: none;
+    }
+
+    .review-header-row {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 4px;
+      width: 100%;
+    }
+    .review-author-block {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+    .review-author { 
+      font-weight: 700; 
+      font-size: 15px; 
+      color: var(--text-primary); 
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .review-date { 
+      font-size: 13px; 
+      color: var(--text-secondary); 
+      white-space: nowrap;
+    }
+    
+    .review-options-btn {
+      background: transparent;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      margin-left: 8px;
+      margin-right: -4px;
+      flex-shrink: 0;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 24px;
+      width: 24px;
+      z-index: 4;
+    }
+    .review-options-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+    
+    .review-stars { display: flex; gap: 3px; margin-bottom: 6px; }
+    .review-stars svg { 
+      width: 24px; 
+      height: 24px; 
+      fill: var(--star-filled); 
+    }
+    .review-text { font-size: 14px; line-height: 1.4; color: var(--text-primary); }
+    
+    .review-input-area {
+      background: transparent;
+    }
+    .review-star-selector {
+      display: flex; justify-content: center; gap: 12px; margin-bottom: 12px;
+    }
+    .review-star-selector svg {
+      width: 36px; height: 36px; fill: var(--star-empty); cursor: pointer; transition: transform 0.2s;
+    }
+    .review-star-selector svg.active { fill: var(--star-filled); transform: scale(1.1); }
+    .review-star-selector svg:active { transform: scale(0.9); }
+    
+    .review-textarea {
+      width: 100%; height: 80px; padding: 12px; border-radius: 12px;
+      border: 2px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary); font-family: inherit; font-size: 16px; resize: none;
+      margin-bottom: 12px; outline: none;
+    }
+    .review-textarea:focus { border-color: var(--icon-active); }
+    
+    .send-review-btn {
+      width: 100%; padding: 16px; 
+      background: var(--btn-blue);
+      color: #ffffff;
+      border: none; border-radius: 100px; font-weight: 700; font-size: 17px;
+      cursor: pointer; opacity: 0.5; pointer-events: none; transition: opacity 0.2s;
+      font-family: inherit;
+    }
+    
+    .dark-theme .send-review-btn {
+        background: var(--btn-blue);
+        color: #ffffff;
+    }
+
+    .send-review-btn.active { opacity: 1; pointer-events: auto; }
+
+    /* --- DETAIL MODAL (FULL SCREEN) --- */
+    .detail-modal {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary);
+      z-index: 200; display: none; overflow-y: auto;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+    .detail-modal.active { display: block; animation: fadeInDetail 0.3s ease; }
+    
+    @keyframes fadeInDetail {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .detail-header-spacer {
+       height: var(--header-height);
+       width: 100%;
+    }
+
+    .detail-top-actions {
+      position: fixed;
+      top: max(12px, env(safe-area-inset-top));
+      left: 0;
+      right: 0;
+      z-index: 210;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      pointer-events: none;
+    }
+
+    .action-circle-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .dark-theme .action-circle-btn {
+      background: rgba(44, 44, 46, 0.8);
+    }
+    .action-circle-btn:active {
+      transform: scale(0.9);
+    }
+    .action-circle-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--text-primary);
+      stroke-width: 2;
+      fill: none;
+    }
+    
+    /* Heart Logic: Default is empty (stroke only). Active class fills it. */
+    .action-circle-btn.favorite-active svg {
+      fill: var(--favorite-color);
+      stroke: var(--favorite-color);
+    }
+
+    /* FIXED SETTINGS GEAR STYLES */
+    .detail-settings-container {
+      position: relative; 
+      z-index: 220;
+      pointer-events: auto;
+    }
+
+    .settings-gear-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .dark-theme .settings-gear-btn {
+      background: rgba(44, 44, 46, 0.8);
+    }
+
+    .settings-gear-btn.active {
+      transform: rotate(90deg);
+      background: rgba(0,0,0,0.1);
+    }
+    
+    .dark-theme .settings-gear-btn.active {
+       background: rgba(255,255,255,0.1);
+    }
+
+    .settings-gear-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--text-primary);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .settings-actions-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 44px;
+      height: 44px;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .sub-action-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: scale(0.5) translateY(-10px);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: auto;
+      z-index: 230;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .sub-action-btn.edit {
+      background: #007AFF;
+      color: white;
+      top: 55px; 
+      right: 0;
+    }
+
+    .sub-action-btn.delete {
+      background: var(--danger-color);
+      color: white;
+      top: 110px; 
+      right: 0;
+    }
+
+    .settings-gear-btn.active ~ .settings-actions-container .sub-action-btn {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    
+    .sub-action-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: white;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    .image-carousel { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: var(--bg-secondary); }
+    .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
+    .carousel-slide { min-width: 100%; height: 100%; }
+    .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+    .carousel-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+    .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); border: none; cursor: pointer; padding: 0; }
+    .carousel-dot.active { background: white; }
+    
+    .detail-info { 
+      padding: 20px 16px; 
+      /* Increased padding bottom to make room for the floating island at the bottom of the scroll view */
+      padding-bottom: 20px; 
+    }
+    .detail-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .detail-price { font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
+    .detail-city { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
+    
+    /* FIX: Description wrapping and width */
+    .detail-desc { 
+      font-size: 15px; 
+      color: var(--text-primary); 
+      line-height: 1.5; 
+      margin-bottom: 20px; 
+      white-space: pre-wrap;
+      width: 100%;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    
+    /* --- SELLER ISLAND (FIXED FLOATING LAYER) --- */
+    .seller-island-container {
+      position: absolute; /* Changed from fixed to absolute so it scrolls with content */
+      bottom: 20px; 
+      left: 0;
+      right: 0;
+      z-index: 150; /* High Z-index to float above content */
+      display: flex;
+      justify-content: center;
+      pointer-events: none; /* Let clicks pass through around the pill */
+      margin-top: 0;
+    }
+
+    .seller-island {
+      pointer-events: auto; /* Re-enable clicks on the pill itself */
+      background: var(--bg-primary);
+      border-radius: 100px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+    
+    .seller-island:active {
+      transform: scale(0.98);
+    }
+
+    .island-seller-info {
+      display: flex;
+      align-items: center;
+      /* UPDATED: Reduced padding from 12px to 5px (moved left by 7px) */
+      padding-left: 5px;
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .island-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--border-color);
+      /* UPDATED: Reduced margin to match the shift */
+      margin-right: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .island-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .island-name-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .island-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .island-status {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .island-write-btn {
+      background: var(--write-btn-green);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .island-write-btn:active {
+      opacity: 0.8;
+    }
+
+    .main-content::-webkit-scrollbar { width: 0; }
+
+    /* --- MESSAGE ACTION WIDGET STYLES --- */
+    .chat-message-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 50;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .chat-message-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .message-action-widget {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 8px;
+      display: flex;
+      gap: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 51;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+    .message-action-widget.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    .msg-action-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .msg-action-btn.edit-btn {
+      color: var(--icon-active);
+      background: rgba(0, 122, 255, 0.1);
+    }
+    .msg-action-btn.edit-btn:active {
+      background: rgba(0, 122, 255, 0.2);
+    }
+    .msg-action-btn.delete-btn {
+      color: var(--danger-color);
+      background: rgba(255, 59, 48, 0.1);
+    }
+    .msg-action-btn.delete-btn:active {
+      background: rgba(255, 59, 48, 0.2);
+    }
+    
+    .edit-textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      resize: none;
+      outline: none;
+      padding: 0;
+      margin: 0;
+      line-height: 1.4;
+    }
+    .edit-confirm-btn {
+      margin-top: 5px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      color: inherit;
+      cursor: pointer;
+      float: right;
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 500;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast-notification.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .toast-icon {
+      color: var(--toast-green);
+    }
+
+  </style>
 </head>
 <body>
 
-    <div class="app-container">
-        
-        <!-- === TAB 1: GIFTS === -->
-        <div id="tab-gifts" class="tab-content active">
-            <header class="page-header"><h1>Цветы</h1></header>
-            <div class="search-row">
-                <div class="search-box"><i class="fas fa-search search-icon"></i><input type="text" class="search-input" placeholder="Поиск..." id="searchInput"></div>
-                <button class="cart-btn" onclick="openCart()"><i class="fas fa-shopping-cart"></i><span class="cart-badge" id="cartBadge">0</span></button>
-            </div>
-            <div class="filters-row">
-                <button class="filter-pill" onclick="openCategoryModal()">Категория <i class="fas fa-chevron-down" style="font-size:10px;"></i></button>
-                <button class="filter-pill" onclick="openPriceModal()">Цена <i class="fas fa-chevron-down" style="font-size:10px;"></i></button>
-            </div>
-            <div class="products-grid" id="productsGrid"></div>
-        </div>
+  <!-- SVG Definitions for Half Star -->
+  <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="half-star-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="50%" style="stop-color:var(--star-filled);stop-opacity:1" />
+        <stop offset="50%" style="stop-color:var(--star-empty);stop-opacity:1" />
+      </linearGradient>
+    </defs>
+  </svg>
 
-        <!-- === TAB 2: PROFILE === -->
-        <div id="tab-profile" class="tab-content">
-            <div class="profile-top">
-                <div class="user-block">
-                    <img src="https://via.placeholder.com/60" alt="" class="avatar" id="userAvatar">
-                    <div><div class="u-name" id="userName">Name</div><div class="u-tag" id="userUsername">@username</div></div>
-                </div>
-                <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
-            </div>
-            <div class="info-card">
-                <div class="card-head"><i class="far fa-flag"></i> Важные даты</div>
-                <div class="cal-nav">
-                    <div class="date-select-btn" onclick="openMonthPicker()"><span id="monthDisplay">Апрель</span><i class="fas fa-chevron-down"></i></div>
-                    <div class="date-select-btn" onclick="openYearPicker()"><span id="yearDisplay">2026</span><i class="fas fa-chevron-down"></i></div>
-                </div>
-                <div class="cal-grid" id="calendarGrid"></div>
-            </div>
-            <div class="info-card">
-                <div class="card-head"><i class="fas fa-map-marker-alt"></i> Адрес доставки</div>
-                <div class="list-row"><span class="row-label">Енисейская 33, кв 16</span></div>
-                <div class="list-row"><span class="row-action">+ Добавить адрес</span></div>
-            </div>
-            <div class="info-card">
-                <div class="card-head"><i class="far fa-credit-card"></i> Оплата</div>
-                <div class="list-row"><span class="row-label">•••• 4242</span><span class="row-val">Visa</span></div>
-            </div>
-            <div class="info-card">
-                <div class="card-head"><i class="far fa-clock"></i> История заказов</div>
-                <div class="list-row"><span class="row-label">Нет активных заказов</span><span class="row-val" id="orderCountBadge">0</span></div>
-            </div>
-        </div>
+  <!-- Toast Notification -->
+  <div class="toast-notification" id="toastNotification">
+    <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toastText">Скопировано</span>
+  </div>
 
-        <!-- === TAB 3: COURIER === -->
-        <div id="tab-courier" class="tab-content">
-            <header class="page-header"><h1>Заказы</h1></header>
-            <div id="courierOrdersList"></div>
-        </div>
+  <!-- ГЛОБАЛЬНАЯ ШАПКА -->
+  <div class="app-header">
+    <img src="logos.png" alt="Swapka Logo" class="header-logo">
+  </div>
 
+  <div class="main-content" id="mainContent">
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="pageHome" data-screen-id="home">
+      <div class="search-container">
+        <div class="search-bar">
+          <div class="search-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <input type="text" class="search-input" id="searchInput" placeholder="Загрузка...">
+        </div>
+        <button class="fav-search-btn" onclick="navigateToFavorites()">
+           <svg viewBox="0 0 24 24">
+             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+           </svg>
+        </button>
+      </div>
+      <div class="ads-grid" id="adsGrid"></div>
+      <div class="empty-state" id="homeEmpty" style="display:none;">
+        <div class="empty-state-text">Пока нет объявлений</div>
+      </div>
+    </div>
+    
+    <!-- FAVORITES PAGE -->
+    <div class="page" id="pageFavorites" data-screen-id="favorites">
+      <div class="search-container">
+         <div class="search-bar" style="justify-content: center; pointer-events: none;">
+            <span style="font-weight: 700; font-size: 18px; color: var(--text-primary);">Избранное</span>
+         </div>
+      </div>
+      <div class="ads-grid" id="favGrid"></div>
+      <div class="empty-state" id="favEmpty" style="display:none;">
+        <div class="empty-state-text">Нет избранных объявлений</div>
+      </div>
     </div>
 
-    <!-- === NAVIGATION === -->
-    <div class="nav-wrapper">
-        <div class="nav-container" id="navContainer">
-            <div class="nav-indicator" id="navIndicator"></div>
-            
-            <div class="nav-item" data-index="0" onclick="switchTabByIndex(0)">
-                <i class="fas fa-gift"></i>
-                <span>Подарки</span>
-            </div>
-            <div class="nav-item" data-index="1" onclick="switchTabByIndex(1)">
-                <i class="fas fa-user"></i>
-                <span>Профиль</span>
-            </div>
-            <div class="nav-item" data-index="2" onclick="switchTabByIndex(2)">
-                <i class="fas fa-truck"></i>
-                <span>Курьер</span>
-            </div>
-            <div class="nav-item" data-index="3" onclick="switchTabByIndex(3)">
-                <i class="fas fa-crown" style="color: gold;"></i>
-                <span>Админ</span>
-            </div>
+    <!-- MESSAGES PAGE -->
+    <div class="page" id="pageMessages" data-screen-id="messages">
+      <div class="messages-list" id="messagesList">
+        <div class="empty-state">
+          <div class="empty-state-text">У вас пока нет чатов</div>
         </div>
+      </div>
     </div>
 
-    <!-- === MODALS === -->
-    <div class="modal-bg" id="modalOverlay" onclick="closeAllModals()"></div>
-    <div class="sheet" id="catSheet"><div class="handle"></div><button class="cat-btn" onclick="setCat('all')">Все</button><button class="cat-btn" onclick="setCat('flowers')">Цветы</button><button class="cat-btn" onclick="setCat('sweets')">Сладкое</button><button class="cat-btn" onclick="setCat('toys')">Игрушки</button></div>
-    <div class="sheet" id="priceSheet"><div class="handle"></div><h3 style="margin-bottom:15px;">Цена</h3><input type="range" style="width:100%" oninput="document.getElementById('pVal').innerText=this.value+' ₽'"><div style="text-align:center; margin:10px 0;" id="pVal">5000 ₽</div><div style="display:flex; gap:10px;"><input type="number" placeholder="От" style="width:50%; padding:10px; border-radius:8px; border:1px solid var(--input-bg); background:var(--bg-color); color:var(--text-color);"><input type="number" placeholder="До" style="width:50%; padding:10px; border-radius:8px; border:1px solid var(--input-bg); background:var(--bg-color); color:var(--text-color);"></div><button class="btn-full" onclick="closeAllModals()">Готово</button></div>
-    <div class="sheet" id="cartSheet"><div class="handle"></div><h3 style="margin-bottom:15px;">Корзина</h3><div id="cartItems"></div><div style="text-align:right; font-size:18px; font-weight:bold; margin-top:15px;" id="cartTotal">0 ₽</div><button class="btn-full" onclick="checkout()">Оформить</button></div>
-    <div class="sheet" id="monthPickerSheet"><div class="handle"></div><h3 style="margin-bottom:15px;">Выберите месяц</h3><div class="picker-list-container" id="monthListContainer"></div></div>
-    <div class="sheet" id="yearPickerSheet"><div class="handle"></div><h3 style="margin-bottom:15px;">Выберите год</h3><div class="picker-list-container" id="yearListContainer"></div></div>
-    <div class="sheet" id="eventSheet"><div class="handle"></div><div class="event-widget-header"><div class="event-widget-title">Событие</div><button class="trash-btn" id="deleteEventBtn" onclick="deleteEvent()" style="display:none;"><i class="fas fa-trash-alt"></i></button></div><div class="event-date-label" id="eventDateLabel">Дата: ...</div><input type="text" class="event-input" id="eventNameInput" placeholder="Название события" oninput="checkEventInput()"><button class="btn-full" id="saveEventBtn" disabled onclick="saveEvent()">Сохранить</button></div>
+    <!-- PROFILE PAGE -->
+    <div class="page" id="pageProfile" data-screen-id="profile">
+      <div class="profile-moon-wrapper">
+        <button class="moon-btn" id="themeToggle">
+          <svg id="iconMoon" viewBox="0 0 24 24" style="display:block">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg id="iconSun" viewBox="0 0 24 24" style="display:none">
+            <circle cx="12" cy="12" r="4"></circle>
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div style="padding-top: 0;">
+        <div class="profile-user-info" style="margin-top: -50px;">
+          <div id="profileAvatarContainer"></div>
+          <div class="profile-name" id="profileName">Загрузка...</div>
+          <div class="profile-username" id="profileUsername">@loading</div>
+          
+          <div class="profile-rating" id="profileRating">
+             <span class="rating-label-btn" onclick="openReviewsModal(currentUser.id, currentUser.firstName)">Рейтинг</span>
+             <div class="stars-container" id="myProfileStars">
+               <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+               <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+               <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             </div>
+          </div>
+        </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+        <button class="create-ad-btn" id="openCreateBtn">Создать объявление</button>
 
-        if (tg.colorScheme === 'dark') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
-        }
+        <div class="my-ads-title">Мои объявления</div>
+        <div class="my-ads-grid-wrapper">
+          <div class="ads-grid" id="myAdsGrid"></div>
+          <div class="empty-state" id="myAdsEmpty">
+            <div class="empty-state-text">У вас пока нет объявлений</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ADMIN PAGE -->
+    <div class="page" id="pageAdmin" data-screen-id="admin">
+      <div class="profile-user-info" style="padding-top: 20px;">
+        <div class="profile-avatar-placeholder" style="background: var(--btn-blue); color: white;">👑</div>
+        <div class="profile-name">Администрация</div>
+        <div class="profile-username">Модераторы</div>
+      </div>
+      <div style="padding: 20px; text-align: center;">
+         <p style="color: var(--text-secondary);">Панель управления модератора.</p>
+         <div style="margin-top: 20px; padding: 15px; background: var(--bg-secondary); border-radius: 12px;">
+            <strong>Статистика:</strong><br>
+            Объявлений: <span id="adminAdCount">0</span><br>
+            Пользователей: <span id="adminUserCount">1</span>
+         </div>
+      </div>
+    </div>
 
-        const user = tg.initDataUnsafe.user || { first_name: "Name", username: "username" };
-        document.getElementById('userName').innerText = user.first_name;
-        document.getElementById('userUsername').innerText = user.username ? '@'+user.username : '';
-
-        // --- CALENDAR LOGIC ---
-        const MOCK_TODAY = new Date(2026, 3, 17);
-        let currentViewMonth = MOCK_TODAY.getMonth();
-        let currentViewYear = MOCK_TODAY.getFullYear();
-        let events = {};
-        let selectedEventDay = null;
-        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-
-        function updateCalendarHeader() {
-            document.getElementById('monthDisplay').innerText = monthNames[currentViewMonth];
-            document.getElementById('yearDisplay').innerText = currentViewYear;
-        }
-
-        function renderCalendar() {
-            updateCalendarHeader();
-            const g = document.getElementById('calendarGrid');
-            g.innerHTML = '';
-            ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => g.innerHTML += `<div class="d-name">${d}</div>`);
-            const firstDayOfMonth = new Date(currentViewYear, currentViewMonth, 1).getDay();
-            let startOffset = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
-            for(let i=0; i<startOffset; i++) g.innerHTML += `<div></div>`;
-            const daysInMonth = new Date(currentViewYear, currentViewMonth + 1, 0).getDate();
-            for(let d=1; d<=daysInMonth; d++) {
-                let cls = 'd-cell';
-                if (d === MOCK_TODAY.getDate() && currentViewMonth === MOCK_TODAY.getMonth() && currentViewYear === MOCK_TODAY.getFullYear()) cls += ' today';
-                const eventKey = `${currentViewYear}-${currentViewMonth}-${d}`;
-                if (events[eventKey]) cls += ' event';
-                g.innerHTML += `<div class="${cls}" onclick="openEventModal(${d})">${d}</div>`;
-            }
-        }
-
-        function openMonthPicker() {
-            const container = document.getElementById('monthListContainer');
-            container.innerHTML = '';
-            monthNames.forEach((m, index) => {
-                const div = document.createElement('div');
-                div.className = `picker-item ${index === currentViewMonth ? 'selected' : ''}`;
-                div.innerText = m;
-                div.onclick = () => { currentViewMonth = index; renderCalendar(); closeAllModals(); };
-                container.appendChild(div);
-            });
-            openModal('monthPickerSheet');
-        }
-
-        function openYearPicker() {
-            const container = document.getElementById('yearListContainer');
-            container.innerHTML = '';
-            for(let y=2026; y<=2030; y++) {
-                const div = document.createElement('div');
-                div.className = `picker-item ${y === currentViewYear ? 'selected' : ''}`;
-                div.innerText = y;
-                div.onclick = () => { currentViewYear = y; renderCalendar(); closeAllModals(); };
-                container.appendChild(div);
-            }
-            openModal('yearPickerSheet');
-        }
-
-        function openEventModal(day) {
-            selectedEventDay = day;
-            const dateStr = `${day} ${monthNames[currentViewMonth]} ${currentViewYear}`;
-            document.getElementById('eventDateLabel').innerText = `Дата: ${dateStr}`;
-            const input = document.getElementById('eventNameInput');
-            const deleteBtn = document.getElementById('deleteEventBtn');
-            const eventKey = `${currentViewYear}-${currentViewMonth}-${day}`;
-            if (events[eventKey]) { input.value = events[eventKey]; deleteBtn.style.display = 'block'; }
-            else { input.value = ''; deleteBtn.style.display = 'none'; }
-            checkEventInput();
-            openModal('eventSheet');
-            setTimeout(() => input.focus(), 300);
-        }
-
-        function checkEventInput() {
-            const val = document.getElementById('eventNameInput').value.trim();
-            document.getElementById('saveEventBtn').disabled = val.length === 0;
-        }
-
-        function saveEvent() {
-            const val = document.getElementById('eventNameInput').value.trim();
-            if (!val) return;
-            events[`${currentViewYear}-${currentViewMonth}-${selectedEventDay}`] = val;
-            renderCalendar(); closeAllModals();
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        }
-
-        function deleteEvent() {
-            const key = `${currentViewYear}-${currentViewMonth}-${selectedEventDay}`;
-            if (events[key]) { delete events[key]; renderCalendar(); closeAllModals(); if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning'); }
-        }
-
-        // --- PRODUCTS & CART ---
-        const products = [
-            { id: 1, title: "Букет роз", price: 3500, cat: "flowers", img: null },
-            { id: 2, title: "Мишка", price: 1200, cat: "toys", img: null },
-            { id: 3, title: "Шоколад", price: 800, cat: "sweets", img: null },
-            { id: 4, title: "Тюльпаны", price: 2500, cat: "flowers", img: null },
-            { id: 5, title: "Рафаэлло", price: 600, cat: "sweets", img: null },
-            { id: 6, title: "Зайка", price: 1500, cat: "toys", img: null },
-        ];
-        let cart = [];
-        let currentCat = 'all';
-
-        function renderProducts(q = '') {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '';
-            products.filter(p => (currentCat === 'all' || p.cat === currentCat) && p.title.toLowerCase().includes(q.toLowerCase())).forEach(p => {
-                const div = document.createElement('div');
-                div.className = 'product-card';
-                const imgHtml = p.img ? `<div class="tile-image has-img"><img src="${p.img}"></div>` : `<div class="tile-image"><i class="fas fa-image" style="opacity:0.3"></i></div>`;
-                div.innerHTML = `${imgHtml}<div class="p-info"><div class="p-title">${p.title}</div><div class="p-price">${p.price} ₽</div><button class="add-btn" onclick="addToCart(${p.id})">В корзину</button></div>`;
-                grid.appendChild(div);
-            });
-        }
-
-        function renderOrders() {
-            const c = document.getElementById('courierOrdersList');
-            const orders = [
-                { date: "25 марта 15:00", addr: "Ленина 1", phone: "+7900...", items: [1,2] },
-                { date: "25 марта 18:30", addr: "Мира 10", phone: "+7999...", items: [3], expired: true }
-            ];
-            orders.forEach(o => {
-                let thumbs = o.items.map(id => { const p = products.find(x=>x.id===id); return p.img ? `<div class="o-thumb"><img src="${p.img}"></div>` : `<div class="o-thumb"></div>`; }).join('');
-                c.innerHTML += `<div class="order-card" style="${o.expired?'opacity:0.5':''}"><div class="o-head">Содержимое</div><div class="o-scroll">${thumbs}</div><div class="o-detail"><b>Адрес:</b> <span>${o.addr}</span></div><div class="o-detail"><b>Дата:</b> <span>${o.date}</span></div><div class="o-detail"><b>Телефон:</b> <span class="o-phone">${o.phone}</span></div></div>`;
-            });
-        }
-
-        // --- НАВИГАЦИЯ (CLONE METHOD - 100% WORKING) ---
-        let currentTabIndex = 0;
-        const indicator = document.getElementById('navIndicator');
-        const navItems = document.querySelectorAll('.nav-item');
-        const navContainer = document.getElementById('navContainer');
+    <!-- OTHER USER PROFILE PAGE -->
+    <div class="page" id="pageOtherProfile" data-screen-id="otherProfile">
+      <div class="profile-user-info" style="padding-top: 20px;">
+        <div id="otherProfileAvatarContainer"></div>
+        <div class="profile-name" id="otherProfileName">Имя пользователя</div>
         
-        let isDragging = false;
-        let clone = null;
-        let startX = 0;
-        let startLeft = 0;
+        <div class="profile-rating" id="otherProfileRating">
+           <span class="rating-label-btn" id="otherProfileRatingBtn">Рейтинг</span>
+           <div class="stars-container" id="otherProfileStars">
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+           </div>
+        </div>
+      </div>
 
-        function updateIndicatorPosition(index, animate = true) {
-            const targetItem = navItems[index];
-            const itemLeft = targetItem.offsetLeft;
-            const itemWidth = targetItem.offsetWidth;
-            const itemCenter = itemLeft + (itemWidth / 2);
-            const indicatorWidth = itemWidth - 12; 
-            const newLeft = itemCenter - (indicatorWidth / 2);
+      <div class="my-ads-title">Активные объявления (<span id="otherAdsCount">0</span>)</div>
+      <div class="my-ads-grid-wrapper">
+        <div class="ads-grid" id="otherAdsGrid"></div>
+        <div class="empty-state" id="otherAdsEmpty">
+          <div class="empty-state-text">У пользователя пока нет активных объявлений</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            if (!animate) {
-                indicator.style.transition = 'none';
-            } else {
-                indicator.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease';
-            }
-            
-            indicator.style.width = `${indicatorWidth}px`;
-            indicator.style.transform = `translateX(${newLeft}px)`;
+  <!-- REVIEWS MODAL -->
+  <div class="reviews-modal" id="reviewsModal">
+    <div class="reviews-content-wrapper" id="reviewsWrapper">
+      <div class="reviews-header">
+        <span class="reviews-title">Отзывы</span>
+        <span class="reviews-subtitle" id="reviewsUserName">Пользователь</span>
+      </div>
+      <div class="reviews-list" id="reviewsList">
+        <!-- Reviews here -->
+      </div>
+      
+      <button class="send-review-btn active" id="openReviewFormBtn" onclick="showReviewForm()" style="margin-top: 10px;">Написать отзыв</button>
 
-            navItems.forEach((el, i) => {
-                if (i === index) el.classList.add('active');
-                else el.classList.remove('active');
-            });
-            
-            currentTabIndex = index;
-        }
+      <div class="review-input-area" id="reviewInputArea" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 310; align-items: center; justify-content: center; backdrop-filter: blur(5px);" ondblclick="hideReviewForm()">
+         <div style="background: var(--bg-primary); width: 90%; max-width: 350px; padding: 20px; border-radius: 20px; display: flex; flex-direction: column; align-items: center;">
+            <h3 style="margin-bottom: 15px; color: var(--text-primary);">Ваша оценка</h3>
+            <div class="review-star-selector" id="reviewStarSelector">
+              <svg onclick="setReviewRating(1)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+              <svg onclick="setReviewRating(2)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+              <svg onclick="setReviewRating(3)" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+            </div>
+            <textarea class="review-textarea" id="reviewTextarea" placeholder="Напишите отзыв (макс. 250 симв.)..." maxlength="250" oninput="checkReviewForm()"></textarea>
+            <div style="display: flex; gap: 10px; width: 100%;">
+               <button class="send-review-btn" id="sendReviewBtn" onclick="submitReview()" style="flex: 1; margin: 0; padding: 12px;">Создать</button>
+            </div>
+         </div>
+      </div>
+    </div>
+  </div>
 
-        function switchTabByIndex(index) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            const tabs = ['gifts', 'profile', 'courier', 'admin'];
-            const targetId = index === 3 ? 'tab-gifts' : `tab-${tabs[index]}`;
-            
-            if(index === 3) alert("Раздел Админ в разработке");
-            
-            document.getElementById(targetId).classList.add('active');
-            updateIndicatorPosition(index);
-        }
+  <!-- CHAT SCREEN -->
+  <div class="chat-screen" id="chatScreen" data-screen-id="chat">
+    
+    <div class="chat-header-pill-container">
+      <div class="chat-profile-pill" onclick="openOtherProfileFromChat()">
+        <div class="chat-pill-avatar" id="chatHeaderAvatar"></div>
+        <div class="chat-pill-info">
+          <div class="chat-pill-name" id="chatHeaderName">Имя</div>
+          <div class="chat-pill-status" id="chatHeaderStatus">В сети</div>
+        </div>
+      </div>
+    </div>
 
-        window.addEventListener('load', () => updateIndicatorPosition(0, false));
-        window.addEventListener('resize', () => updateIndicatorPosition(currentTabIndex, false));
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-message-overlay" id="msgOverlay" onclick="closeMessageActions()"></div>
+      <div class="message-action-widget" id="msgActionWidget">
+        <button class="msg-action-btn edit-btn" onclick="startEditMessage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Редактировать
+        </button>
+        <button class="msg-action-btn delete-btn" onclick="deleteSelectedMessage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          Удалить
+        </button>
+      </div>
+    </div>
+    
+    <div class="attached-photo-preview" id="attachedPhotoPreview" style="display:none;">
+      <div class="attached-photo-thumb">
+        <img id="attachedPhotoImg" src="" alt="">
+        <button class="remove-attachment-btn" onclick="removeAttachedPhoto()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
 
-        // --- ФИЗИКА ИНДИКАТОРА (CLONE METHOD) ---
+    <div class="chat-input-area">
+      <div class="chat-input-wrapper-complex">
+        <button class="chat-add-photo-btn" onclick="document.getElementById('chatPhotoInput').click()">
+          <svg viewBox="0 0 24 24">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <input type="file" id="chatPhotoInput" accept="image/*" multiple style="display:none;" onchange="handleChatPhotoSelect(event)">
         
-        indicator.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Предотвращаем клик
-            isDragging = true;
-            
-            // 1. Получаем координаты и размеры оригинала
-            const rect = indicator.getBoundingClientRect();
-            startLeft = rect.left;
-            startX = e.touches[0].clientX;
+        <input type="text" class="chat-input" id="chatInput" placeholder="Написать...">
+      </div>
+      
+      <button class="chat-send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
 
-            // 2. Создаем КЛОН
-            clone = indicator.cloneNode(true);
-            clone.classList.add('clone');
-            
-            // 3. Задаем клону точные размеры и позицию
-            clone.style.width = rect.width + 'px';
-            clone.style.height = rect.height + 'px';
-            clone.style.top = rect.top + 'px';
-            clone.style.left = startLeft + 'px';
-            clone.style.transform = 'none'; // Сбрасываем трансформ
-            
-            // 4. Добавляем клон в BODY (поверх всего)
-            document.body.appendChild(clone);
-            
-            // 5. Скрываем оригинал, чтобы не мелькал
-            indicator.style.opacity = '0';
-        }, {passive: false});
+  <!-- IOS 26 LIQUID GLASS BOTTOM NAV -->
+  <div class="bottom-nav" id="bottomNav">
+    <div class="nav-pill" id="navPill">
+      <div class="nav-indicator" id="navIndicator"></div>
 
-        document.addEventListener('touchmove', (e) => {
-            if (!isDragging || !clone) return;
-            
-            // БЛОКИРУЕМ СКРОЛЛ ПОЛНОСТЬЮ
-            e.preventDefault(); 
-            
-            const x = e.touches[0].clientX;
-            const diff = x - startX;
-            
-            // Двигаем КЛОН
-            clone.style.left = (startLeft + diff) + 'px';
-        }, {passive: false});
+      <button class="nav-item active" data-tab="home" id="navHome">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <span class="nav-label">Главная</span>
+      </button>
+      
+      <button class="nav-item" data-tab="messages" id="navMessages">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <span class="nav-label">Сообщения</span>
+      </button>
+      
+      <button class="nav-item" data-tab="profile" id="navProfile">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <span class="nav-label">Профиль</span>
+      </button>
+      
+      <button class="nav-item" data-tab="admin" id="navAdmin" style="display: none;">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5v-2z"></path>
+          </svg>
+        </div>
+        <span class="nav-label">Админ</span>
+      </button>
+    </div>
+  </div>
 
-        document.addEventListener('touchend', (e) => {
-            if (!isDragging || !clone) return;
-            isDragging = false;
-            
-            // 1. Возвращаем видимость оригиналу
-            indicator.style.opacity = '1';
-            
-            // 2. Вычисляем, куда упал клон
-            const cloneRect = clone.getBoundingClientRect();
-            const cloneCenter = cloneRect.left + (cloneRect.width / 2);
-            
-            // 3. Ищем ближайшую вкладку
-            let nearestIndex = 0;
-            let minDiff = Infinity;
+  <!-- CREATE AD MODAL -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal-content" id="createModalContent">
+      <div class="modal-header">
+        <span class="modal-title" id="createModalTitle">Новое объявление</span>
+      </div>
 
-            navItems.forEach((item, index) => {
-                const itemRect = item.getBoundingClientRect();
-                const itemCenter = itemRect.left + (itemRect.width / 2);
-                const diff = Math.abs(cloneCenter - itemCenter);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    nearestIndex = index;
-                }
-            });
-            
-            // 4. Удаляем клон
-            clone.remove();
-            clone = null;
-            
-            // 5. Переключаем таб (оригинал плавно приедет на место)
-            switchTabByIndex(nearestIndex);
+      <div class="form-group">
+        <label class="form-label">Фотографии (1–4)</label>
+        <div class="photos-grid" id="photosGrid">
+          <div class="photo-slot" onclick="addPhoto(0)" id="photoSlot0"><span class="add-icon">+</span></div>
+          <div class="photo-slot" onclick="addPhoto(1)" id="photoSlot1"><span class="add-icon">+</span></div>
+          <div class="photo-slot" onclick="addPhoto(2)" id="photoSlot2"><span class="add-icon">+</span></div>
+          <div class="photo-slot" onclick="addPhoto(3)" id="photoSlot3"><span class="add-icon">+</span></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Название товара</label>
+        <input type="text" class="form-input" id="adTitle" placeholder="Введите название">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Цена</label>
+        <input type="text" class="form-input" id="adPrice" placeholder="Введите цену">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Город</label>
+        <input type="text" class="form-input" id="adCity" placeholder="Введите город">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Категория</label>
+        <select class="form-input" id="adCategory" style="appearance: none; -webkit-appearance: none;">
+          <option value="" disabled selected>Выберите категорию</option>
+          <option value="Одежда">Одежда</option>
+          <option value="Электроника">Электроника</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Описание (макс. 250 симв.)</label>
+        <textarea class="form-input" id="adDesc" rows="3" maxlength="250" placeholder="Опишите товар..." style="resize: none;"></textarea>
+        <div style="text-align: right; font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+          <span id="descCounter">0</span>/250
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitAdBtn" onclick="createAd()">Создать</button>
+    </div>
+  </div>
+
+  <!-- AD DETAIL MODAL -->
+  <div class="detail-modal" id="detailModal" data-screen-id="detail">
+    
+    <div class="detail-top-actions">
+      <button class="action-circle-btn" id="btnFavorite" onclick="toggleFavorite()">
+        <svg viewBox="0 0 24 24">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      </button>
+
+      <button class="action-circle-btn" onclick="shareAd()">
+        <svg viewBox="0 0 24 24">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+      </button>
+
+      <div class="detail-settings-container" id="detailSettingsContainer" style="display:none;">
+        <button class="settings-gear-btn" id="settingsGearBtn" onclick="toggleSettingsMenu()">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+        <div class="settings-actions-container">
+          <button class="sub-action-btn edit" onclick="editCurrentAd()">
+            <svg viewBox="0 0 24 24">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
+          <button class="sub-action-btn delete" onclick="deleteCurrentAdFromDetail()">
+            <svg viewBox="0 0 24 24">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-header-spacer"></div>
+    
+    <div class="image-carousel" id="detailCarousel">
+      <div class="carousel-track" id="carouselTrack"></div>
+      <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+    <div class="detail-info">
+      <div class="detail-title" id="detailTitle"></div>
+      <div class="detail-price" id="detailPrice"></div>
+      <div class="detail-city" id="detailCity"></div>
+      <div class="detail-desc" id="detailDesc"></div>
+
+      <!-- MOVED SELLER ISLAND INSIDE DETAIL INFO SO IT SCROLLS -->
+      <div class="seller-island-container">
+        <div class="seller-island">
+          <div class="island-seller-info" onclick="openOtherProfileFromDetail()">
+            <div class="island-avatar" id="detailSellerAvatar">👤</div>
+            <div class="island-name-block">
+              <div class="island-name" id="detailSellerName">Продавец</div>
+              <div class="island-status">Был(а) недавно</div>
+            </div>
+          </div>
+          <button class="island-write-btn" onclick="contactSeller()">Написать</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    
+    // ИНИЦИАЛИЗАЦИЯ И РАСШИРЕНИЕ ЭКРАНА
+    tg.ready();
+    tg.expand(); 
+
+    if (window.innerWidth > 430) {
+      document.body.style.width = '430px';
+    } else {
+      document.body.style.width = '100%';
+    }
+
+    const user = tg.initDataUnsafe?.user;
+    
+    // Модераторы
+    const moderators = ['qvilxy'];
+    const isAdmin = user && user.username && moderators.includes(user.username.toLowerCase().replace('@', ''));
+
+    const currentUser = {
+      id: user?.id || 'guest_' + Date.now(),
+      firstName: user?.first_name || 'Гость',
+      lastName: user?.last_name || '',
+      username: user?.username || '',
+      photoUrl: user?.photo_url || ''
+    };
+
+    const ADS_KEY = 'swapka_ads';
+    const THEME_KEY = 'swapka_theme';
+    const CHATS_KEY = 'swapka_chats';
+    const REVIEWS_KEY = 'swapka_reviews';
+    const FAVORITES_KEY = 'swapka_favorites';
+
+    localStorage.removeItem(REVIEWS_KEY);
+
+    // --- NAVIGATION STACK LOGIC ---
+    let navStack = []; 
+    const mainTabs = ['home', 'messages', 'profile', 'admin'];
+
+    tg.BackButton.onClick(() => {
+      if (document.getElementById('reviewInputArea').style.display === 'flex') {
+        hideReviewForm();
+        return;
+      }
+      if (document.getElementById('reviewsModal').classList.contains('active')) {
+        closeReviewsModal();
+        return;
+      }
+      goBack();
+    });
+
+    function updateTelegramBackButton() {
+      const currentScreen = getCurrentScreenId();
+      const reviewsModal = document.getElementById('reviewsModal');
+      
+      if (reviewsModal.classList.contains('active')) {
+        tg.BackButton.show();
+        return;
+      }
+
+      if (!currentScreen || mainTabs.includes(currentScreen)) {
+        tg.BackButton.hide();
+      } else {
+        tg.BackButton.show();
+      }
+    }
+
+    function navigateTo(screenId, data = null) {
+      closeMessageActions();
+      
+      const currentScreen = getCurrentScreenId();
+      
+      if (currentScreen) {
+        navStack.push(currentScreen);
+      }
+
+      document.querySelectorAll('.page, .chat-screen, .detail-modal').forEach(el => {
+        el.classList.remove('active');
+      });
+
+      let targetEl;
+      if (screenId === 'home') targetEl = document.getElementById('pageHome');
+      else if (screenId === 'favorites') targetEl = document.getElementById('pageFavorites');
+      else if (screenId === 'messages') targetEl = document.getElementById('pageMessages');
+      else if (screenId === 'profile') targetEl = document.getElementById('pageProfile');
+      else if (screenId === 'admin') targetEl = document.getElementById('pageAdmin');
+      else if (screenId === 'otherProfile') targetEl = document.getElementById('pageOtherProfile');
+      else if (screenId === 'chat') targetEl = document.getElementById('chatScreen');
+      else if (screenId === 'detail') targetEl = document.getElementById('detailModal');
+
+      if (targetEl) {
+        targetEl.classList.add('active');
+        
+        if (navStack.length > 0) {
+           navStack.pop(); 
+        }
+        navStack.push(screenId);
+      }
+
+      if (mainTabs.includes(screenId)) {
+        document.getElementById('bottomNav').classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const activeNav = document.querySelector(`.nav-item[data-tab="${screenId}"]`);
+        if(activeNav) activeNav.classList.add('active');
+        
+        const index = mainTabs.indexOf(screenId);
+        updateIndicatorPosition(index, false);
+        indicatorPhysics.currentIndex = index;
+      } else {
+        document.getElementById('bottomNav').classList.add('hidden');
+      }
+
+      updateTelegramBackButton();
+
+      if (screenId === 'messages') renderMessages();
+      if (screenId === 'profile') renderMyAds();
+      if (screenId === 'home') renderAds();
+      if (screenId === 'favorites') renderFavorites();
+      if (screenId === 'admin') renderAdminStats();
+      if (screenId === 'otherProfile' && data) renderOtherProfile(data);
+      
+      const mainContent = document.getElementById('mainContent');
+      if(mainContent) mainContent.scrollTop = 0;
+    }
+    
+    function navigateToFavorites() {
+       navigateTo('favorites');
+    }
+
+    function getCurrentScreenId() {
+      const activePage = document.querySelector('.page.active');
+      if (activePage) return activePage.dataset.screenId;
+      
+      const activeChat = document.querySelector('.chat-screen.active');
+      if (activeChat) return activeChat.dataset.screenId;
+      
+      const activeDetail = document.querySelector('.detail-modal.active');
+      if (activeDetail) return activeDetail.dataset.screenId;
+      
+      return null;
+    }
+
+    function goBack() {
+      closeSettingsMenu();
+      closeMessageActions();
+
+      if (navStack.length <= 1) {
+        navigateTo('home');
+        navStack = ['home'];
+        return;
+      }
+
+      navStack.pop();
+      const previousScreen = navStack[navStack.length - 1];
+      
+      document.querySelectorAll('.page, .chat-screen, .detail-modal').forEach(el => {
+        el.classList.remove('active');
+      });
+
+      let targetEl;
+      if (previousScreen === 'home') targetEl = document.getElementById('pageHome');
+      else if (previousScreen === 'favorites') targetEl = document.getElementById('pageFavorites');
+      else if (previousScreen === 'messages') targetEl = document.getElementById('pageMessages');
+      else if (previousScreen === 'profile') targetEl = document.getElementById('pageProfile');
+      else if (previousScreen === 'admin') targetEl = document.getElementById('pageAdmin');
+      else if (previousScreen === 'otherProfile') targetEl = document.getElementById('pageOtherProfile');
+      else if (previousScreen === 'chat') targetEl = document.getElementById('chatScreen');
+      else if (previousScreen === 'detail') targetEl = document.getElementById('detailModal');
+
+      if (targetEl) targetEl.classList.add('active');
+
+      if (mainTabs.includes(previousScreen)) {
+        document.getElementById('bottomNav').classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const activeNav = document.querySelector(`.nav-item[data-tab="${previousScreen}"]`);
+        if(activeNav) activeNav.classList.add('active');
+        const index = mainTabs.indexOf(previousScreen);
+        updateIndicatorPosition(index, false);
+        indicatorPhysics.currentIndex = index;
+      } else {
+        document.getElementById('bottomNav').classList.add('hidden');
+      }
+
+      updateTelegramBackButton();
+      
+      const mainContent = document.getElementById('mainContent');
+      if(mainContent) mainContent.scrollTop = 0;
+    }
+
+    // --- DATA MANAGEMENT ---
+    function loadAds() {
+      try { const data = localStorage.getItem(ADS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
+    }
+    function saveAds(ads) {
+      try { localStorage.setItem(ADS_KEY, JSON.stringify(ads)); } catch (e) { throw e; }
+    }
+    function loadChats() {
+      try { const data = localStorage.getItem(CHATS_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
+    }
+    function saveChats(chats) {
+      try { localStorage.setItem(CHATS_KEY, JSON.stringify(chats)); } catch (e) {}
+    }
+    function loadTheme() { return localStorage.getItem(THEME_KEY); }
+    function saveTheme(theme) { localStorage.setItem(THEME_KEY, theme); }
+    
+    function loadReviews() {
+      try { const data = localStorage.getItem(REVIEWS_KEY); return data ? JSON.parse(data) : {}; } catch (e) { return {}; }
+    }
+    function saveReviews(reviews) {
+      try { localStorage.setItem(REVIEWS_KEY, JSON.stringify(reviews)); } catch (e) {}
+    }
+
+    function loadFavorites() {
+      try { const data = localStorage.getItem(FAVORITES_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; }
+    }
+    function saveFavorites(favs) {
+      try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs)); } catch (e) {}
+    }
+
+    function applyTheme(theme) {
+      const body = document.body;
+      const iconMoon = document.getElementById('iconMoon');
+      const iconSun = document.getElementById('iconSun');
+      if (theme === 'dark') {
+        body.classList.add('dark-theme');
+        if (iconMoon) iconMoon.style.display = 'none';
+        if (iconSun) iconSun.style.display = 'block';
+      } else {
+        body.classList.remove('dark-theme');
+        if (iconMoon) iconMoon.style.display = 'block';
+        if (iconSun) iconSun.style.display = 'none';
+      }
+    }
+
+    const savedTheme = loadTheme();
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      applyTheme(savedTheme);
+    } else {
+      applyTheme(tg.colorScheme === 'dark' ? 'dark' : 'light');
+    }
+
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', function() {
+        const isDark = document.body.classList.contains('dark-theme');
+        if (isDark) { applyTheme('light'); saveTheme('light'); }
+        else { applyTheme('dark'); saveTheme('dark'); }
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      });
+    }
+
+    function setupProfile() {
+      const avatarContainer = document.getElementById('profileAvatarContainer');
+      if (currentUser.photoUrl) {
+        avatarContainer.innerHTML = `<img src="${currentUser.photoUrl}" class="profile-avatar" alt="Avatar">`;
+      } else {
+        avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
+      }
+      document.getElementById('profileName').textContent = currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
+      document.getElementById('profileUsername').textContent = currentUser.username ? '@' + currentUser.username : '';
+    }
+    setupProfile();
+
+    function setRandomSearchPlaceholder() {
+      const searchInput = document.getElementById('searchInput');
+      const rand = Math.random();
+      if (rand < 0.1) searchInput.placeholder = 'Свиной навоз оптом';
+      else if (rand < 0.55) searchInput.placeholder = 'Что ищем?';
+      else searchInput.placeholder = 'Погнали за покупками!';
+    }
+
+    // --- INDICATOR PHYSICS ---
+    const navPill = document.getElementById('navPill');
+    const navIndicator = document.getElementById('navIndicator');
+    const navItems = document.querySelectorAll('.nav-item');
+    let indicatorPhysics = { isDragging: false, currentTransformX: 0, touchOffsetX: 0, velocity: 0, lastX: 0, lastTime: 0, currentIndex: 0, cachedItemWidth: 0 };
+
+    function initIndicatorPhysics() {
+      // Recalculate width based on visible items
+      const visibleItems = Array.from(navItems).filter(i => i.style.display !== 'none');
+      if(visibleItems.length > 0) {
+         indicatorPhysics.cachedItemWidth = visibleItems[0].offsetWidth;
+      }
+      updateIndicatorPosition(0, false);
+      window.addEventListener('resize', () => {
+        const visibleItems = Array.from(navItems).filter(i => i.style.display !== 'none');
+        if(visibleItems.length > 0) indicatorPhysics.cachedItemWidth = visibleItems[0].offsetWidth;
+        updateIndicatorPosition(indicatorPhysics.currentIndex, false);
+      });
+    }
+
+    function updateIndicatorPosition(index, isDragging = false) {
+      // Ensure we have a valid width
+      if (!indicatorPhysics.cachedItemWidth || indicatorPhysics.cachedItemWidth === 0) {
+        const navItem = navItems[index] || navItems[0];
+        if (navItem) indicatorPhysics.cachedItemWidth = navItem.offsetWidth;
+      }
+      
+      const targetX = index * indicatorPhysics.cachedItemWidth;
+      indicatorPhysics.currentTransformX = targetX;
+      indicatorPhysics.currentIndex = index;
+      
+      if (isDragging) return;
+      
+      navIndicator.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
+      navIndicator.style.transform = `translate3d(${targetX}px, 0, 0) scale(1)`;
+      
+      // Adjust width based on number of VISIBLE items
+      const totalItems = Array.from(navItems).filter(i => i.style.display !== 'none').length;
+      const itemWidthPercent = 100 / totalItems;
+      navIndicator.style.width = `calc(${itemWidthPercent}% - 8px)`;
+      navIndicator.style.borderRadius = '24px';
+    }
+
+    function switchTab(tab, index) {
+      navigateTo(tab);
+      // Force update indicator immediately after navigation to fix profile bug
+      setTimeout(() => {
+         updateIndicatorPosition(index, false);
+      }, 50);
+    }
+
+    navPill.addEventListener('touchstart', (e) => {
+      indicatorPhysics.isDragging = true;
+      indicatorPhysics.lastX = e.touches[0].clientX;
+      indicatorPhysics.lastTime = Date.now();
+      indicatorPhysics.velocity = 0;
+      navItems.forEach((item, idx) => { if(item.classList.contains('active')) indicatorPhysics.currentIndex = idx; });
+      indicatorPhysics.touchOffsetX = e.touches[0].clientX - indicatorPhysics.currentTransformX;
+      navIndicator.style.transition = 'none';
+    }, { passive: true });
+
+    navPill.addEventListener('touchmove', (e) => {
+      if (!indicatorPhysics.isDragging) return;
+      const touchX = e.touches[0].clientX;
+      const currentTime = Date.now();
+      const dt = currentTime - indicatorPhysics.lastTime;
+      if (dt > 10) { indicatorPhysics.velocity = (touchX - indicatorPhysics.lastX) / dt; indicatorPhysics.lastX = touchX; indicatorPhysics.lastTime = currentTime; }
+      let newX = touchX - indicatorPhysics.touchOffsetX;
+      
+      // Calculate max index based on visible items
+      const visibleItems = Array.from(navItems).filter(i => i.style.display !== 'none');
+      const maxIndex = visibleItems.length - 1;
+      
+      const minX = 0;
+      const maxX = maxIndex * indicatorPhysics.cachedItemWidth;
+      const limit = indicatorPhysics.cachedItemWidth * 0.4;
+      if (newX < minX - limit) newX = (minX - limit) + (newX - (minX - limit)) * 0.15;
+      else if (newX > maxX + limit) newX = (maxX + limit) + (newX - (maxX + limit)) * 0.15;
+      
+      const diffFromCenter = Math.abs(newX - (indicatorPhysics.currentIndex * indicatorPhysics.cachedItemWidth));
+      const stretch = Math.min(diffFromCenter / 100, 0.25);
+      navIndicator.style.transform = `translate3d(${newX}px, 0, 0) scale(1.2)`;
+      navIndicator.style.width = `calc(33.33% - 8px + ${stretch * 15}px)`;
+      navIndicator.style.borderRadius = `${24 - stretch * 8}px`;
+      indicatorPhysics.currentTransformX = newX;
+    }, { passive: true });
+
+    navPill.addEventListener('touchend', (e) => {
+      if (!indicatorPhysics.isDragging) return;
+      indicatorPhysics.isDragging = false;
+      const momentum = indicatorPhysics.velocity * 15;
+      let finalX = indicatorPhysics.currentTransformX + momentum;
+      
+      const visibleItems = Array.from(navItems).filter(i => i.style.display !== 'none');
+      const maxIndex = visibleItems.length - 1;
+      
+      finalX = Math.max(0, Math.min(finalX, maxIndex * indicatorPhysics.cachedItemWidth));
+      let targetIndex = Math.round(finalX / indicatorPhysics.cachedItemWidth);
+      targetIndex = Math.max(0, Math.min(maxIndex, targetIndex));
+      
+      const newTab = visibleItems[targetIndex].getAttribute('data-tab');
+      const currentTab = visibleItems[indicatorPhysics.currentIndex].getAttribute('data-tab');
+      
+      if (newTab !== currentTab) switchTab(newTab, targetIndex);
+      else updateIndicatorPosition(indicatorPhysics.currentIndex, false);
+      
+      // Reset width
+      const itemWidthPercent = 100 / visibleItems.length;
+      navIndicator.style.width = `calc(${itemWidthPercent}% - 8px)`;
+      navIndicator.style.borderRadius = '24px';
+    });
+
+    navItems.forEach((btn, index) => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const tab = this.getAttribute('data-tab');
+        if (tab) switchTab(tab, index);
+      });
+    });
+
+    setTimeout(() => { initIndicatorPhysics(); }, 100);
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // --- ADS RENDERING ---
+    function renderAds(filter = '') {
+      const ads = loadAds();
+      const grid = document.getElementById('adsGrid');
+      const empty = document.getElementById('homeEmpty');
+      grid.innerHTML = '';
+      let filteredAds = ads;
+      if (filter.trim()) {
+        const q = filter.toLowerCase().trim();
+        filteredAds = ads.filter(ad => ad.title.toLowerCase().includes(q));
+      }
+      if (filteredAds.length === 0) {
+        empty.style.display = 'flex';
+        empty.querySelector('.empty-state-text').textContent = filter.trim() ? 'Ничего не найдено' : 'Пока нет объявлений';
+      } else {
+        empty.style.display = 'none';
+        filteredAds.forEach(ad => grid.appendChild(createAdCard(ad)));
+      }
+    }
+    
+    function renderFavorites() {
+       const favIds = loadFavorites();
+       const ads = loadAds();
+       const grid = document.getElementById('favGrid');
+       const empty = document.getElementById('favEmpty');
+       grid.innerHTML = '';
+       
+       const favAds = ads.filter(ad => favIds.includes(ad.id));
+       
+       if (favAds.length === 0) {
+         empty.style.display = 'flex';
+       } else {
+         empty.style.display = 'none';
+         favAds.forEach(ad => grid.appendChild(createAdCard(ad)));
+       }
+    }
+
+    function createAdCard(ad) {
+      const card = document.createElement('div');
+      card.className = 'ad-card';
+      card.onclick = () => {
+        window.currentAdData = ad;
+        renderDetailModalContent(ad);
+        navigateTo('detail');
+      };
+      
+      const imgHtml = ad.photos && ad.photos.length > 0
+        ? `<img class="ad-image" src="${ad.photos[0]}" alt="${escapeHtml(ad.title)}">`
+        : `<div class="ad-image-placeholder">📷</div>`;
+      
+      card.innerHTML = `<div class="ad-image-container">${imgHtml}</div><div class="ad-info"><div class="ad-title">${escapeHtml(ad.title)}</div><div class="ad-price">${escapeHtml(ad.price)}</div><div class="ad-city">📍 ${escapeHtml(ad.city)}</div></div>`;
+      return card;
+    }
+
+    function renderMyAds() {
+      const ads = loadAds();
+      const grid = document.getElementById('myAdsGrid');
+      const empty = document.getElementById('myAdsEmpty');
+      grid.innerHTML = '';
+      const myAds = ads.filter(ad => ad.userId === currentUser.id);
+      if (myAds.length === 0) { empty.style.display = 'flex'; }
+      else { empty.style.display = 'none'; myAds.forEach(ad => grid.appendChild(createAdCard(ad))); }
+    }
+    
+    function renderAdminStats() {
+       const ads = loadAds();
+       document.getElementById('adminAdCount').textContent = ads.length;
+       // Mock user count or calculate unique users from ads/chats
+       document.getElementById('adminUserCount').textContent = "1+";
+    }
+
+    function renderOtherProfile(userData) {
+      const ads = loadAds();
+      const grid = document.getElementById('otherAdsGrid');
+      const empty = document.getElementById('otherAdsEmpty');
+      const countSpan = document.getElementById('otherAdsCount');
+      
+      const avatarContainer = document.getElementById('otherProfileAvatarContainer');
+      if (userData.photoUrl) {
+        avatarContainer.innerHTML = `<img src="${userData.photoUrl}" class="profile-avatar" alt="Avatar">`;
+      } else {
+        avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
+      }
+      document.getElementById('otherProfileName').textContent = userData.name || 'Пользователь';
+      
+      const ratingBtn = document.getElementById('otherProfileRatingBtn');
+      if(ratingBtn) ratingBtn.onclick = () => openReviewsModal(userData.id, userData.name);
+      
+      updateProfileStars(userData.id, 'otherProfileStars');
+      
+      const userAds = ads.filter(ad => ad.userId === userData.id);
+      countSpan.textContent = userAds.length;
+      
+      grid.innerHTML = '';
+      if (userAds.length === 0) { empty.style.display = 'flex'; }
+      else { empty.style.display = 'none'; userAds.forEach(ad => grid.appendChild(createAdCard(ad))); }
+    }
+
+    function openOtherProfileFromChat() {
+      const chatScreen = document.getElementById('chatScreen');
+      const chatId = chatScreen.dataset.chatId;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      if (chat) {
+        navigateTo('otherProfile', { id: chat.sellerId, name: chat.sellerName, photoUrl: chat.sellerPhoto });
+      }
+    }
+
+    function openOtherProfileFromDetail() {
+      const ad = window.currentAdData;
+      if (!ad) return;
+      if (ad.userId === currentUser.id) { navigateTo('profile'); return; }
+      navigateTo('otherProfile', { id: ad.userId, name: ad.userName, photoUrl: ad.userPhoto });
+    }
+
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function (e) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => renderAds(e.target.value), 200);
+    });
+
+    // --- CREATE AD LOGIC ---
+    let selectedPhotos = [];
+    let editingAdId = null;
+    const bottomNav = document.getElementById('bottomNav');
+    function hideBottomNav() { bottomNav.classList.add('hidden'); }
+    function showBottomNav() { bottomNav.classList.remove('hidden'); }
+
+    function openCreateModal(editAd = null) {
+      editingAdId = editAd ? editAd.id : null;
+      document.getElementById('createModalTitle').textContent = editAd ? 'Редактировать объявление' : 'Новое объявление';
+      document.getElementById('submitAdBtn').textContent = editAd ? 'Сохранить' : 'Создать';
+      
+      if (editAd) {
+         document.getElementById('adTitle').value = editAd.title;
+         document.getElementById('adPrice').value = editAd.price;
+         document.getElementById('adCity').value = editAd.city;
+         document.getElementById('adCategory').value = editAd.category || '';
+         document.getElementById('adDesc').value = editAd.description || '';
+         selectedPhotos = [...(editAd.photos || [])];
+      } else {
+         selectedPhotos = [];
+         document.getElementById('adTitle').value = '';
+         document.getElementById('adPrice').value = '';
+         document.getElementById('adCity').value = '';
+         document.getElementById('adCategory').value = '';
+         document.getElementById('adDesc').value = '';
+      }
+      
+      resetPhotoSlots();
+      updateDescCounter();
+      document.getElementById('createModal').classList.add('active');
+      hideBottomNav();
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+    }
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.remove('active');
+      showBottomNav();
+      editingAdId = null;
+    }
+    document.getElementById('openCreateBtn').addEventListener('click', () => openCreateModal(null));
+
+    const descInput = document.getElementById('adDesc');
+    const descCounter = document.getElementById('descCounter');
+    function updateDescCounter() { if(descInput && descCounter) descCounter.textContent = descInput.value.length; }
+    if(descInput) descInput.addEventListener('input', updateDescCounter);
+
+    function resetPhotoSlots() {
+      for (let i = 0; i < 4; i++) {
+        const slot = document.getElementById('photoSlot' + i);
+        if (i < selectedPhotos.length) {
+           updatePhotoSlot(i, selectedPhotos[i]);
+        } else {
+           slot.innerHTML = '<span class="add-icon">+</span>';
+           slot.style.display = 'flex';
+           slot.onclick = () => addPhoto(i);
+        }
+      }
+    }
+    function addPhoto(index) { document.getElementById('photoInput').dataset.index = index; document.getElementById('photoInput').click(); }
+    
+    function handlePhotoSelect(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      const remainingSlots = 4 - selectedPhotos.length;
+      if (remainingSlots <= 0) { tg.showAlert('Максимум 4 фотографии'); event.target.value = ''; return; }
+      const filesToProcess = Array.from(files).slice(0, remainingSlots);
+      let processedCount = 0;
+      filesToProcess.forEach(file => {
+        compressImage(file, (compressedDataUrl) => {
+          selectedPhotos.push(compressedDataUrl);
+          processedCount++;
+          updatePhotoSlot(selectedPhotos.length - 1, compressedDataUrl);
+          if (processedCount === filesToProcess.length) event.target.value = '';
         });
+      });
+    }
 
-
-        // --- MODALS UTILS ---
-        function openModal(id) { document.getElementById('modalOverlay').classList.add('open'); document.getElementById(id).classList.add('open'); }
-        function closeAllModals() { document.getElementById('modalOverlay').classList.remove('open'); document.querySelectorAll('.sheet').forEach(s => s.classList.remove('open')); }
-        function openCategoryModal() { openModal('catSheet'); }
-        function openPriceModal() { openModal('priceSheet'); }
-        function setCat(c) { currentCat = c; renderProducts(); closeAllModals(); }
-        function addToCart(id) { cart.push(products.find(p=>p.id===id)); updateCart(); if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged(); }
-        function updateCart() {
-            document.getElementById('cartBadge').innerText = cart.length;
-            document.getElementById('cartBadge').style.display = cart.length ? 'block' : 'none';
-            const list = document.getElementById('cartItems'); list.innerHTML = ''; let sum = 0;
-            cart.forEach((item, idx) => { sum += item.price; list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--input-bg);"><span>${item.title}</span><span>${item.price} ₽ <i class="fas fa-times" style="color:red; margin-left:10px;" onclick="rmFromCart(${idx})"></i></span></div>`; });
-            document.getElementById('cartTotal').innerText = sum + ' ₽';
-            document.getElementById('orderCountBadge').innerText = cart.length;
+    function compressImage(file, callback) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function(event) {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const MAX_WIDTH = 800;
+          let width = img.width, height = img.height;
+          if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } }
+          else { if (height > MAX_WIDTH) { width *= MAX_WIDTH / height; height = MAX_WIDTH; } }
+          canvas.width = width; canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          callback(canvas.toDataURL('image/jpeg', 0.7));
         }
-        function rmFromCart(idx) { cart.splice(idx,1); updateCart(); }
-        function openCart() { openModal('cartSheet'); }
-        function checkout() { alert('Заказ оформлен'); cart=[]; updateCart(); closeAllModals(); }
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const icon = document.getElementById('themeIcon');
-            if(document.body.classList.contains('dark-mode')) icon.classList.replace('fa-moon', 'fa-sun');
-            else icon.classList.replace('fa-sun', 'fa-moon');
+      }
+    }
+    
+    function updatePhotoSlot(index, dataUrl) {
+      const slot = document.getElementById('photoSlot' + index);
+      slot.innerHTML = `<img src="${dataUrl}" alt="Photo"><button class="remove-btn" onclick="removePhoto(event, ${index})">✕</button>`;
+      slot.onclick = null;
+    }
+    function removePhoto(event, index) {
+      event.stopPropagation();
+      selectedPhotos.splice(index, 1);
+      resetPhotoSlots();
+      selectedPhotos.forEach((photo, i) => updatePhotoSlot(i, photo));
+    }
+    
+    function createAd() {
+      const title = document.getElementById('adTitle').value.trim();
+      const price = document.getElementById('adPrice').value.trim();
+      const city = document.getElementById('adCity').value.trim();
+      const category = document.getElementById('adCategory').value;
+      const desc = document.getElementById('adDesc').value.trim();
+      
+      if (!title || !price || !city || !category || selectedPhotos.length === 0) {
+        tg.showAlert('Заполните все поля и добавьте фото'); return;
+      }
+      
+      const ads = loadAds();
+      
+      if (editingAdId) {
+         // Edit existing
+         const adIndex = ads.findIndex(a => a.id === editingAdId);
+         if (adIndex !== -1) {
+            ads[adIndex].title = title;
+            ads[adIndex].price = price;
+            ads[adIndex].city = city;
+            ads[adIndex].category = category;
+            ads[adIndex].description = desc;
+            ads[adIndex].photos = selectedPhotos.slice(0, 4);
+            
+            saveAds(ads);
+            closeCreateModal();
+            renderAds();
+            renderMyAds();
+            // If we are in detail view, update it
+            if(window.currentAdData && window.currentAdData.id === editingAdId) {
+               window.currentAdData = ads[adIndex];
+               renderDetailModalContent(ads[adIndex]);
+            }
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            tg.showAlert('Объявление обновлено! ✅');
+         }
+      } else {
+         // Create new
+         const newAd = {
+           id: 'ad_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+           userId: currentUser.id,
+           userName: currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : ''),
+           userUsername: currentUser.username,
+           userPhoto: currentUser.photoUrl,
+           title, price, city, category, description: desc,
+           photos: selectedPhotos.slice(0, 4),
+           createdAt: Date.now()
+         };
+         
+         try {
+           ads.unshift(newAd);
+           saveAds(ads);
+           selectedPhotos = [];
+           resetPhotoSlots();
+           document.getElementById('adTitle').value = '';
+           document.getElementById('adPrice').value = '';
+           document.getElementById('adCity').value = '';
+           document.getElementById('adCategory').value = '';
+           document.getElementById('adDesc').value = '';
+           closeCreateModal();
+           renderAds();
+           renderMyAds();
+           switchTab('home', 0);
+           if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+           tg.showAlert('Объявление создано! ✅');
+         } catch (e) { ads.shift(); console.error(e); }
+      }
+    }
+
+    // --- DETAIL MODAL LOGIC ---
+    let currentCarouselIndex = 0;
+    let currentAdForChat = null;
+
+    function renderDetailModalContent(ad) {
+      document.getElementById('detailTitle').textContent = ad.title;
+      document.getElementById('detailPrice').textContent = ad.price;
+      document.getElementById('detailCity').textContent = '📍 ' + ad.city;
+      
+      const descEl = document.getElementById('detailDesc');
+      if (ad.description && ad.description.trim() !== '') {
+        descEl.textContent = ad.description + (ad.category ? `\n\nКатегория: ${ad.category}` : '');
+        descEl.style.display = 'block';
+      } else {
+        descEl.style.display = 'none';
+      }
+
+      document.getElementById('detailSellerName').textContent = ad.userName || 'Продавец';
+      if (ad.userPhoto) {
+        document.getElementById('detailSellerAvatar').innerHTML = `<img src="${ad.userPhoto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`;
+      } else {
+        document.getElementById('detailSellerAvatar').innerHTML = '👤';
+      }
+      
+      const settingsContainer = document.getElementById('detailSettingsContainer');
+      if (ad.userId === currentUser.id) settingsContainer.style.display = 'block';
+      else settingsContainer.style.display = 'none';
+      closeSettingsMenu();
+
+      updateFavoriteButtonState(ad.id);
+
+      const track = document.getElementById('carouselTrack');
+      const dots = document.getElementById('carouselDots');
+      track.innerHTML = ''; dots.innerHTML = ''; currentCarouselIndex = 0;
+      ad.photos.forEach((photo, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        slide.innerHTML = `<img src="${photo}" alt="Photo ${i + 1}">`;
+        track.appendChild(slide);
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        dots.appendChild(dot);
+      });
+    }
+
+    // --- FAVORITE & SHARE LOGIC ---
+    function toggleFavorite() {
+      const ad = window.currentAdData;
+      if (!ad) return;
+      
+      let favs = loadFavorites();
+      const idx = favs.indexOf(ad.id);
+      
+      if (idx === -1) {
+        favs.push(ad.id);
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      } else {
+        favs.splice(idx, 1);
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      }
+      saveFavorites(favs);
+      updateFavoriteButtonState(ad.id);
+    }
+
+    function updateFavoriteButtonState(adId) {
+      const btn = document.getElementById('btnFavorite');
+      const favs = loadFavorites();
+      if (favs.includes(adId)) {
+        btn.classList.add('favorite-active');
+      } else {
+        btn.classList.remove('favorite-active');
+      }
+    }
+
+    function shareAd() {
+      const ad = window.currentAdData;
+      if (!ad) return;
+      
+      const dummyLink = `https://swapka.app/ad/${ad.id}`;
+      navigator.clipboard.writeText(dummyLink).then(() => {
+        showToast('Ссылка скопирована');
+      }).catch(() => {
+        showToast('Ссылка скопирована');
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastText');
+      text.textContent = message;
+      toast.classList.add('visible');
+      setTimeout(() => {
+        toast.classList.remove('visible');
+      }, 2000);
+    }
+
+    // --- SETTINGS GEAR LOGIC ---
+    function toggleSettingsMenu() {
+      const btn = document.getElementById('settingsGearBtn');
+      btn.classList.toggle('active');
+    }
+    function closeSettingsMenu() {
+      const btn = document.getElementById('settingsGearBtn');
+      if(btn) btn.classList.remove('active');
+    }
+    
+    function editCurrentAd() { 
+       const ad = window.currentAdData;
+       if(ad) {
+          closeSettingsMenu();
+          openCreateModal(ad);
+       }
+    }
+    
+    function deleteCurrentAdFromDetail() {
+      const ad = window.currentAdData;
+      if (!ad) return;
+      if (confirm('Удалить это объявление?')) {
+        const ads = loadAds();
+        saveAds(ads.filter(a => a.id !== ad.id));
+        closeSettingsMenu();
+        goBack();
+        renderAds(); renderMyAds();
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      }
+    }
+
+    function goToSlide(index) {
+      const track = document.getElementById('carouselTrack');
+      track.style.transform = `translateX(-${index * 100}%)`;
+      currentCarouselIndex = index;
+      document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+    }
+
+    function contactSeller() {
+      const ad = window.currentAdData;
+      if (!ad) return;
+      currentAdForChat = ad;
+      const chats = loadChats();
+      let chat = chats.find(c => c.adId === ad.id && c.sellerId === ad.userId);
+      
+      if (!chat) {
+        chat = {
+          id: 'chat_' + Date.now(), adId: ad.id, adTitle: ad.title,
+          sellerId: ad.userId, sellerName: ad.userName || 'Пользователь',
+          sellerPhoto: ad.userPhoto || '', sellerUsername: ad.userUsername || '',
+          buyerId: currentUser.id, messages: [], createdAt: Date.now(), updatedAt: Date.now(), lastActive: Date.now()
+        };
+        chats.push(chat);
+        saveChats(chats);
+      } else {
+        if ((!chat.sellerPhoto && ad.userPhoto) || chat.sellerName !== ad.userName) {
+             chat.sellerPhoto = ad.userPhoto || chat.sellerPhoto;
+             chat.sellerName = ad.userName || chat.sellerName;
+             chat.sellerUsername = ad.userUsername || chat.sellerUsername;
+             saveChats(chats);
         }
-        document.getElementById('searchInput').addEventListener('input', e => renderProducts(e.target.value));
+      }
+      openChat(chat);
+    }
 
-        // Init
-        renderProducts();
-        renderCalendar();
-        renderOrders();
+    // --- CHAT LOGIC ---
+    function formatLastSeen(lastActiveTimestamp) {
+      if (!lastActiveTimestamp) return 'Был(а) недавно';
+      const now = Date.now();
+      const diff = now - lastActiveTimestamp;
+      if (diff < 5 * 60 * 1000) return 'В сети';
+      const minutes = Math.floor(diff / (60 * 1000));
+      const hours = Math.floor(diff / (60 * 60 * 1000));
+      if (minutes < 60) return `Был(а) ${minutes} мин. назад`;
+      else if (hours < 24) return `Был(а) ${hours} ч. назад`;
+      else return `Был(а) ${Math.floor(hours/24)} дн. назад`;
+    }
 
-    </script>
+    function updateChatHeaderStatus(chat) {
+      const statusEl = document.getElementById('chatHeaderStatus');
+      const statusText = formatLastSeen(chat.lastActive);
+      statusEl.textContent = statusText;
+      statusEl.classList.toggle('online', statusText === 'В сети');
+    }
+
+    function openChat(chat) {
+      const chatScreen = document.getElementById('chatScreen');
+      document.getElementById('chatHeaderName').textContent = chat.sellerName;
+      const avatarEl = document.getElementById('chatHeaderAvatar');
+      if (chat.sellerPhoto) avatarEl.innerHTML = `<img src="${chat.sellerPhoto}" alt="">`;
+      else avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
+      
+      chatScreen.dataset.chatId = chat.id;
+      navigateTo('chat');
+      updateChatHeaderStatus(chat);
+      
+      const chats = loadChats();
+      const chatIdx = chats.findIndex(c => c.id === chat.id);
+      if (chatIdx !== -1) { chats[chatIdx].unreadCount = 0; saveChats(chats); renderMessages(); }
+      
+      renderChatMessages(chat);
+      setTimeout(() => { document.getElementById('chatMessages').scrollTop = 0; }, 100);
+    }
+
+    let attachedChatPhoto = null;
+    
+    // Handle Multiple Photos
+    function handleChatPhotoSelect(event) {
+      const files = Array.from(event.target.files);
+      if (!files || files.length === 0) return;
+      
+      // Process files sequentially
+      let processedCount = 0;
+      files.forEach(file => {
+        compressImage(file, (dataUrl) => {
+           // Send each photo as a separate message immediately or queue them
+           // Here we send immediately for simplicity
+           sendPhotoMessage(dataUrl);
+           processedCount++;
+        });
+      });
+      event.target.value = '';
+    }
+
+    function sendPhotoMessage(dataUrl) {
+       const chatScreen = document.getElementById('chatScreen');
+       const chatId = chatScreen.dataset.chatId;
+       const chats = loadChats();
+       const chat = chats.find(c => c.id === chatId);
+       
+       if (chat) {
+         chat.messages.push({
+           id: 'msg_' + Date.now() + Math.random(), senderId: currentUser.id,
+           text: '', image: dataUrl, timestamp: Date.now()
+         });
+         chat.updatedAt = Date.now(); chat.lastActive = Date.now();
+         saveChats(chats);
+         renderChatMessages(chat);
+         setTimeout(() => { document.getElementById('chatMessages').scrollTop = 0; }, 50);
+         renderMessages();
+       }
+    }
+
+    function removeAttachedPhoto() {
+      attachedChatPhoto = null;
+      document.getElementById('attachedPhotoPreview').style.display = 'none';
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text && !attachedChatPhoto) return;
+      
+      const chatScreen = document.getElementById('chatScreen');
+      const chatId = chatScreen.dataset.chatId;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      
+      if (chat) {
+        chat.messages.push({
+          id: 'msg_' + Date.now(), senderId: currentUser.id,
+          text: text, image: attachedChatPhoto, timestamp: Date.now()
+        });
+        chat.updatedAt = Date.now(); chat.lastActive = Date.now();
+        saveChats(chats);
+        
+        input.value = ''; removeAttachedPhoto();
+        renderChatMessages(chat); updateChatHeaderStatus(chat);
+        setTimeout(() => { document.getElementById('chatMessages').scrollTop = 0; }, 50);
+        renderMessages();
+      }
+    }
+    document.getElementById('chatInput')?.addEventListener('keypress', function(e) { if (e.key === 'Enter') sendMessage(); });
+
+    function renderChatMessages(chat) {
+      const container = document.getElementById('chatMessages');
+      const overlay = document.getElementById('msgOverlay');
+      const widget = document.getElementById('msgActionWidget');
+      container.innerHTML = ''; container.appendChild(overlay); container.appendChild(widget);
+      
+      if (chat.messages.length === 0) {
+        container.innerHTML += '<div class="empty-state"><div class="empty-state-text">Напишите свое первое сообщение</div></div>';
+        return;
+      }
+      
+      [...chat.messages].reverse().forEach(msg => {
+        const isSent = msg.senderId === currentUser.id;
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
+        messageDiv.dataset.msgId = msg.id;
+        
+        let contentHtml = '';
+        if (msg.image) contentHtml += `<img src="${msg.image}" alt="Photo">`;
+        if (msg.text) contentHtml += `<div>${escapeHtml(msg.text)}</div>`;
+        
+        const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const editedMark = msg.edited ? ' <span style="opacity:0.6">(ред)</span>' : '';
+        messageDiv.innerHTML = `${contentHtml}<div class="chat-message-time">${time}${editedMark}</div>`;
+        container.appendChild(messageDiv);
+        
+        if (isSent) initMessageLongPress(messageDiv, msg.id);
+      });
+    }
+
+    // --- MESSAGE ACTIONS ---
+    let selectedMessageId = null;
+    let longPressTimer = null;
+    function initMessageLongPress(msgElement, msgId) {
+      msgElement.addEventListener('contextmenu', e => e.preventDefault());
+      const startHandler = () => { if(!document.querySelector('.edit-textarea')) longPressTimer = setTimeout(() => { if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged(); showMessageActions(msgId); }, 500); };
+      const endHandler = () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } };
+      msgElement.addEventListener('touchstart', startHandler, {passive: true});
+      msgElement.addEventListener('mousedown', startHandler);
+      msgElement.addEventListener('touchend', endHandler);
+      msgElement.addEventListener('mouseup', endHandler);
+      msgElement.addEventListener('touchmove', endHandler);
+    }
+    function showMessageActions(msgId) { selectedMessageId = msgId; document.getElementById('msgOverlay').classList.add('active'); document.getElementById('msgActionWidget').classList.add('active'); }
+    function closeMessageActions() { selectedMessageId = null; document.getElementById('msgOverlay').classList.remove('active'); document.getElementById('msgActionWidget').classList.remove('active'); }
+    function deleteSelectedMessage() {
+      if (!selectedMessageId) return;
+      const chatId = document.getElementById('chatScreen').dataset.chatId;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      if (chat) { chat.messages = chat.messages.filter(m => m.id !== selectedMessageId); saveChats(chats); renderChatMessages(chat); closeMessageActions(); }
+    }
+    function startEditMessage() {
+      if (!selectedMessageId) return;
+      const chatId = document.getElementById('chatScreen').dataset.chatId;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      const msg = chat ? chat.messages.find(m => m.id === selectedMessageId) : null;
+      if (!msg) return;
+      const msgDiv = document.querySelector(`.chat-message[data-msg-id="${selectedMessageId}"]`);
+      if (!msgDiv) { closeMessageActions(); return; }
+      const contentDiv = msgDiv.querySelector('div:not(.chat-message-time)');
+      if (!contentDiv) return;
+      contentDiv.innerHTML = `<textarea class="edit-textarea" id="editArea">${escapeHtml(msg.text)}</textarea><button class="edit-confirm-btn" onclick="confirmEdit('${chatId}', '${selectedMessageId}')">Сохранить</button>`;
+      const textarea = document.getElementById('editArea'); textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      document.getElementById('msgActionWidget').classList.remove('active');
+    }
+    function confirmEdit(chatId, msgId) {
+      const newText = document.getElementById('editArea').value.trim();
+      if (!newText) return;
+      const chats = loadChats();
+      const chat = chats.find(c => c.id === chatId);
+      const msg = chat ? chat.messages.find(m => m.id === msgId) : null;
+      if (msg) { msg.text = newText; msg.edited = true; saveChats(chats); renderChatMessages(chat); closeMessageActions(); }
+    }
+    window.closeMessageActions = closeMessageActions; window.startEditMessage = startEditMessage; window.deleteSelectedMessage = deleteSelectedMessage; window.confirmEdit = confirmEdit;
+
+    // --- MESSAGES LIST ---
+    function renderMessages() {
+      const chats = loadChats();
+      const container = document.getElementById('messagesList');
+      const userChats = chats.filter(c => c.buyerId === currentUser.id);
+      if (userChats.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-state-text">У вас пока нет чатов</div></div>`; return; }
+      userChats.sort((a, b) => b.updatedAt - a.updatedAt);
+      container.innerHTML = '';
+      userChats.forEach(chat => {
+        const lastMessage = chat.messages[chat.messages.length - 1];
+        let preview = 'Нет сообщений';
+        if (lastMessage) { if (lastMessage.image) preview = '📷 Фотография'; else preview = lastMessage.text; }
+        
+        const wrapper = document.createElement('div'); wrapper.className = 'message-item-wrapper';
+        const deleteBg = document.createElement('div'); deleteBg.className = 'message-delete-bg';
+        deleteBg.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg><span>Удалить</span>`;
+        
+        const messageItem = document.createElement('div'); messageItem.className = 'message-item';
+        messageItem.onclick = function() {
+          const style = window.getComputedStyle(this); const matrix = new WebKitCSSMatrix(style.transform);
+          if (matrix.m41 !== 0) { this.style.transform = 'translateX(0)'; const w = this.closest('.message-item-wrapper'); if(w){w.querySelector('.message-delete-bg').classList.remove('visible');w.querySelector('.message-delete-btn').classList.remove('visible');} return; }
+          openChat(chat);
+        };
+        
+        const avatarHtml = chat.sellerPhoto ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>` : '<div class="message-avatar">👤</div>';
+        const unreadBadge = chat.unreadCount > 0 ? `<div class="unread-badge">${chat.unreadCount}</div>` : '';
+        messageItem.innerHTML = `${avatarHtml}<div class="message-content"><div class="message-name">${escapeHtml(chat.sellerName)}</div><div class="message-preview">${escapeHtml(preview)}</div></div>${unreadBadge}`;
+        
+        const deleteBtn = document.createElement('button'); deleteBtn.className = 'message-delete-btn';
+        deleteBtn.onclick = (e) => { e.stopPropagation(); deleteChat(chat.id); };
+        
+        wrapper.appendChild(deleteBg); wrapper.appendChild(messageItem); wrapper.appendChild(deleteBtn); container.appendChild(wrapper);
+        initChatSwipe(messageItem, chat.id);
+      });
+    }
+    function deleteChat(chatId) { if (confirm('Удалить этот чат?')) { saveChats(loadChats().filter(c => c.id !== chatId)); renderMessages(); } }
+    function initChatSwipe(item, chatId) {
+      let startX = 0, currentX = 0, isSwiping = false, deleteWidth = 120;
+      item.addEventListener('touchstart', (e) => { if(selectedMessageId) return; document.querySelectorAll('.message-item').forEach(el => { if (el !== item) { el.style.transform = 'translateX(0)'; const w = el.closest('.message-item-wrapper'); if(w){const bg=w.querySelector('.message-delete-bg'),btn=w.querySelector('.message-delete-btn');if(bg)bg.classList.remove('visible');if(btn)btn.classList.remove('visible');} } }); startX = e.touches[0].clientX; currentX = startX; isSwiping = true; item.classList.add('swiping'); }, { passive: true });
+      item.addEventListener('touchmove', (e) => { if (!isSwiping) return; const touchX = e.touches[0].clientX; const diff = startX - touchX; if (diff > 0) { currentX = touchX; item.style.transform = `translateX(-${Math.min(diff, deleteWidth)}px)`; } }, { passive: true });
+      item.addEventListener('touchend', (e) => { if (!isSwiping) return; isSwiping = false; item.classList.remove('swiping'); const diff = startX - currentX; const wrapper = item.closest('.message-item-wrapper'); const deleteBg = wrapper.querySelector('.message-delete-bg'); const deleteBtn = wrapper.querySelector('.message-delete-btn'); if (diff > deleteWidth / 2) { item.style.transform = `translateX(-${deleteWidth}px)`; if(deleteBg)deleteBg.classList.add('visible'); if(deleteBtn)deleteBtn.classList.add('visible'); } else { item.style.transform = 'translateX(0)'; if(deleteBg)deleteBg.classList.remove('visible'); if(deleteBtn)deleteBtn.classList.remove('visible'); } });
+    }
+
+    // --- REVIEWS LOGIC ---
+    let currentReviewUserId = null;
+    let currentReviewRating = 0;
+    const MAX_RATING = 3;
+
+    function calculateAverageRating(userId) {
+      const allReviews = loadReviews();
+      const userReviews = allReviews[userId] || [];
+      if (userReviews.length === 0) return 0;
+      return userReviews.reduce((acc, rev) => acc + rev.rating, 0) / userReviews.length;
+    }
+
+    function updateProfileStars(userId, containerId) {
+      const avg = calculateAverageRating(userId);
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const stars = container.querySelectorAll('svg');
+      stars.forEach((star, index) => {
+        const starNum = index + 1;
+        if (starNum <= Math.floor(avg)) { star.classList.add('filled'); star.classList.remove('half-filled'); }
+        else if (starNum === Math.ceil(avg) && (avg % 1) >= 0.25 && (avg % 1) <= 0.75) { star.classList.remove('filled'); star.classList.add('half-filled'); }
+        else { star.classList.remove('filled'); star.classList.remove('half-filled'); }
+      });
+    }
+
+    function openReviewsModal(userId, userName) {
+      currentReviewUserId = userId;
+      currentReviewRating = 0;
+      document.getElementById('reviewsUserName').textContent = userName || 'Пользователь';
+      const modal = document.getElementById('reviewsModal');
+      const list = document.getElementById('reviewsList');
+      hideReviewForm();
+      
+      const allReviews = loadReviews();
+      const userReviews = allReviews[userId] || [];
+      list.innerHTML = '';
+      if (userReviews.length === 0) { list.innerHTML = '<div class="empty-state" style="position:relative;transform:none;"><div class="empty-state-text">Пока нет отзывов</div></div>'; }
+      else {
+        userReviews.sort((a, b) => b.timestamp - a.timestamp).forEach(review => {
+          const date = new Date(review.timestamp).toLocaleDateString('ru-RU');
+          let starsHtml = '';
+          for(let i=0; i<MAX_RATING; i++) starsHtml += `<svg viewBox="0 0 24 24" style="${i < review.rating ? 'fill:var(--star-filled)' : 'fill:var(--star-empty)'}"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>`;
+          
+          const isMyReview = review.authorId === currentUser.id;
+          const wrapper = document.createElement('div'); wrapper.className = 'review-item-wrapper';
+          
+          // Updated Delete BG with Complaint Button
+          const deleteBg = document.createElement('div'); deleteBg.className = 'review-delete-bg';
+          deleteBg.innerHTML = `
+            <button class="review-action-btn" onclick="complainReview('${review.id}')">
+               <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+               Жалоба
+            </button>
+            <button class="review-action-btn" onclick="deleteReview('${review.id}', '${userId}')">
+               <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+               Удалить
+            </button>
+          `;
+          
+          const item = document.createElement('div'); item.className = 'review-item';
+          let optionsHtml = isMyReview ? `<button class="review-options-btn" onclick="showReviewOptions('${review.id}', this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg></button>` : '';
+          item.innerHTML = `<div class="review-header-row"><div class="review-author-block"><span class="review-author">${escapeHtml(review.author)}</span><span class="review-date">${date}</span></div>${optionsHtml}</div><div class="review-stars">${starsHtml}</div><div class="review-text">${escapeHtml(review.text)}</div>`;
+          
+          const deleteBtn = document.createElement('button'); deleteBtn.className = 'review-delete-btn';
+          
+          wrapper.appendChild(deleteBg); wrapper.appendChild(item); wrapper.appendChild(deleteBtn); list.appendChild(wrapper);
+          if (isMyReview) initReviewSwipe(item, wrapper, deleteBg, deleteBtn);
+        });
+      }
+      modal.classList.add('active');
+      hideBottomNav();
+      updateTelegramBackButton();
+    }
+
+    function complainReview(id) {
+       tg.showAlert('Жалоба отправлена');
+       document.querySelectorAll('.review-item-wrapper').forEach(w => {
+          w.querySelector('.review-item').style.transform = 'translateX(0)';
+          w.querySelector('.review-delete-bg').classList.remove('visible');
+          w.querySelector('.review-delete-btn').classList.remove('visible');
+       });
+    }
+
+    function showReviewOptions(reviewId, btn) {
+      const wrapper = btn.closest('.review-item-wrapper');
+      const item = wrapper.querySelector('.review-item');
+      const deleteBg = wrapper.querySelector('.review-delete-bg');
+      const deleteBtn = wrapper.querySelector('.review-delete-btn');
+      item.style.transform = `translateX(-140px)`;
+      deleteBg.classList.add('visible');
+      deleteBtn.classList.add('visible');
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function initReviewSwipe(item, wrapper, deleteBg, deleteBtn) {
+      let startX = 0, currentX = 0, isSwiping = false, deleteWidth = 140;
+      item.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; currentX = startX; isSwiping = true; item.classList.add('swiping'); }, { passive: true });
+      item.addEventListener('touchmove', (e) => { if (!isSwiping) return; const touchX = e.touches[0].clientX; const diff = startX - touchX; if (diff > 0) { currentX = touchX; item.style.transform = `translateX(-${Math.min(diff, deleteWidth)}px)`; } }, { passive: true });
+      item.addEventListener('touchend', (e) => { if (!isSwiping) return; isSwiping = false; item.classList.remove('swiping'); const diff = startX - currentX; if (diff > deleteWidth / 2) { item.style.transform = `translateX(-${deleteWidth}px)`; deleteBg.classList.add('visible'); deleteBtn.classList.add('visible'); } else { item.style.transform = 'translateX(0)'; deleteBg.classList.remove('visible'); deleteBtn.classList.remove('visible'); } });
+    }
+
+    function deleteReview(reviewId, userId) {
+      if (confirm('Удалить этот отзыв?')) {
+        const allReviews = loadReviews();
+        if (allReviews[userId]) {
+          allReviews[userId] = allReviews[userId].filter(r => r.id !== reviewId);
+          saveReviews(allReviews);
+          openReviewsModal(userId, document.getElementById('reviewsUserName').textContent);
+          updateProfileStars(userId, userId === currentUser.id ? 'myProfileStars' : 'otherProfileStars');
+        }
+      }
+    }
+
+    function closeReviewsModal() {
+      document.getElementById('reviewsModal').classList.remove('active');
+      showBottomNav();
+      updateTelegramBackButton();
+      updateProfileStars(currentUser.id, 'myProfileStars');
+    }
+
+    function showReviewForm() { 
+       document.getElementById('reviewTextarea').value = '';
+       currentReviewRating = 0;
+       updateStarSelector(0);
+       checkReviewForm();
+       
+       document.getElementById('reviewInputArea').style.display = 'flex'; 
+       hideBottomNav(); 
+    }
+    function hideReviewForm() { document.getElementById('reviewInputArea').style.display = 'none'; }
+    function setReviewRating(rating) { currentReviewRating = rating; updateStarSelector(rating); checkReviewForm(); if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); }
+    function updateStarSelector(rating) { const stars = document.querySelectorAll('#reviewStarSelector svg'); stars.forEach((star, index) => { if (index < rating) star.classList.add('active'); else star.classList.remove('active'); }); }
+    function checkReviewForm() { const text = document.getElementById('reviewTextarea').value.trim(); const btn = document.getElementById('sendReviewBtn'); if (text.length > 0 && currentReviewRating > 0) btn.classList.add('active'); else btn.classList.remove('active'); }
+    function submitReview() {
+      if (!currentReviewUserId || currentReviewRating === 0) return;
+      const text = document.getElementById('reviewTextarea').value.trim();
+      if (!text) return;
+      const allReviews = loadReviews();
+      if (!allReviews[currentReviewUserId]) allReviews[currentReviewUserId] = [];
+      allReviews[currentReviewUserId].push({ id: 'rev_' + Date.now(), authorId: currentUser.id, author: currentUser.firstName, rating: currentReviewRating, text: text, timestamp: Date.now() });
+      saveReviews(allReviews);
+      
+      document.getElementById('reviewTextarea').value = '';
+      currentReviewRating = 0;
+      updateStarSelector(0);
+      checkReviewForm();
+      
+      hideReviewForm();
+      openReviewsModal(currentReviewUserId, document.getElementById('reviewsUserName').textContent);
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    }
+
+    // --- SWIPE DOWN TO CLOSE LOGIC ---
+    function initSwipeDownToClose(modalId, contentId, onCloseCallback) {
+      const modal = document.getElementById(modalId);
+      const content = document.getElementById(contentId);
+      let startY = 0;
+      let currentY = 0;
+      let isDragging = false;
+
+      content.addEventListener('touchstart', (e) => {
+        if (content.scrollTop === 0) {
+          startY = e.touches[0].clientY;
+          isDragging = true;
+          content.style.transition = 'none';
+        }
+      }, { passive: true });
+
+      content.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+        if (diff > 0) {
+          content.style.transform = `translateY(${diff}px)`;
+        }
+      }, { passive: true });
+
+      content.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const diff = currentY - startY;
+        content.style.transition = 'transform 0.3s ease';
+        
+        if (diff > 100) {
+          content.style.transform = `translateY(100%)`;
+          setTimeout(() => {
+            onCloseCallback();
+            content.style.transform = '';
+          }, 300);
+        } else {
+          content.style.transform = 'translateY(0)';
+        }
+      });
+    }
+
+    initSwipeDownToClose('createModal', 'createModalContent', closeCreateModal);
+    initSwipeDownToClose('reviewsModal', 'reviewsWrapper', closeReviewsModal);
+    
+    let detailStartY = 0;
+    let detailIsDragging = false;
+    const detailModal = document.getElementById('detailModal');
+    detailModal.addEventListener('touchstart', (e) => {
+       if (detailModal.scrollTop === 0 && e.touches[0].clientY < 100) {
+         detailStartY = e.touches[0].clientY;
+         detailIsDragging = true;
+         detailModal.style.transition = 'none';
+       }
+    }, {passive: true});
+    detailModal.addEventListener('touchmove', (e) => {
+       if(!detailIsDragging) return;
+       const diff = e.touches[0].clientY - detailStartY;
+       if(diff > 0) detailModal.style.transform = `translateY(${diff}px)`;
+    }, {passive: true});
+    detailModal.addEventListener('touchend', (e) => {
+       if(!detailIsDragging) return;
+       detailIsDragging = false;
+       detailModal.style.transition = 'transform 0.3s ease';
+       const diff = e.changedTouches[0].clientY - detailStartY;
+       if(diff > 100) {
+         detailModal.style.transform = `translateY(100%)`;
+         setTimeout(() => { goBack(); detailModal.style.transform = ''; }, 300);
+       } else {
+         detailModal.style.transform = 'translateY(0)';
+       }
+    });
+
+    // --- CAROUSEL SWIPE LOGIC ---
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const carousel = document.getElementById('detailCarousel');
+    
+    carousel.addEventListener('touchstart', e => { 
+      touchStartX = e.changedTouches[0].screenX; 
+    }, { passive: true });
+    
+    carousel.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleCarouselSwipe();
+    }, { passive: true });
+
+    function handleCarouselSwipe() {
+      const diff = touchStartX - touchEndX;
+      const totalSlides = document.querySelectorAll('.carousel-slide').length;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && currentCarouselIndex < totalSlides - 1) goToSlide(currentCarouselIndex + 1);
+        else if (diff < 0 && currentCarouselIndex > 0) goToSlide(currentCarouselIndex - 1);
+      }
+    }
+
+
+    // --- INITIALIZATION ---
+    navStack = ['home'];
+    updateTelegramBackButton();
+    setRandomSearchPlaceholder();
+    renderAds();
+    renderMyAds();
+    updateProfileStars(currentUser.id, 'myProfileStars');
+    
+    // Show Admin Tab if moderator
+    if (isAdmin) {
+       document.getElementById('navAdmin').style.display = 'flex';
+    }
+  </script>
 </body>
 </html>
