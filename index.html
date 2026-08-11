@@ -36,7 +36,7 @@
       --write-btn-green: #34C759; 
       
       /* Chat Colors */
-      --msg-sent-bg: #F5E6A8; /* Yellowish from image */
+      --msg-sent-bg: #F5E6A8;
       --msg-received-bg: #ffffff;
       --msg-received-border: #e0e0e0;
       --check-gray: #8e8e93;
@@ -71,7 +71,7 @@
       --write-btn-green: #30D158;
 
       /* Chat Colors Dark */
-      --msg-sent-bg: #3E3A28; /* Darker yellow/brown for dark mode */
+      --msg-sent-bg: #3E3A28;
       --msg-received-bg: #2c2c2e;
       --msg-received-border: #3a3a3c;
       --check-gray: #8e8e93;
@@ -505,6 +505,7 @@
       flex-shrink: 0;
       overflow: hidden;
       background: var(--bg-secondary);
+      cursor: pointer; /* For fullscreen view */
     }
     
     .message-avatar img {
@@ -618,6 +619,7 @@
       margin-right: 14px;
       overflow: hidden;
       flex-shrink: 0;
+      cursor: pointer; /* For fullscreen view */
     }
     .chat-pill-avatar img {
       width: 100%;
@@ -660,6 +662,7 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
+      /* Increased top padding to account for header pill + extra space */
       padding: 180px 16px calc(20px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column-reverse;
@@ -667,6 +670,14 @@
       background: var(--bg-primary);
       scroll-behavior: smooth;
       position: relative;
+    }
+
+    /* Invisible spacer to ensure first message isn't hidden under header */
+    .chat-top-spacer {
+      height: 400px;
+      width: 100%;
+      flex-shrink: 0;
+      pointer-events: none;
     }
 
     /* --- NEW CHAT MESSAGE STYLES --- */
@@ -703,10 +714,10 @@
     /* Sent Message (Right) */
     .chat-message.sent {
       background: var(--msg-sent-bg);
-      color: #000000; /* Always black text on yellow */
+      color: #000000;
       align-self: flex-end;
       border-bottom-right-radius: 4px;
-      border: 1px solid transparent; /* Placeholder for structure */
+      border: 1px solid transparent;
     }
     
     .dark-theme .chat-message.sent {
@@ -761,6 +772,7 @@
         box-shadow: none;
         max-width: 65%;
         overflow: hidden;
+        border-radius: 12px;
     }
     
     .chat-message.photo-msg.sent {
@@ -778,24 +790,16 @@
     .photo-container {
         position: relative;
         width: 100%;
-        line-height: 0; /* Remove gap below image */
+        line-height: 0;
+        cursor: pointer; /* For fullscreen view */
     }
 
     .chat-message.photo-msg img {
       width: 100%;
-      height: auto;
+      height: auto; /* Fix for flat images */
       display: block;
-      border-radius: 0; /* Sharp corners inside border */
-    }
-    
-    /* Round the corners of the image slightly to match border radius if needed, 
-       but request implies "photo itself", usually sharp or slight radius. 
-       Let's keep it sharp or very slight. */
-    .chat-message.photo-msg {
-        border-radius: 12px;
-    }
-    .chat-message.photo-msg img {
-        border-radius: 11px; /* Slightly less than container */
+      border-radius: 11px;
+      object-fit: cover;
     }
 
     /* Time Badge on Photo */
@@ -822,6 +826,47 @@
         height: 12px;
         stroke: white;
         stroke-width: 2.5;
+    }
+
+    /* --- FULLSCREEN IMAGE VIEWER --- */
+    .fullscreen-viewer {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      touch-action: none; /* Handle gestures manually */
+    }
+    .fullscreen-viewer.active {
+      display: flex;
+    }
+    .fullscreen-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.1s;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .close-viewer-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* --- END NEW STYLES --- */
@@ -1032,6 +1077,7 @@
     .profile-avatar {
       width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px;
       display: block; background: var(--bg-secondary);
+      cursor: pointer; /* For fullscreen view */
     }
     .profile-avatar-placeholder {
       width: 80px; height: 80px; border-radius: 50%; background: var(--bg-secondary);
@@ -1719,8 +1765,8 @@
 
     .image-carousel { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: var(--bg-secondary); }
     .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
-    .carousel-slide { min-width: 100%; height: 100%; }
-    .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+    .carousel-slide { min-width: 100%; height: 100%; cursor: pointer; /* For fullscreen */ }
+    .carousel-slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
     .carousel-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
     .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); border: none; cursor: pointer; padding: 0; }
     .carousel-dot.active { background: white; }
@@ -1795,6 +1841,7 @@
       font-size: 20px;
       overflow: hidden;
       flex-shrink: 0;
+      cursor: pointer; /* For fullscreen */
     }
     .island-avatar img {
       width: 100%;
@@ -1988,6 +2035,12 @@
     <span id="toastText">Скопировано</span>
   </div>
 
+  <!-- FULLSCREEN IMAGE VIEWER -->
+  <div class="fullscreen-viewer" id="fullscreenViewer">
+    <button class="close-viewer-btn" onclick="closeFullscreenViewer()">✕</button>
+    <img src="" alt="Fullscreen" class="fullscreen-img" id="fullscreenImg">
+  </div>
+
   <!-- ГЛОБАЛЬНАЯ ШАПКА -->
   <div class="app-header">
     <img src="logos.png" alt="Swapka Logo" class="header-logo">
@@ -2166,7 +2219,7 @@
     
     <div class="chat-header-pill-container">
       <div class="chat-profile-pill" onclick="openOtherProfileFromChat()">
-        <div class="chat-pill-avatar" id="chatHeaderAvatar"></div>
+        <div class="chat-pill-avatar" id="chatHeaderAvatar" onclick="event.stopPropagation(); openFullscreenViewer(this.querySelector('img')?.src)"></div>
         <div class="chat-pill-info">
           <div class="chat-pill-name" id="chatHeaderName">Имя</div>
           <div class="chat-pill-status" id="chatHeaderStatus">В сети</div>
@@ -2175,6 +2228,9 @@
     </div>
 
     <div class="chat-messages" id="chatMessages">
+      <!-- Invisible spacer to fix scroll issue -->
+      <div class="chat-top-spacer"></div>
+      
       <div class="chat-message-overlay" id="msgOverlay" onclick="closeMessageActions()"></div>
       <div class="message-action-widget" id="msgActionWidget">
         <button class="msg-action-btn edit-btn" onclick="startEditMessage()">
@@ -2378,7 +2434,7 @@
       <div class="seller-island-container">
         <div class="seller-island">
           <div class="island-seller-info" onclick="openOtherProfileFromDetail()">
-            <div class="island-avatar" id="detailSellerAvatar">👤</div>
+            <div class="island-avatar" id="detailSellerAvatar" onclick="event.stopPropagation(); openFullscreenViewer(this.querySelector('img')?.src)">👤</div>
             <div class="island-name-block">
               <div class="island-name" id="detailSellerName">Продавец</div>
               <div class="island-status">Был(а) недавно</div>
@@ -2426,6 +2482,69 @@
 
     localStorage.removeItem(REVIEWS_KEY);
 
+    // --- FULLSCREEN VIEWER LOGIC ---
+    const fullscreenViewer = document.getElementById('fullscreenViewer');
+    const fullscreenImg = document.getElementById('fullscreenImg');
+    let scale = 1;
+    let lastScale = 1;
+    let lastDistance = 0;
+
+    function openFullscreenViewer(src) {
+      if (!src) return;
+      fullscreenImg.src = src;
+      fullscreenViewer.classList.add('active');
+      scale = 1;
+      lastScale = 1;
+      fullscreenImg.style.transform = `scale(1)`;
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function closeFullscreenViewer() {
+      fullscreenViewer.classList.remove('active');
+      fullscreenImg.src = '';
+    }
+
+    // Pinch to Zoom Logic
+    fullscreenViewer.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        lastDistance = Math.hypot(
+          e.touches[0].pageX - e.touches[1].pageX,
+          e.touches[0].pageY - e.touches[1].pageY
+        );
+      }
+    }, { passive: false });
+
+    fullscreenViewer.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault(); // Prevent scrolling while zooming
+        const distance = Math.hypot(
+          e.touches[0].pageX - e.touches[1].pageX,
+          e.touches[0].pageY - e.touches[1].pageY
+        );
+        
+        if (lastDistance > 0) {
+          const delta = distance / lastDistance;
+          scale = Math.min(Math.max(0.5, lastScale * delta), 4); // Limit zoom 0.5x to 4x
+          fullscreenImg.style.transform = `scale(${scale})`;
+        }
+        lastDistance = distance;
+      }
+    }, { passive: false });
+
+    fullscreenViewer.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) {
+        lastDistance = 0;
+        lastScale = scale;
+      }
+    });
+
+    // Close on background click
+    fullscreenViewer.addEventListener('click', (e) => {
+      if (e.target === fullscreenViewer) {
+        closeFullscreenViewer();
+      }
+    });
+
     // --- SPLASH SCREEN LOGIC ---
     window.addEventListener('load', () => {
       const splash = document.getElementById('splashScreen');
@@ -2441,14 +2560,17 @@
     let edgeSwipeStartX = 0;
     let edgeSwipeStartY = 0;
     let isEdgeSwiping = false;
-    const EDGE_THRESHOLD = 30; // px from left edge to start gesture
-    const SWIPE_DISTANCE = 80; // px to trigger back
+    const EDGE_THRESHOLD = 30;
+    const SWIPE_DISTANCE = 80;
 
     function getSwipeBackScreens() {
       return ['favorites', 'chat', 'detail', 'otherProfile'];
     }
 
     document.addEventListener('touchstart', (e) => {
+      // Don't trigger edge swipe if viewer is open
+      if (fullscreenViewer.classList.contains('active')) return;
+      
       const touch = e.touches[0];
       if (touch.clientX <= EDGE_THRESHOLD) {
         edgeSwipeStartX = touch.clientX;
@@ -2464,7 +2586,6 @@
       const diffX = touch.clientX - edgeSwipeStartX;
       const diffY = Math.abs(touch.clientY - edgeSwipeStartY);
       
-      // Must swipe right more than threshold, and mostly horizontal
       if (diffX > SWIPE_DISTANCE && diffY < 100) {
         const currentScreen = getCurrentScreenId();
         if (getSwipeBackScreens().includes(currentScreen)) {
@@ -2478,21 +2599,19 @@
     let navStack = []; 
     const mainTabs = ['home', 'messages', 'profile', 'admin', 'favorites'];
 
-    // Screens that should show BackButton instead of CloseButton
-    const backButtonScreens = ['favorites', 'chat', 'detail', 'otherProfile', 'createModal', 'reviewsModal'];
-
     tg.BackButton.onClick(() => {
-      // If review form is open, close it first
+      if (fullscreenViewer.classList.contains('active')) {
+        closeFullscreenViewer();
+        return;
+      }
       if (document.getElementById('reviewInputArea').style.display === 'flex') {
         hideReviewForm();
         return;
       }
-      // If reviews modal is open, close it
       if (document.getElementById('reviewsModal').classList.contains('active')) {
         closeReviewsModal();
         return;
       }
-      // If create modal is open, close it
       if (document.getElementById('createModal').classList.contains('active')) {
         closeCreateModal();
         return;
@@ -2505,7 +2624,6 @@
       const reviewsModal = document.getElementById('reviewsModal');
       const createModal = document.getElementById('createModal');
       
-      // Check if any modal/screen that needs back button is active
       const isCreateModalOpen = createModal.classList.contains('active');
       const isReviewsModalOpen = reviewsModal.classList.contains('active');
       
@@ -2515,7 +2633,6 @@
       }
 
       if (!currentScreen || mainTabs.includes(currentScreen)) {
-        // Favorites is in mainTabs but needs back button
         if (currentScreen === 'favorites') {
           tg.BackButton.show();
         } else {
@@ -2611,13 +2728,11 @@
       closeSettingsMenu();
       closeMessageActions();
 
-      // FIX: If create modal is open, close it immediately
       if (document.getElementById('createModal').classList.contains('active')) {
         closeCreateModal();
         return;
       }
 
-      // If reviews modal is open, close it
       if (document.getElementById('reviewsModal').classList.contains('active')) {
         closeReviewsModal();
         return;
@@ -2738,7 +2853,7 @@
     function setupProfile() {
       const avatarContainer = document.getElementById('profileAvatarContainer');
       if (currentUser.photoUrl) {
-        avatarContainer.innerHTML = `<img src="${currentUser.photoUrl}" class="profile-avatar" alt="Avatar">`;
+        avatarContainer.innerHTML = `<img src="${currentUser.photoUrl}" class="profile-avatar" alt="Avatar" onclick="openFullscreenViewer(this.src)">`;
       } else {
         avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
       }
@@ -2955,7 +3070,7 @@
       
       const avatarContainer = document.getElementById('otherProfileAvatarContainer');
       if (userData.photoUrl) {
-        avatarContainer.innerHTML = `<img src="${userData.photoUrl}" class="profile-avatar" alt="Avatar">`;
+        avatarContainer.innerHTML = `<img src="${userData.photoUrl}" class="profile-avatar" alt="Avatar" onclick="openFullscreenViewer(this.src)">`;
       } else {
         avatarContainer.innerHTML = `<div class="profile-avatar-placeholder">👤</div>`;
       }
@@ -3029,7 +3144,6 @@
       updateDescCounter();
       document.getElementById('createModal').classList.add('active');
       hideBottomNav();
-      // Show back button for create modal
       tg.BackButton.show();
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
@@ -3041,7 +3155,6 @@
         showBottomNav();
       }
       editingAdId = null;
-      // Update back button state after closing
       updateTelegramBackButton();
     }
     
@@ -3139,15 +3252,12 @@
             ads[adIndex].photos = selectedPhotos.slice(0, 4);
             
             saveAds(ads);
-            
-            // FIX: Update currentAdData reference immediately
             window.currentAdData = ads[adIndex];
             
             closeCreateModal();
             renderAds();
             renderMyAds();
             
-            // FIX: Re-render detail modal with updated data immediately
             if (document.getElementById('detailModal').classList.contains('active')) {
                renderDetailModalContent(ads[adIndex]);
             }
@@ -3206,7 +3316,7 @@
 
       document.getElementById('detailSellerName').textContent = ad.userName || 'Продавец';
       if (ad.userPhoto) {
-        document.getElementById('detailSellerAvatar').innerHTML = `<img src="${ad.userPhoto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`;
+        document.getElementById('detailSellerAvatar').innerHTML = `<img src="${ad.userPhoto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onclick="event.stopPropagation(); openFullscreenViewer(this.src)">`;
       } else {
         document.getElementById('detailSellerAvatar').innerHTML = '👤';
       }
@@ -3224,7 +3334,8 @@
       ad.photos.forEach((photo, i) => {
         const slide = document.createElement('div');
         slide.className = 'carousel-slide';
-        slide.innerHTML = `<img src="${photo}" alt="Photo ${i + 1}">`;
+        // Add click listener for fullscreen
+        slide.innerHTML = `<img src="${photo}" alt="Photo ${i + 1}" onclick="openFullscreenViewer('${photo}')">`;
         track.appendChild(slide);
         const dot = document.createElement('button');
         dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
@@ -3373,8 +3484,11 @@
       const chatScreen = document.getElementById('chatScreen');
       document.getElementById('chatHeaderName').textContent = chat.sellerName;
       const avatarEl = document.getElementById('chatHeaderAvatar');
-      if (chat.sellerPhoto) avatarEl.innerHTML = `<img src="${chat.sellerPhoto}" alt="">`;
-      else avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
+      if (chat.sellerPhoto) {
+        avatarEl.innerHTML = `<img src="${chat.sellerPhoto}" alt="" onclick="event.stopPropagation(); openFullscreenViewer(this.src)">`;
+      } else {
+        avatarEl.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ddd;color:#555;font-size:16px;">👤</div>`;
+      }
       
       chatScreen.dataset.chatId = chat.id;
       navigateTo('chat');
@@ -3413,7 +3527,7 @@
        if (chat) {
          chat.messages.push({
            id: 'msg_' + Date.now() + Math.random(), senderId: currentUser.id,
-           text: '', image: dataUrl, timestamp: Date.now(), status: 'read' // Simulate read for demo
+           text: '', image: dataUrl, timestamp: Date.now(), status: 'read'
          });
          chat.updatedAt = Date.now(); chat.lastActive = Date.now();
          saveChats(chats);
@@ -3441,7 +3555,7 @@
       if (chat) {
         chat.messages.push({
           id: 'msg_' + Date.now(), senderId: currentUser.id,
-          text: text, image: attachedChatPhoto, timestamp: Date.now(), status: 'read' // Simulate read
+          text: text, image: attachedChatPhoto, timestamp: Date.now(), status: 'read'
         });
         chat.updatedAt = Date.now(); chat.lastActive = Date.now();
         saveChats(chats);
@@ -3454,19 +3568,14 @@
     }
     document.getElementById('chatInput')?.addEventListener('keypress', function(e) { if (e.key === 'Enter') sendMessage(); });
 
-    // Helper to generate checkmark SVG
     function getCheckmarksSVG(status, isSent) {
         if (!isSent) return '';
-        
-        // Single gray check (sent)
         if (status === 'sent') {
             return `<svg viewBox="0 0 24 24" fill="none" class="check-gray"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         }
-        // Double gray check (delivered)
         if (status === 'delivered') {
             return `<svg viewBox="0 0 24 24" fill="none" class="check-gray"><path d="M18 6L7 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 6L11 17" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         }
-        // Double blue check (read)
         if (status === 'read') {
             return `<svg viewBox="0 0 24 24" fill="none" class="check-blue"><path d="M18 6L7 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 6L11 17" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         }
@@ -3477,10 +3586,22 @@
       const container = document.getElementById('chatMessages');
       const overlay = document.getElementById('msgOverlay');
       const widget = document.getElementById('msgActionWidget');
-      container.innerHTML = ''; container.appendChild(overlay); container.appendChild(widget);
+      const spacer = container.querySelector('.chat-top-spacer');
+      
+      container.innerHTML = ''; 
+      container.appendChild(spacer); // Re-add spacer
+      container.appendChild(overlay); 
+      container.appendChild(widget);
       
       if (chat.messages.length === 0) {
-        container.innerHTML += '<div class="empty-state"><div class="empty-state-text">Напишите свое первое сообщение</div></div>';
+        // Insert empty state after spacer
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'empty-state';
+        emptyDiv.style.position = 'relative';
+        emptyDiv.style.transform = 'none';
+        emptyDiv.style.marginTop = '200px';
+        emptyDiv.innerHTML = '<div class="empty-state-text">Напишите свое первое сообщение</div>';
+        container.appendChild(emptyDiv);
         return;
       }
       
@@ -3488,7 +3609,6 @@
         const isSent = msg.senderId === currentUser.id;
         const messageDiv = document.createElement('div');
         
-        // Determine if it's a photo message
         const isPhoto = !!msg.image;
         
         messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'} ${isPhoto ? 'photo-msg' : ''}`;
@@ -3498,10 +3618,10 @@
         const editedMark = msg.edited ? ' <span style="opacity:0.6">(ред)</span>' : '';
         
         if (isPhoto) {
-            // Photo Message Structure
             const checksHtml = getCheckmarksSVG(msg.status || 'read', isSent);
+            // Added onclick for fullscreen
             messageDiv.innerHTML = `
-                <div class="photo-container">
+                <div class="photo-container" onclick="openFullscreenViewer('${msg.image}')">
                     <img src="${msg.image}" alt="Photo">
                     <div class="photo-time-badge">
                         ${time} ${checksHtml}
@@ -3509,7 +3629,6 @@
                 </div>
             `;
         } else {
-            // Text Message Structure
             const checksHtml = getCheckmarksSVG(msg.status || 'read', isSent);
             messageDiv.innerHTML = `
                 <div class="msg-text-content">${escapeHtml(msg.text)}${editedMark}</div>
@@ -3558,15 +3677,8 @@
       const msgDiv = document.querySelector(`.chat-message[data-msg-id="${selectedMessageId}"]`);
       if (!msgDiv) { closeMessageActions(); return; }
       
-      // Handle editing for both text and photo (though photo editing text is weird, we stick to text content)
-      // If it's a photo message, we might not allow text edit or we edit caption. 
-      // For simplicity, we only allow editing text messages or captions if implemented.
-      // Current logic assumes text content div exists.
-      
       const contentDiv = msgDiv.querySelector('.msg-text-content');
       if (!contentDiv) {
-          // If photo, maybe we can't edit or we edit a hidden caption? 
-          // Let's just close for now if no text content found to avoid errors
           closeMessageActions();
           return; 
       }
@@ -3609,7 +3721,7 @@
           openChat(chat);
         };
         
-        const avatarHtml = chat.sellerPhoto ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt=""></div>` : '<div class="message-avatar">👤</div>';
+        const avatarHtml = chat.sellerPhoto ? `<div class="message-avatar"><img src="${chat.sellerPhoto}" alt="" onclick="event.stopPropagation(); openFullscreenViewer(this.src)"></div>` : '<div class="message-avatar">👤</div>';
         const unreadBadge = chat.unreadCount > 0 ? `<div class="unread-badge">${chat.unreadCount}</div>` : '';
         messageItem.innerHTML = `${avatarHtml}<div class="message-content"><div class="message-name">${escapeHtml(chat.sellerName)}</div><div class="message-preview">${escapeHtml(preview)}</div></div>${unreadBadge}`;
         
