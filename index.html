@@ -505,7 +505,7 @@
       flex-shrink: 0;
       overflow: hidden;
       background: var(--bg-secondary);
-      cursor: pointer; /* For fullscreen view */
+      cursor: pointer;
     }
     
     .message-avatar img {
@@ -619,7 +619,7 @@
       margin-right: 14px;
       overflow: hidden;
       flex-shrink: 0;
-      cursor: pointer; /* For fullscreen view */
+      cursor: pointer;
     }
     .chat-pill-avatar img {
       width: 100%;
@@ -662,8 +662,8 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      /* Increased top padding to account for header pill + extra space */
-      padding: 180px 16px calc(20px + env(safe-area-inset-bottom));
+      /* Увеличенный отступ сверху, чтобы не залезать под таблетку */
+      padding: 160px 16px calc(20px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column-reverse;
       gap: 8px;
@@ -672,9 +672,9 @@
       position: relative;
     }
 
-    /* Invisible spacer to ensure first message isn't hidden under header */
+    /* Невидимый спейсер для фикса скролла */
     .chat-top-spacer {
-      height: 400px;
+      height: 300px;
       width: 100%;
       flex-shrink: 0;
       pointer-events: none;
@@ -776,11 +776,11 @@
     }
     
     .chat-message.photo-msg.sent {
-        border: 1px solid #F5E6A8; /* Thin yellow border */
+        border: 1px solid #F5E6A8;
     }
     
     .chat-message.photo-msg.received {
-        border: 1px solid #ffffff; /* Thin white border */
+        border: 1px solid #ffffff;
     }
     
     .dark-theme .chat-message.photo-msg.received {
@@ -791,12 +791,12 @@
         position: relative;
         width: 100%;
         line-height: 0;
-        cursor: pointer; /* For fullscreen view */
+        cursor: pointer;
     }
 
     .chat-message.photo-msg img {
       width: 100%;
-      height: auto; /* Fix for flat images */
+      height: auto;
       display: block;
       border-radius: 11px;
       object-fit: cover;
@@ -838,7 +838,7 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      touch-action: none; /* Handle gestures manually */
+      touch-action: none;
     }
     .fullscreen-viewer.active {
       display: flex;
@@ -1077,7 +1077,7 @@
     .profile-avatar {
       width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px;
       display: block; background: var(--bg-secondary);
-      cursor: pointer; /* For fullscreen view */
+      cursor: pointer;
     }
     .profile-avatar-placeholder {
       width: 80px; height: 80px; border-radius: 50%; background: var(--bg-secondary);
@@ -1765,7 +1765,7 @@
 
     .image-carousel { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: var(--bg-secondary); }
     .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
-    .carousel-slide { min-width: 100%; height: 100%; cursor: pointer; /* For fullscreen */ }
+    .carousel-slide { min-width: 100%; height: 100%; cursor: pointer; }
     .carousel-slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
     .carousel-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
     .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); border: none; cursor: pointer; padding: 0; }
@@ -1841,7 +1841,7 @@
       font-size: 20px;
       overflow: hidden;
       flex-shrink: 0;
-      cursor: pointer; /* For fullscreen */
+      cursor: pointer;
     }
     .island-avatar img {
       width: 100%;
@@ -2228,9 +2228,6 @@
     </div>
 
     <div class="chat-messages" id="chatMessages">
-      <!-- Invisible spacer to fix scroll issue -->
-      <div class="chat-top-spacer"></div>
-      
       <div class="chat-message-overlay" id="msgOverlay" onclick="closeMessageActions()"></div>
       <div class="message-action-widget" id="msgActionWidget">
         <button class="msg-action-btn edit-btn" onclick="startEditMessage()">
@@ -2242,6 +2239,7 @@
           Удалить
         </button>
       </div>
+      <!-- Спейсер будет добавлен через JS в конец, чтобы быть сверху -->
     </div>
     
     <div class="attached-photo-preview" id="attachedPhotoPreview" style="display:none;">
@@ -2504,7 +2502,6 @@
       fullscreenImg.src = '';
     }
 
-    // Pinch to Zoom Logic
     fullscreenViewer.addEventListener('touchstart', (e) => {
       if (e.touches.length === 2) {
         lastDistance = Math.hypot(
@@ -2516,7 +2513,7 @@
 
     fullscreenViewer.addEventListener('touchmove', (e) => {
       if (e.touches.length === 2) {
-        e.preventDefault(); // Prevent scrolling while zooming
+        e.preventDefault();
         const distance = Math.hypot(
           e.touches[0].pageX - e.touches[1].pageX,
           e.touches[0].pageY - e.touches[1].pageY
@@ -2524,7 +2521,7 @@
         
         if (lastDistance > 0) {
           const delta = distance / lastDistance;
-          scale = Math.min(Math.max(0.5, lastScale * delta), 4); // Limit zoom 0.5x to 4x
+          scale = Math.min(Math.max(0.5, lastScale * delta), 4);
           fullscreenImg.style.transform = `scale(${scale})`;
         }
         lastDistance = distance;
@@ -2538,7 +2535,6 @@
       }
     });
 
-    // Close on background click
     fullscreenViewer.addEventListener('click', (e) => {
       if (e.target === fullscreenViewer) {
         closeFullscreenViewer();
@@ -2568,9 +2564,7 @@
     }
 
     document.addEventListener('touchstart', (e) => {
-      // Don't trigger edge swipe if viewer is open
       if (fullscreenViewer.classList.contains('active')) return;
-      
       const touch = e.touches[0];
       if (touch.clientX <= EDGE_THRESHOLD) {
         edgeSwipeStartX = touch.clientX;
@@ -3334,7 +3328,6 @@
       ad.photos.forEach((photo, i) => {
         const slide = document.createElement('div');
         slide.className = 'carousel-slide';
-        // Add click listener for fullscreen
         slide.innerHTML = `<img src="${photo}" alt="Photo ${i + 1}" onclick="openFullscreenViewer('${photo}')">`;
         track.appendChild(slide);
         const dot = document.createElement('button');
@@ -3586,15 +3579,12 @@
       const container = document.getElementById('chatMessages');
       const overlay = document.getElementById('msgOverlay');
       const widget = document.getElementById('msgActionWidget');
-      const spacer = container.querySelector('.chat-top-spacer');
       
       container.innerHTML = ''; 
-      container.appendChild(spacer); // Re-add spacer
       container.appendChild(overlay); 
       container.appendChild(widget);
       
       if (chat.messages.length === 0) {
-        // Insert empty state after spacer
         const emptyDiv = document.createElement('div');
         emptyDiv.className = 'empty-state';
         emptyDiv.style.position = 'relative';
@@ -3602,6 +3592,10 @@
         emptyDiv.style.marginTop = '200px';
         emptyDiv.innerHTML = '<div class="empty-state-text">Напишите свое первое сообщение</div>';
         container.appendChild(emptyDiv);
+        
+        const spacer = document.createElement('div');
+        spacer.className = 'chat-top-spacer';
+        container.appendChild(spacer);
         return;
       }
       
@@ -3619,7 +3613,6 @@
         
         if (isPhoto) {
             const checksHtml = getCheckmarksSVG(msg.status || 'read', isSent);
-            // Added onclick for fullscreen
             messageDiv.innerHTML = `
                 <div class="photo-container" onclick="openFullscreenViewer('${msg.image}')">
                     <img src="${msg.image}" alt="Photo">
@@ -3643,6 +3636,11 @@
         
         if (isSent) initMessageLongPress(messageDiv, msg.id);
       });
+
+      // Добавляем спейсер в конец (визуально вверх)
+      const spacer = document.createElement('div');
+      spacer.className = 'chat-top-spacer';
+      container.appendChild(spacer);
     }
 
     // --- MESSAGE ACTIONS ---
