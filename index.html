@@ -34,6 +34,13 @@
       --favorite-color: #FF2D55;
       --toast-green: #34C759;
       --write-btn-green: #34C759; 
+      
+      /* Chat Colors */
+      --msg-sent-bg: #F5E6A8; /* Yellowish from image */
+      --msg-received-bg: #ffffff;
+      --msg-received-border: #e0e0e0;
+      --check-gray: #8e8e93;
+      --check-blue: #007AFF;
     }
 
     .dark-theme {
@@ -62,6 +69,13 @@
       --warning-color: #FF9F0A;
       --toast-green: #30D158;
       --write-btn-green: #30D158;
+
+      /* Chat Colors Dark */
+      --msg-sent-bg: #3E3A28; /* Darker yellow/brown for dark mode */
+      --msg-received-bg: #2c2c2e;
+      --msg-received-border: #3a3a3c;
+      --check-gray: #8e8e93;
+      --check-blue: #0A84FF;
     }
 
     * {
@@ -655,50 +669,163 @@
       position: relative;
     }
 
+    /* --- NEW CHAT MESSAGE STYLES --- */
     .chat-message {
       max-width: 75%;
-      padding: 10px 14px;
+      padding: 8px 12px;
       border-radius: 18px;
-      font-size: 15px;
+      font-size: 16px;
       line-height: 1.4;
       word-wrap: break-word;
       position: relative;
       animation: messagePopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       user-select: text;
       -webkit-user-select: text;
+      display: flex;
+      flex-direction: column;
     }
 
     @keyframes messagePopIn {
       from { opacity: 0; transform: scale(0.9) translateY(10px); }
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
-    
-    .chat-message img {
-      max-width: 100%;
-      border-radius: 12px;
-      margin-top: 4px;
-      display: block;
-    }
 
+    /* Received Message (Left) */
     .chat-message.received {
-      background: var(--bg-secondary);
+      background: var(--msg-received-bg);
       color: var(--text-primary);
       align-self: flex-start;
       border-bottom-left-radius: 4px;
+      border: 1px solid var(--msg-received-border);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
+
+    /* Sent Message (Right) */
     .chat-message.sent {
-      background: #007AFF;
-      color: white;
+      background: var(--msg-sent-bg);
+      color: #000000; /* Always black text on yellow */
       align-self: flex-end;
       border-bottom-right-radius: 4px;
-    }
-    .chat-message-time {
-      font-size: 11px;
-      opacity: 0.7;
-      margin-top: 4px;
-      text-align: right;
+      border: 1px solid transparent; /* Placeholder for structure */
     }
     
+    .dark-theme .chat-message.sent {
+        color: #ffffff;
+    }
+
+    /* Text Content Wrapper */
+    .msg-text-content {
+        display: inline;
+    }
+
+    /* Time and Checks Container for Text Messages */
+    .msg-meta {
+      float: right;
+      margin-left: 8px;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: rgba(0,0,0,0.5);
+      position: relative;
+      top: 2px;
+    }
+    
+    .dark-theme .chat-message.sent .msg-meta {
+        color: rgba(255,255,255,0.7);
+    }
+    
+    .chat-message.received .msg-meta {
+        color: var(--text-secondary);
+    }
+
+    /* Checkmarks */
+    .msg-checks {
+        display: flex;
+        align-items: center;
+    }
+    .msg-checks svg {
+        width: 14px;
+        height: 14px;
+        stroke-width: 2.5;
+    }
+    .check-gray { stroke: var(--check-gray); }
+    .check-blue { stroke: var(--check-blue); }
+
+    /* --- PHOTO MESSAGE STYLES --- */
+    .chat-message.photo-msg {
+        padding: 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        max-width: 65%;
+        overflow: hidden;
+    }
+    
+    .chat-message.photo-msg.sent {
+        border: 1px solid #F5E6A8; /* Thin yellow border */
+    }
+    
+    .chat-message.photo-msg.received {
+        border: 1px solid #ffffff; /* Thin white border */
+    }
+    
+    .dark-theme .chat-message.photo-msg.received {
+        border: 1px solid #555;
+    }
+
+    .photo-container {
+        position: relative;
+        width: 100%;
+        line-height: 0; /* Remove gap below image */
+    }
+
+    .chat-message.photo-msg img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 0; /* Sharp corners inside border */
+    }
+    
+    /* Round the corners of the image slightly to match border radius if needed, 
+       but request implies "photo itself", usually sharp or slight radius. 
+       Let's keep it sharp or very slight. */
+    .chat-message.photo-msg {
+        border-radius: 12px;
+    }
+    .chat-message.photo-msg img {
+        border-radius: 11px; /* Slightly less than container */
+    }
+
+    /* Time Badge on Photo */
+    .photo-time-badge {
+        position: absolute;
+        bottom: 6px;
+        right: 6px;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        color: white;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        pointer-events: none;
+    }
+    
+    .photo-time-badge svg {
+        width: 12px;
+        height: 12px;
+        stroke: white;
+        stroke-width: 2.5;
+    }
+
+    /* --- END NEW STYLES --- */
+
     .chat-input-area {
       padding: 10px 16px;
       padding-bottom: max(10px, env(safe-area-inset-bottom));
@@ -3286,7 +3413,7 @@
        if (chat) {
          chat.messages.push({
            id: 'msg_' + Date.now() + Math.random(), senderId: currentUser.id,
-           text: '', image: dataUrl, timestamp: Date.now()
+           text: '', image: dataUrl, timestamp: Date.now(), status: 'read' // Simulate read for demo
          });
          chat.updatedAt = Date.now(); chat.lastActive = Date.now();
          saveChats(chats);
@@ -3314,7 +3441,7 @@
       if (chat) {
         chat.messages.push({
           id: 'msg_' + Date.now(), senderId: currentUser.id,
-          text: text, image: attachedChatPhoto, timestamp: Date.now()
+          text: text, image: attachedChatPhoto, timestamp: Date.now(), status: 'read' // Simulate read
         });
         chat.updatedAt = Date.now(); chat.lastActive = Date.now();
         saveChats(chats);
@@ -3326,6 +3453,25 @@
       }
     }
     document.getElementById('chatInput')?.addEventListener('keypress', function(e) { if (e.key === 'Enter') sendMessage(); });
+
+    // Helper to generate checkmark SVG
+    function getCheckmarksSVG(status, isSent) {
+        if (!isSent) return '';
+        
+        // Single gray check (sent)
+        if (status === 'sent') {
+            return `<svg viewBox="0 0 24 24" fill="none" class="check-gray"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        }
+        // Double gray check (delivered)
+        if (status === 'delivered') {
+            return `<svg viewBox="0 0 24 24" fill="none" class="check-gray"><path d="M18 6L7 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 6L11 17" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        }
+        // Double blue check (read)
+        if (status === 'read') {
+            return `<svg viewBox="0 0 24 24" fill="none" class="check-blue"><path d="M18 6L7 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 6L11 17" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        }
+        return '';
+    }
 
     function renderChatMessages(chat) {
       const container = document.getElementById('chatMessages');
@@ -3341,16 +3487,39 @@
       [...chat.messages].reverse().forEach(msg => {
         const isSent = msg.senderId === currentUser.id;
         const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
-        messageDiv.dataset.msgId = msg.id;
         
-        let contentHtml = '';
-        if (msg.image) contentHtml += `<img src="${msg.image}" alt="Photo">`;
-        if (msg.text) contentHtml += `<div>${escapeHtml(msg.text)}</div>`;
+        // Determine if it's a photo message
+        const isPhoto = !!msg.image;
+        
+        messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'} ${isPhoto ? 'photo-msg' : ''}`;
+        messageDiv.dataset.msgId = msg.id;
         
         const time = new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         const editedMark = msg.edited ? ' <span style="opacity:0.6">(ред)</span>' : '';
-        messageDiv.innerHTML = `${contentHtml}<div class="chat-message-time">${time}${editedMark}</div>`;
+        
+        if (isPhoto) {
+            // Photo Message Structure
+            const checksHtml = getCheckmarksSVG(msg.status || 'read', isSent);
+            messageDiv.innerHTML = `
+                <div class="photo-container">
+                    <img src="${msg.image}" alt="Photo">
+                    <div class="photo-time-badge">
+                        ${time} ${checksHtml}
+                    </div>
+                </div>
+            `;
+        } else {
+            // Text Message Structure
+            const checksHtml = getCheckmarksSVG(msg.status || 'read', isSent);
+            messageDiv.innerHTML = `
+                <div class="msg-text-content">${escapeHtml(msg.text)}${editedMark}</div>
+                <div class="msg-meta">
+                    ${time}
+                    <span class="msg-checks">${checksHtml}</span>
+                </div>
+            `;
+        }
+        
         container.appendChild(messageDiv);
         
         if (isSent) initMessageLongPress(messageDiv, msg.id);
@@ -3388,8 +3557,20 @@
       if (!msg) return;
       const msgDiv = document.querySelector(`.chat-message[data-msg-id="${selectedMessageId}"]`);
       if (!msgDiv) { closeMessageActions(); return; }
-      const contentDiv = msgDiv.querySelector('div:not(.chat-message-time)');
-      if (!contentDiv) return;
+      
+      // Handle editing for both text and photo (though photo editing text is weird, we stick to text content)
+      // If it's a photo message, we might not allow text edit or we edit caption. 
+      // For simplicity, we only allow editing text messages or captions if implemented.
+      // Current logic assumes text content div exists.
+      
+      const contentDiv = msgDiv.querySelector('.msg-text-content');
+      if (!contentDiv) {
+          // If photo, maybe we can't edit or we edit a hidden caption? 
+          // Let's just close for now if no text content found to avoid errors
+          closeMessageActions();
+          return; 
+      }
+
       contentDiv.innerHTML = `<textarea class="edit-textarea" id="editArea">${escapeHtml(msg.text)}</textarea><button class="edit-confirm-btn" onclick="confirmEdit('${chatId}', '${selectedMessageId}')">Сохранить</button>`;
       const textarea = document.getElementById('editArea'); textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length);
       document.getElementById('msgActionWidget').classList.remove('active');
