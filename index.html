@@ -158,11 +158,6 @@
       z-index: 2;
       filter: drop-shadow(0 10px 25px rgba(0,0,0,0.3));
     }
-    
-    @keyframes splashPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
 
     .splash-screen.fade-out {
       opacity: 0;
@@ -2315,17 +2310,64 @@
       }, 2000);
     });
 
+    // --- EDGE SWIPE BACK GESTURE ---
+    let edgeSwipeStartX = 0;
+    let edgeSwipeStartY = 0;
+    let isEdgeSwiping = false;
+    const EDGE_THRESHOLD = 30; // px from left edge to start gesture
+    const SWIPE_DISTANCE = 80; // px to trigger back
+
+    function getSwipeBackScreens() {
+      return ['favorites', 'chat', 'detail', 'otherProfile'];
+    }
+
+    document.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      if (touch.clientX <= EDGE_THRESHOLD) {
+        edgeSwipeStartX = touch.clientX;
+        edgeSwipeStartY = touch.clientY;
+        isEdgeSwiping = true;
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      if (!isEdgeSwiping) return;
+      isEdgeSwiping = false;
+      const touch = e.changedTouches[0];
+      const diffX = touch.clientX - edgeSwipeStartX;
+      const diffY = Math.abs(touch.clientY - edgeSwipeStartY);
+      
+      // Must swipe right more than threshold, and mostly horizontal
+      if (diffX > SWIPE_DISTANCE && diffY < 100) {
+        const currentScreen = getCurrentScreenId();
+        if (getSwipeBackScreens().includes(currentScreen)) {
+          goBack();
+          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        }
+      }
+    }, { passive: true });
+
     // --- NAVIGATION STACK LOGIC ---
     let navStack = []; 
     const mainTabs = ['home', 'messages', 'profile', 'admin', 'favorites'];
 
+    // Screens that should show BackButton instead of CloseButton
+    const backButtonScreens = ['favorites', 'chat', 'detail', 'otherProfile', 'createModal', 'reviewsModal'];
+
     tg.BackButton.onClick(() => {
+      // If review form is open, close it first
       if (document.getElementById('reviewInputArea').style.display === 'flex') {
         hideReviewForm();
         return;
       }
+      // If reviews modal is open, close it
       if (document.getElementById('reviewsModal').classList.contains('active')) {
         closeReviewsModal();
+        return;
+      }
+      // If create modal is open, close it
+      if (document.getElementById('createModal').classList.contains('active')) {
+        closeCreateModal();
         return;
       }
       goBack();
@@ -2334,14 +2376,24 @@
     function updateTelegramBackButton() {
       const currentScreen = getCurrentScreenId();
       const reviewsModal = document.getElementById('reviewsModal');
+      const createModal = document.getElementById('createModal');
       
-      if (reviewsModal.classList.contains('active')) {
+      // Check if any modal/screen that needs back button is active
+      const isCreateModalOpen = createModal.classList.contains('active');
+      const isReviewsModalOpen = reviewsModal.classList.contains('active');
+      
+      if (isCreateModalOpen || isReviewsModalOpen) {
         tg.BackButton.show();
         return;
       }
 
       if (!currentScreen || mainTabs.includes(currentScreen)) {
-        tg.BackButton.hide();
+        // Favorites is in mainTabs but needs back button
+        if (currentScreen === 'favorites') {
+          tg.BackButton.show();
+        } else {
+          tg.BackButton.hide();
+        }
       } else {
         tg.BackButton.show();
       }
@@ -2431,6 +2483,18 @@
     function goBack() {
       closeSettingsMenu();
       closeMessageActions();
+
+      // FIX: If create modal is open, close it immediately
+      if (document.getElementById('createModal').classList.contains('active')) {
+        closeCreateModal();
+        return;
+      }
+
+      // If reviews modal is open, close it
+      if (document.getElementById('reviewsModal').classList.contains('active')) {
+        closeReviewsModal();
+        return;
+      }
 
       if (navStack.length <= 1) {
         navigateTo('home');
@@ -2838,14 +2902,22 @@
       updateDescCounter();
       document.getElementById('createModal').classList.add('active');
       hideBottomNav();
+      // Show back button for create modal
+      tg.BackButton.show();
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
+    
     function closeCreateModal() {
       document.getElementById('createModal').classList.remove('active');
       const current = getCurrentScreenId();
-      if (mainTabs.includes(current)) showBottomNav();
+      if (mainTabs.includes(current)) {
+        showBottomNav();
+      }
       editingAdId = null;
+      // Update back button state after closing
+      updateTelegramBackButton();
     }
+    
     document.getElementById('openCreateBtn').addEventListener('click', () => openCreateModal(null));
 
     const descInput = document.getElementById('adDesc');
@@ -2940,13 +3012,19 @@
             ads[adIndex].photos = selectedPhotos.slice(0, 4);
             
             saveAds(ads);
+            
+            // FIX: Update currentAdData reference immediately
+            window.currentAdData = ads[adIndex];
+            
             closeCreateModal();
             renderAds();
             renderMyAds();
-            if(window.currentAdData && window.currentAdData.id === editingAdId) {
-               window.currentAdData = ads[adIndex];
+            
+            // FIX: Re-render detail modal with updated data immediately
+            if (document.getElementById('detailModal').classList.contains('active')) {
                renderDetailModalContent(ads[adIndex]);
             }
+            
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             tg.showAlert('Объявление обновлено! ✅');
          }
@@ -3439,6 +3517,7 @@
       }
       modal.classList.add('active');
       hideBottomNav();
+      tg.BackButton.show();
       updateTelegramBackButton();
     }
 
