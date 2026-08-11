@@ -103,60 +103,72 @@
 
     /* --- SPLASH SCREEN --- */
     .splash-screen {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 9999;
-  background: var(--bg-primary); /* Базовый фон (белый/тёмный) */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: opacity 0.6s ease;
-  pointer-events: all;
-  overflow: hidden;
-}
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 9999;
+      background: var(--bg-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.6s ease;
+      pointer-events: all;
+      overflow: hidden;
+    }
 
-/* Псевдоэлемент для радиальной анимации */
-.splash-screen::before {
-  content: '';
-  position: absolute;
-  top: 50%; 
-  left: 50%;
-  /* Делаем элемент огромным, чтобы при вращении не было пустых углов */
-  width: 300vmax; 
-  height: 300vmax;
-  transform: translate(-50%, -50%) scale(0);
-  
-  /* Конический градиент создаёт эффект "лучей" из центра */
-  background: conic-gradient(
-    from 0deg,
-    #8A2BE2 0deg,
-    #FFD60A 72deg,
-    #007AFF 144deg,
-    #FFFFFF 216deg,
-    #FF00FF 288deg,
-    #8A2BE2 360deg
-  );
-  
-  /* Анимация: одновременно расширяется и вращается */
-  animation: radialExpand 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  border-radius: 50%;
-}
+    .splash-screen::before {
+      content: '';
+      position: absolute;
+      top: 50%; 
+      left: 50%;
+      width: 300vmax; 
+      height: 300vmax;
+      transform: translate(-50%, -50%) scale(0);
+      background: conic-gradient(
+        from 0deg,
+        #8A2BE2 0deg,
+        #FFD60A 72deg,
+        #007AFF 144deg,
+        #FFFFFF 216deg,
+        #FF00FF 288deg,
+        #8A2BE2 360deg
+      );
+      animation: radialExpand 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      border-radius: 50%;
+      z-index: 1;
+    }
 
-@keyframes radialExpand {
-  0% {
-    transform: translate(-50%, -50%) scale(0) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    /* scale(1) достаточно, т.к. размер 300vmax покрывает весь экран */
-    transform: translate(-50%, -50%) scale(1) rotate(360deg);
-    opacity: 1;
-  }
-}
+    @keyframes radialExpand {
+      0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1) rotate(360deg);
+        opacity: 1;
+      }
+    }
 
+    .splash-logo {
+      width: 180px;
+      height: auto;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 10px 25px rgba(0,0,0,0.3));
+      animation: splashPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes splashPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .splash-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
 
     /* --- HEADER --- */
     .app-header {
@@ -1839,7 +1851,6 @@
     <img src="IMG_13001.png" alt="Swapka" class="splash-logo">
   </div>
 
-
   <!-- SVG Definitions for Half Star -->
   <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -2008,9 +2019,7 @@
         <span class="reviews-title">Отзывы</span>
         <span class="reviews-subtitle" id="reviewsUserName">Пользователь</span>
       </div>
-      <div class="reviews-list" id="reviewsList">
-        <!-- Reviews here -->
-      </div>
+      <div class="reviews-list" id="reviewsList"></div>
       
       <button class="send-review-btn active" id="openReviewFormBtn" onclick="showReviewForm()" style="margin-top: 10px;">Написать отзыв</button>
 
@@ -2266,7 +2275,6 @@
   <script>
     const tg = window.Telegram.WebApp;
     
-    // ИНИЦИАЛИЗАЦИЯ И РАСШИРЕНИЕ ЭКРАНА
     tg.ready();
     tg.expand(); 
 
@@ -2278,7 +2286,6 @@
 
     const user = tg.initDataUnsafe?.user;
     
-    // Модераторы
     const moderators = ['qvilxy'];
     const isAdmin = user && user.username && moderators.includes(user.username.toLowerCase().replace('@', ''));
 
@@ -3611,7 +3618,6 @@
         else if (diff < 0 && currentCarouselIndex > 0) goToSlide(currentCarouselIndex - 1);
       }
     }
-
 
     // --- INITIALIZATION ---
     navStack = ['home'];
