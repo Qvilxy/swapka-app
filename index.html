@@ -34,12 +34,6 @@
       --favorite-color: #FF2D55;
       --toast-green: #34C759;
       --write-btn-green: #34C759; 
-      
-      /* Splash Screen Variables */
-      --splash-bg: #ffffff;
-      --splash-gradient-start: #8A2BE2;
-      --splash-gradient-mid: #007AFF;
-      --splash-gradient-end: #FFD60A;
     }
 
     .dark-theme {
@@ -68,9 +62,6 @@
       --warning-color: #FF9F0A;
       --toast-green: #30D158;
       --write-btn-green: #30D158;
-      
-      /* Dark Splash */
-      --splash-bg: #1a1a1a;
     }
 
     * {
@@ -115,11 +106,21 @@
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       z-index: 9999;
-      background: var(--splash-bg);
+      /* Тот же градиент что и в шапке */
+      background: linear-gradient(90deg, 
+        #8A2BE2 0%, 
+        #FFD60A 25%, 
+        #007AFF 50%, 
+        #FFFFFF 75%, 
+        #FF00FF 100%,
+        #8A2BE2 100% 
+      );
+      background-size: 400% 100%;
+      animation: gradientFlow 15s ease infinite;
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.6s ease;
       pointer-events: all;
     }
     
@@ -128,61 +129,16 @@
       pointer-events: none;
     }
 
-    /* The layer that performs the radial fill animation */
-    .splash-fill-layer {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 1;
-      /* Conic gradient creates the clock-like sweep */
-      background: conic-gradient(
-        from 0deg at 50% 50%, 
-        var(--splash-gradient-start) 0deg, 
-        var(--splash-gradient-mid) 120deg, 
-        var(--splash-gradient-end) 240deg, 
-        var(--splash-gradient-start) 360deg
-      );
-      /* Mask to hide it initially or reveal it. 
-         Actually, simpler approach for "filling": 
-         Use a mask-image that expands or simply rotate the gradient behind a mask?
-         
-         Request: "Radial animation... from center up... clockwise fills screen".
-         Implementation: A conic gradient rotating. To make it "fill", we can use a mask.
-      */
-      opacity: 0.6; /* Slight transparency to blend with white/dark bg */
-      mix-blend-mode: multiply; /* Blends nicely with white */
-      animation: splashRotate 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-      transform-origin: center;
-      clip-path: circle(0% at 50% 50%); /* Start hidden */
-      animation: splashExpand 2s cubic-bezier(0.22, 1, 0.36, 1) forwards, splashRotate 4s linear infinite;
-    }
-    
-    .dark-theme .splash-fill-layer {
-       mix-blend-mode: screen; /* Better for dark mode */
-       opacity: 0.4;
-    }
-
-    @keyframes splashExpand {
-      0% { clip-path: circle(0% at 50% 50%); opacity: 0; }
-      10% { opacity: 1; }
-      100% { clip-path: circle(150% at 50% 50%); opacity: 1; }
-    }
-    
-    @keyframes splashRotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
     .splash-logo {
-      width: 140px;
+      width: 180px;
       height: auto;
-      z-index: 2;
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
-      animation: logoFloat 2s ease-in-out infinite alternate;
+      filter: drop-shadow(0 10px 25px rgba(0,0,0,0.3));
+      animation: splashPulse 2s ease-in-out infinite;
     }
     
-    @keyframes logoFloat {
-      from { transform: translateY(0); }
-      to { transform: translateY(-10px); }
+    @keyframes splashPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
 
     /* --- HEADER --- */
@@ -1150,7 +1106,6 @@
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5); 
-      /* FIX: Increased Z-Index to 300 to appear ABOVE Detail Modal (200) */
       z-index: 300; 
       display: none;
       align-items: flex-end; justify-content: center;
@@ -1864,8 +1819,6 @@
 
   <!-- SPLASH SCREEN -->
   <div class="splash-screen" id="splashScreen">
-    <div class="splash-fill-layer"></div>
-    <!-- Logo Image s.png -->
     <img src="s.png" alt="Swapka" class="splash-logo">
   </div>
 
@@ -1919,7 +1872,6 @@
     <!-- FAVORITES PAGE -->
     <div class="page" id="pageFavorites" data-screen-id="favorites">
       <div class="search-container">
-         <!-- FIX: Removed pill background, centered text directly -->
          <div style="width: 100%; text-align: center; font-weight: 800; font-size: 20px; color: var(--text-primary);">
             Избранное
          </div>
@@ -2309,7 +2261,7 @@
     const user = tg.initDataUnsafe?.user;
     
     // Модераторы
-    const moderators = ['striptizgirls'];
+    const moderators = ['qvilxy'];
     const isAdmin = user && user.username && moderators.includes(user.username.toLowerCase().replace('@', ''));
 
     const currentUser = {
@@ -2331,19 +2283,16 @@
     // --- SPLASH SCREEN LOGIC ---
     window.addEventListener('load', () => {
       const splash = document.getElementById('splashScreen');
-      // Animation lasts 2s in CSS
       setTimeout(() => {
         splash.classList.add('fade-out');
-        // Remove from DOM after fade out to allow clicks
         setTimeout(() => {
           splash.style.display = 'none';
-        }, 500);
+        }, 600);
       }, 2000);
     });
 
     // --- NAVIGATION STACK LOGIC ---
     let navStack = []; 
-    // FIX: Added 'favorites' to mainTabs so Bottom Nav stays visible
     const mainTabs = ['home', 'messages', 'profile', 'admin', 'favorites'];
 
     tg.BackButton.onClick(() => {
@@ -2410,9 +2359,6 @@
         document.getElementById('bottomNav').classList.remove('hidden');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         
-        // Map favorites tab to Home icon visually if needed, or just highlight nothing specific if no dedicated tab button
-        // Since there is no dedicated "Favorites" button in HTML nav-pill, we just show the bar.
-        // If you want to highlight 'Home' when in Favorites, do this:
         let tabToHighlight = screenId;
         if (screenId === 'favorites') tabToHighlight = 'home'; 
         
@@ -2420,7 +2366,6 @@
         if(activeNav) activeNav.classList.add('active');
         
         const index = mainTabs.indexOf(tabToHighlight);
-        // Only update indicator if we found a matching nav item
         if (index !== -1 && activeNav) {
             updateIndicatorPosition(index, false);
             indicatorPhysics.currentIndex = index;
@@ -2868,18 +2813,13 @@
       resetPhotoSlots();
       updateDescCounter();
       document.getElementById('createModal').classList.add('active');
-      // Note: We don't necessarily need to hide bottom nav anymore since modal z-index is higher,
-      // but keeping existing behavior to avoid visual clutter.
       hideBottomNav();
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
     function closeCreateModal() {
       document.getElementById('createModal').classList.remove('active');
-      // Determine if we should show nav based on current screen
       const current = getCurrentScreenId();
-      if (mainTabs.includes(current)) {
-         showBottomNav();
-      }
+      if (mainTabs.includes(current)) showBottomNav();
       editingAdId = null;
     }
     document.getElementById('openCreateBtn').addEventListener('click', () => openCreateModal(null));
